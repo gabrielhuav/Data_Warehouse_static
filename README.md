@@ -1,47 +1,57 @@
 # Consumo de Agua CDMX — versión estática
 
-Sitio estático (HTML + JS + JSON + GeoJSON) sin backend ni dependencias de servidor. Listo para publicar en **GitHub Pages**.
+Sitio estático (HTML + JavaScript + JSON + GeoJSON) que permite consultar y visualizar el consumo de agua de la Ciudad de México sin depender de un servidor backend. Esta versión corresponde a la demostración pública del proyecto y está lista para publicarse en **GitHub Pages** o cualquier servicio de alojamiento estático.
 
 ## Contenido
 
-| Archivo | Descripción |
-|---|---|
-| `index.html` | Dashboard con KPIs, gráficos Plotly y tabla paginada. |
-| `mapa.html` | Mapa coroplético de las 16 alcaldías con Leaflet. |
-| `consumo.json` | Dataset estático (~3.9 MB): catálogos + registros a nivel colonia + correlación clima. |
-| `alcaldias.geojson` | Polígonos de las 16 alcaldías de la CDMX. |
+| Archivo             | Descripción                                                                         |
+| ------------------- | ----------------------------------------------------------------------------------- |
+| `index.html`        | Dashboard con indicadores, gráficos interactivos (Plotly) y tabla de consulta.      |
+| `mapa.html`         | Mapa coroplético interactivo de las 16 alcaldías utilizando Leaflet.                |
+| `consumo.json`      | Conjunto de datos exportado desde el almacén de datos para la demostración pública. |
+| `alcaldias.geojson` | Polígonos geográficos de las 16 alcaldías de la Ciudad de México.                   |
 
 ## Datos
 
-Los valores son **simulados** (no son datos reales del SACMEX/CONAGUA), generados con perfiles realistas por alcaldía y bimestre. Sirven para mostrar la UI completa:
+Los datos utilizados en esta versión fueron exportados desde el almacén de datos construido durante el proyecto, el cual integra información proveniente de los conjuntos de datos abiertos publicados por el Sistema de Aguas de la Ciudad de México (SACMEX).
 
-- 16 alcaldías
-- ~390 colonias distribuidas
-- 5 años (2019–2023) × 6 bimestres × ~390 colonias = ~11,700 registros
-- Datos de correlación clima (temperatura, lluvia, días extremos) por bimestre
+La versión estática contiene la información necesaria para ejecutar las consultas, filtros y visualizaciones del sistema directamente en el navegador, sin requerir conexión a una base de datos.
 
-## Publicar en GitHub Pages
+## Funcionalidades
 
-1. Sube esta carpeta (`web/`) a tu repo en GitHub.
-2. En el repo ve a **Settings → Pages**.
-3. En **Source** elige:
-   - **Deploy from a branch** → `main` (o la rama que uses) y carpeta `/web`.
-4. Espera ~1 min. Tu sitio quedará en `https://<usuario>.github.io/<repo>/`.
+* Consulta por alcaldía.
+* Consulta por colonia.
+* Filtros por año y bimestre.
+* Visualización mediante mapa coroplético.
+* Indicadores y gráficas interactivas.
+* Detección exploratoria de consumos atípicos.
 
-> GitHub Pages sirve los archivos tal cual. No hay build, no hay backend.
+## Publicación en GitHub Pages
 
-## Probarlo en local
+1. Subir el contenido del repositorio a GitHub.
+2. Ir a **Settings → Pages**.
+3. Seleccionar:
 
-GitHub Pages requiere un servidor HTTP (los navegadores bloquean `fetch` desde `file://`):
+* **Deploy from a branch**
+* Rama `main`
+* Carpeta correspondiente al sitio
+
+Una vez publicado, el sistema estará disponible mediante GitHub Pages como demostración pública del proyecto.
+
+## Ejecución local
 
 ```bash
-cd web
 python3 -m http.server 8000
-# abrí http://127.0.0.1:8000/
+```
+
+Después abrir:
+
+```
+http://127.0.0.1:8000/
 ```
 
 ## Notas
 
-- El login se quitó: ahora todas las páginas son públicas.
-- Toda la "consulta a la base de datos" se hace filtrando/agregando `consumo.json` en el cliente.
-- Si querés regenerar el JSON con otros parámetros, el script generador está en la raíz del repo (`generar_consumo_json.py`); el resultado lo movés a esta carpeta.
+* La versión publicada corresponde a una implementación completamente estática destinada a la demostración y consulta del sistema.
+* Toda la recuperación de información se realiza mediante procesamiento de los archivos JSON cargados en el navegador.
+* El backend desarrollado con FastAPI y PostgreSQL forma parte de la implementación completa del proyecto, pero no es necesario para ejecutar esta versión de demostración.
