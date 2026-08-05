@@ -1,0 +1,171 @@
+# =====================================================================
+# mapping.r2rml.ttl
+# R2RML mapping: star schema (PostgreSQL) -> RDF knowledge graph
+# Vocabularies: RDF Data Cube (qb), GeoSPARQL (geo), SKOS, OWL-Time
+#
+# This file is the artefact referenced in Section 4.2 of the paper.
+# Commit it to the repository so that the claim "the complete mapping is
+# distributed with the repository" is true.
+#
+# Run with any R2RML engine, e.g.:
+#   morph-kgc config.ini
+#   java -jar rmlmapper.jar -m mapping.r2rml.ttl -o kg.nt
+# =====================================================================
+
+@prefix rr:   <http://www.w3.org/ns/r2rml#> .
+@prefix qb:   <http://purl.org/linked-data/cube#> .
+@prefix geo:  <http://www.opengis.net/ont/geosparql#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix time: <http://www.w3.org/2006/time#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix agua: <https://w3id.org/cdmx/agua/> .
+
+# ---------------------------------------------------------------------
+# 1. Observations (fact table -> qb:Observation)
+# ---------------------------------------------------------------------
+<#ObservationMap> a rr:TriplesMap ;
+  rr:logicalTable [ rr:tableName "fact_water_consumption" ] ;
+
+  rr:subjectMap [
+    rr:template "https://w3id.org/cdmx/agua/obs/{fact_id}" ;
+    rr:class    qb:Observation
+  ] ;
+
+  rr:predicateObjectMap [
+    rr:predicate qb:dataSet ;
+    rr:objectMap [ rr:constant agua:consumoCDMX ]
+  ] ;
+
+  rr:predicateObjectMap [
+    rr:predicate agua:period ;
+    rr:objectMap [ rr:parentTriplesMap <#TimeMap> ;
+                   rr:joinCondition [ rr:child "time_id" ; rr:parent "time_id" ] ]
+  ] ;
+
+  rr:predicateObjectMap [
+    rr:predicate agua:location ;
+    rr:objectMap [ rr:parentTriplesMap <#LocationMap> ;
+                   rr:joinCondition [ rr:child "location_id" ; rr:parent "location_id" ] ]
+  ] ;
+
+  rr:predicateObjectMap [
+    rr:predicate agua:developmentIndex ;
+    rr:objectMap [ rr:parentTriplesMap <#DevIndexMap> ;
+                   rr:joinCondition [ rr:child "dev_index_id" ; rr:parent "dev_index_id" ] ]
+  ] ;
+
+  # --- measures (cubic metres) ---
+  rr:predicateObjectMap [
+    rr:predicate agua:totalConsumption ;
+    rr:objectMap [ rr:column "consumo_total" ; rr:datatype xsd:decimal ]
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate agua:averageConsumption ;
+    rr:objectMap [ rr:column "consumo_promedio" ; rr:datatype xsd:decimal ]
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate agua:domesticConsumption ;
+    rr:objectMap [ rr:column "consumo_dom" ; rr:datatype xsd:decimal ]
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate agua:nonDomesticConsumption ;
+    rr:objectMap [ rr:column "consumo_no_dom" ; rr:datatype xsd:decimal ]
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate agua:mixedConsumption ;
+    rr:objectMap [ rr:column "consumo_mixto" ; rr:datatype xsd:decimal ]
+  ] .
+
+# ---------------------------------------------------------------------
+# 2. Territory (dim_location -> geo:Feature)
+# ---------------------------------------------------------------------
+<#LocationMap> a rr:TriplesMap ;
+  rr:logicalTable [ rr:tableName "dim_location" ] ;
+
+  rr:subjectMap [
+    rr:template "https://w3id.org/cdmx/agua/colonia/{location_id}" ;
+    rr:class    geo:Feature
+  ] ;
+
+  rr:predicateObjectMap [
+    rr:predicate rdfs:label ;
+    rr:objectMap [ rr:column "colonia" ; rr:language "es" ]
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate agua:borough ;
+    rr:objectMap [ rr:template "https://w3id.org/cdmx/agua/alcaldia/{alcaldia}" ]
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate geo:hasGeometry ;
+    rr:objectMap [ rr:template "https://w3id.org/cdmx/agua/geom/{location_id}" ]
+  ] .
+
+<#GeometryMap> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """
+      SELECT location_id,
+             ST_AsText(ST_SetSRID(ST_MakePoint(longitud, latitud), 4326)) AS wkt
+      FROM dim_location
+  """ ] ;
+  rr:subjectMap [
+    rr:template "https://w3id.org/cdmx/agua/geom/{location_id}" ;
+    rr:class    geo:Geometry
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate geo:asWKT ;
+    rr:objectMap [ rr:column "wkt" ; rr:datatype geo:wktLiteral ]
+  ] .
+
+# ---------------------------------------------------------------------
+# 3. Time (dim_time -> qb dimension + OWL-Time)
+# ---------------------------------------------------------------------
+<#TimeMap> a rr:TriplesMap ;
+  rr:logicalTable [ rr:tableName "dim_time" ] ;
+  rr:subjectMap [
+    rr:template "https://w3id.org/cdmx/agua/period/{time_id}" ;
+    rr:class    time:TemporalEntity
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate agua:year ;
+    rr:objectMap [ rr:column "anio" ; rr:datatype xsd:gYear ]
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate agua:bimester ;
+    rr:objectMap [ rr:column "bimestre" ; rr:datatype xsd:integer ]
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate agua:date ;
+    rr:objectMap [ rr:column "fecha" ; rr:datatype xsd:date ]
+  ] .
+
+# ---------------------------------------------------------------------
+# 4. Development index (dim_dev_index -> SKOS ordinal scheme)
+# ---------------------------------------------------------------------
+<#DevIndexMap> a rr:TriplesMap ;
+  rr:logicalTable [ rr:tableName "dim_dev_index" ] ;
+  rr:subjectMap [
+    rr:template "https://w3id.org/cdmx/agua/devindex/{dev_index_id}" ;
+    rr:class    skos:Concept
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate skos:prefLabel ;
+    rr:objectMap [ rr:column "nivel" ; rr:language "es" ]
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate skos:inScheme ;
+    rr:objectMap [ rr:constant agua:indiceDesarrollo ]
+  ] .
+
+# ---------------------------------------------------------------------
+# NOTE ON ADJACENCY (geo:sfTouches)
+# The topological relation used by the SPARQL example in the paper is NOT
+# produced by this mapping: it is derived after materialisation, either by
+# the triple store's spatial index or by a one-off SQL statement such as
+#
+#   SELECT a.location_id, b.location_id
+#   FROM dim_location a JOIN dim_location b
+#     ON ST_Touches(a.geom, b.geom) AND a.location_id <> b.location_id;
+#
+# State this explicitly in the repository README so the claim in the paper
+# matches what the artefact actually does.
+# ---------------------------------------------------------------------
