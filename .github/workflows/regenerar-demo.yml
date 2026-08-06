@@ -1,0 +1,144 @@
+# =====================================================================
+#  Regenera consumo.json de la demo estatica a partir del almacen real
+# ---------------------------------------------------------------------
+#  Levanta el contenedor PostgreSQL de warehouse/ (el de Omar Pulido
+#  Morales), deja que corra el ETL completo sobre los CSV de SACMEX y
+#  Open-Meteo, exporta el resultado al JSON que consume GitHub Pages y lo
+#  commitea SOLO si pasa la validacion.
+#
+#  Disparadores:
+#    - Manual (workflow_dispatch): el modo recomendado al principio.
+#    - Push que toque warehouse/** o el script de exportacion.
+#    - Mensual, dia 1 a las 06:00 UTC (desactivado por defecto: descomenta).
+#
+#  Al hacer commit del JSON, GitHub Pages redespliega solo.
+# =====================================================================
+name: Regenerar demo estatica
+
+on:
+  workflow_dispatch:
+    inputs:
+      publicar:
+        description: 'Commitear el JSON generado (si es "no", solo valida)'
+        required: true
+        default: 'no'
+        type: choice
+        options: ['no', 'si']
+  push:
+    branches: [main]
+    paths:
+      - 'warehouse/**'
+      - 'scripts/exportar_estatico.py'
+      - '.github/workflows/regenerar-demo.yml'
+  # schedule:
+  #   - cron: '0 6 1 * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: regenerar-demo
+  cancel-in-progress: false
+
+jobs:
+  regenerar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Levantar el almacen (Dockerfile de warehouse/)
+        working-directory: warehouse
+        run: |
+          docker compose up -d --build
+          echo "Contenedor levantado, esperando a que el ETL termine..."
+
+      - name: Esperar a que el ETL complete
+        run: |
+          for i in $(seq 1 60); do
+            n=$(docker exec data_warehouse_cdmx psql -U postgres -d data_warehouse \
+                  -tAc "SELECT count(*) FROM fact_consumo_agua" 2>/dev/null || echo 0)
+            if [ "${n:-0}" -gt 0 ]; then
+              echo "ETL listo: $n filas en fact_consumo_agua"
+              exit 0
+            fi
+            echo "  ...esperando ($((i*5))s)"
+            sleep 5
+          done
+          echo "::error::El ETL no termino en 5 minutos"
+          docker logs data_warehouse_cdmx | tail -50
+          exit 1
+
+      - name: Verificar las cifras del articulo
+        run: |
+          docker exec data_warehouse_cdmx psql -U postgres -d data_warehouse -c "
+            SELECT 'fact_consumo_agua' AS tabla, count(*) FROM fact_consumo_agua
+            UNION ALL SELECT 'dim_ubicacion',  count(*) FROM dim_ubicacion
+            UNION ALL SELECT 'dim_tiempo',     count(*) FROM dim_tiempo
+            UNION ALL SELECT 'dim_indice_des', count(*) FROM dim_indice_des
+            UNION ALL SELECT 'con coordenada', count(*) FROM dim_ubicacion
+                                               WHERE latitud IS NOT NULL;"
+
+      - name: Instalar dependencias de Python
+        run: pip install --quiet psycopg2-binary
+
+      - name: Exportar el JSON desde el almacen
+        env:
+          DSN: postgresql://postgres:postgres@localhost:5433/data_warehouse
+        run: |
+          python scripts/exportar_estatico.py --dsn "$DSN" --salida consumo.nuevo.json
+
+      - name: Comparar con lo publicado
+        run: |
+          echo "Actual : $(wc -c < consumo.json) bytes"
+          echo "Nuevo  : $(wc -c < consumo.nuevo.json) bytes"
+          python - <<'PY'
+          import json
+          a=json.load(open('consumo.json')); b=json.load(open('consumo.nuevo.json'))
+          print(f"registros: {len(a['consumo_colonia']):,} -> {len(b['consumo_colonia']):,}")
+          print(f"anios    : {a['anios']} -> {b['anios']}")
+          print(f"indices  : {a['indices']} -> {b['indices']}")
+          PY
+
+      - name: Publicar
+        if: >
+          github.event_name == 'push' ||
+          github.event.inputs.publicar == 'si'
+        run: |
+          # Conserva una sola vez el JSON generado original, como referencia
+          if [ ! -f consumo_demo_generado_original.json ]; then
+            cp consumo.json consumo_demo_generado_original.json
+            echo "Respaldado el JSON generado original"
+          fi
+          mv consumo.nuevo.json consumo.json
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add consumo.json consumo_demo_generado_original.json
+          if git diff --cached --quiet; then
+            echo "Sin cambios que publicar"
+          else
+            git commit -m "Regenerate consumo.json from the real warehouse
+
+          Exported by scripts/exportar_estatico.py from the PostgreSQL warehouse
+          built by warehouse/ over the SACMEX and Open-Meteo source data."
+            git push
+            echo "Publicado. GitHub Pages redesplegara en 1-2 minutos."
+          fi
+
+      - name: Guardar el JSON como artefacto
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: consumo-json
+          path: |
+            consumo.nuevo.json
+            consumo.json
+          if-no-files-found: warn
+
+      - name: Apagar el contenedor
+        if: always()
+        working-directory: warehouse
+        run: docker compose down -v || true

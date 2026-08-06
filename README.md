@@ -176,6 +176,42 @@ the choropleth all behave as they do against the warehouse — but it is not an
 export of the warehouse and reproduces none of the reported measurements. Those
 come from `warehouse/`.
 
+### Geometry and automated regeneration
+
+Two additions made after importing `warehouse/`.
+
+**`warehouse/etl/2b_geo.sql`** restores the coordinates. The source CSV carries
+latitude and longitude for all 71,102 records, every one of them inside the
+Mexico City bounding box, but the original DDL does not retain them. This file
+adds the two columns to `dim_ubicacion` and fills them with the centroid of each
+neighbourhood, exposes a `v_ubicacion_geom` view that renders the point as WKT by
+string concatenation — so no PostGIS is needed — and materialises
+`dim_ubicacion_adyacencia`, a proximity relation between neighbourhoods whose
+centroids lie within 1.5 km. It runs between `2_dim.sql` and `3_fact.sql` by
+alphabetical order in the PostgreSQL entrypoint, while the staging table still
+exists, and **modifies none of the imported files**.
+
+The adjacency is proximity between centroids, not polygon topology: the
+warehouse stores points, not geometries. `mapping.r2rml.ttl` projects it as
+`geo:sfTouches` and the paper describes it as what it is.
+
+**`.github/workflows/regenerar-demo.yml`** rebuilds the static demonstration from
+the warehouse. It starts the `warehouse/` container, waits for the ETL to finish,
+verifies the four cardinalities, exports the JSON with
+`scripts/exportar_estatico.py`, and commits it only if validation passes —
+sixteen boroughs present, no empty measures, every row carrying a coordinate.
+GitHub Pages redeploys on the commit.
+
+The first run is manual (`workflow_dispatch`) and defaults to *not* publishing,
+so the output can be inspected as a build artefact before anything reaches the
+live demonstration. The original generated JSON is preserved once as
+`consumo_demo_generado_original.json` when the first publication happens.
+
+This is what closes the gap between the demonstration and the warehouse: the
+published JSON stops being a generated dataset and becomes an export of the same
+data the article reports.
+
+
 ### Citing this artefact
 
 The version cited by the paper is frozen as release `v1.1-icokg2026`. This
