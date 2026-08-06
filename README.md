@@ -61,104 +61,124 @@ http://127.0.0.1:8000/
 This section documents the artefacts added to this fork for the camera-ready
 version of the ICOKG 2026 paper on the Mexico City water-consumption data
 warehouse. Nothing above this line has been modified; the original static
-demonstration and its documentation are preserved as published by the original
-author.
+demonstration and its documentation are preserved as published by its author.
+
+### Provenance of each component
+
+This repository now aggregates work by three different hands, and it matters
+which is which:
+
+| Component | Author | Status |
+| --- | --- | --- |
+| `index.html`, `mapa.html`, `consumo.json`, `alcaldias.geojson` | upstream author (see fork parent) | original static demonstration |
+| `warehouse/` | **Omar Fernando Pulido Morales** | **the implementation that produced the reported results**, imported from [`omarpulidom/data_warehouse_cdmx`](https://github.com/omarpulidom/data_warehouse_cdmx) |
+| `scripts/reproducir_cifras.py` | added for the camera-ready | recomputes the paper's figures from the published CSVs |
+| `mapping.r2rml.ttl` | added for the camera-ready | R2RML mapping described in Section 4 |
+| `evaluacion-ml/eval_anomalias.py` | added for the camera-ready | **reconstruction** — see the caveat below |
+| `paper/` | the authors | manuscript sources |
+
+### `warehouse/` — the data warehouse implementation
+
+Imported unmodified from Omar Fernando Pulido Morales' repository, with his
+authorship recorded here and in the paper. This is the code that built the
+warehouse whose figures the article reports:
+
+| File | Description |
+| --- | --- |
+| `ddl/0_schema.sql` | Star schema: `fact_consumo_agua` and `fact_clima` over `dim_tiempo`, `dim_ubicacion` and `dim_indice_des`, plus the two staging tables. |
+| `etl/1_copy.sql` | Phase 1–2: `COPY` of both source CSVs into staging, with `NULL 'NA'`. |
+| `etl/2_dim.sql` | Phase 3: populates the three dimensions. `dim_tiempo` is derived from the daily climate series; `dim_ubicacion` from distinct borough–neighbourhood pairs. |
+| `etl/3_fact.sql` | Phase 4: populates both fact tables and drops staging. The `INNER JOIN`s against the dimensions are the cleaning step. |
+| `scripts/consulta.sql` | Bimestral correlation between water consumption and climate. |
+| `data/consumo_agua_historico_2019.csv` | SACMEX open data, 71,102 records, 2019 bimesters 1–3. |
+| `data/open-meteo-19.44N99.11W2233m.csv` | Hourly climate series for Mexico City, 1 Jan – 30 Jun 2019 (Open-Meteo). |
+| `Dockerfile`, `compose.yml` | PostgreSQL 16 image that runs the whole pipeline on start-up. |
+
+```bash
+cd warehouse && docker compose up -d
+docker exec -it data_warehouse_cdmx psql -U postgres -d data_warehouse
+```
+
+### `scripts/reproducir_cifras.py`
+
+Recomputes the volume and cleaning figures of the paper straight from the two
+CSVs, with no database, by replicating what the SQL ETL does. It exists so that a
+reader can verify the reported numbers in one command:
+
+```bash
+python scripts/reproducir_cifras.py \
+    --consumo warehouse/data/consumo_agua_historico_2019.csv \
+    --clima   warehouse/data/open-meteo-19.44N99.11W2233m.csv --correlacion
+```
+
+Verified output:
+
+```
+Source records read: 71,102
+Unmatched territorial label            216    0.30%
+Total discarded                        216    0.30%
+Loaded into the fact table          70,886   99.70%
+
+fact_consumo_agua   70,886      dim_ubicacion    1,553
+dim_tiempo             181      dim_indice_des       4
+```
+
+Two facts about the data that the numbers make explicit. The 181 rows of
+`dim_tiempo` are daily climate observations, not reading dates: the consumption
+source carries three reading dates (28 Feb, 30 Apr, 30 Jun 2019). And
+`dim_indice_des` has four members because the source scale is `ALTO`, `BAJO`,
+`MEDIO` and `POPULAR`.
+
+### `mapping.r2rml.ttl`
+
+The R2RML mapping that projects the relational star schema onto an RDF knowledge
+graph, as described in Section 4 of the paper, reusing RDF Data Cube, GeoSPARQL,
+SKOS and OWL-Time. It runs under any R2RML engine:
+
+```bash
+java -jar rmlmapper.jar -m mapping.r2rml.ttl -o kg.nt
+```
+
+Two limitations are recorded in the file and repeated here. The topological
+relation `geo:sfTouches` used by the SPARQL example is not produced by the
+mapping; it is derived after materialisation. And the geometry triples map reads
+`latitud`/`longitud` from the location dimension, columns which the warehouse
+DDL currently does not retain although they are present in the source CSV —
+materialising geometry therefore requires extending `dim_ubicacion` first.
+
+### `evaluacion-ml/eval_anomalias.py` — reconstruction
+
+This is the one component that is **not** the original code. The script that
+produced the anomaly-detection table of the paper was not preserved, so this file
+reimplements the protocol as the paper describes it (N ≈ 11,460, 3 % injected
+anomalies, 70 % spikes / 30 % drops, log-scaled consumption and ratio to the
+neighbourhood mean as features, thresholds A_g > 3, IF s > 0.60, LOF s > 1.5,
+fixed seed). It is provided so the protocol can be inspected and re-executed, not
+as evidence of what was executed previously. Figures obtained by running it
+should be reported as such.
 
 ### `paper/`
-
-The camera-ready manuscript and everything needed to typeset it:
 
 | File | Description |
 | --- | --- |
 | `dw_agua_camera_ready.tex` | LaTeX source of the camera-ready manuscript. |
-| `dw_agua_camera_ready.pdf` | Compiled manuscript, as submitted. |
-| `Mapa.png` | Choropleth figure of the 16 boroughs used in the paper. |
-| `llncs.cls` | Springer LNCS document class required to compile the source. |
+| `dw_agua_camera_ready.pdf` | Compiled manuscript. |
+| `Mapa.png` | Choropleth figure of the 16 boroughs. |
+| `llncs.cls` | Springer LNCS document class. |
 
-### `mapping.r2rml.ttl`
+### Scope of the static demonstration
 
-The complete R2RML mapping that projects the relational star schema of the
-warehouse onto an RDF knowledge graph, as described in Section 4 of the paper.
-It declares four triples maps — observations (`fact_water_consumption` →
-`qb:Observation`), territory (`dim_location` → `geo:Feature` plus a derived
-`geo:Geometry`), time (`dim_time` → `time:TemporalEntity`) and the development
-index (`dim_dev_index` → an ordinal `skos:Concept` scheme) — reusing the RDF
-Data Cube, GeoSPARQL, SKOS and OWL-Time vocabularies. It runs unmodified under
-any R2RML engine, for example:
-
-```bash
-java -jar rmlmapper.jar -m mapping.r2rml.ttl -o kg.nt
-# or
-morph-kgc config.ini
-```
-
-One limitation is stated explicitly in the file and repeated here: the
-topological relation `geo:sfTouches` used by the SPARQL example in the paper is
-**not** produced by the mapping. It is derived after materialisation, either by
-the triple store's spatial index or by a one-off PostGIS statement over
-`dim_location`.
-
-### `scripts/generar_datos_faltantes.py`
-
-Reproduces the two sets of empirical figures reported in the paper. It has three
-subcommands:
-
-```bash
-python scripts/generar_datos_faltantes.py limpieza  --csv datos_sacmex.csv
-python scripts/generar_datos_faltantes.py consultas --base-url http://localhost:8000
-python scripts/generar_datos_faltantes.py reparto   --dsn "postgresql://user:pw@host/db"
-```
-
-`limpieza` recomputes the **cleaning statistics**: it applies the four exclusion
-criteria (missing or non-numeric measure, null or out-of-range coordinates,
-unmatched territorial label, unparseable reading date) with first-match
-attribution, so the per-criterion counts sum to the total discarded without
-double counting. `consultas` measures the **query response times** of the four
-retrieval workloads against a running instance of the API, reporting mean and
-p95 over repeated executions after a warm-up round. `reparto` recovers the
-domestic / non-domestic split by borough used in the findings section.
-
-### `etl/` and `evaluacion-ml/`
-
-Reference implementations of the pipeline described in Section 4 and of the
-evaluation protocol of Section 5:
-
-| File | Description |
-| --- | --- |
-| `etl/schema.sql` | DDL of the star schema: one fact table and three dimensions, with the check constraints and indexes that support the benchmarked workloads. The table and column identifiers are authoritative — `mapping.r2rml.ttl` and `generar_datos_faltantes.py` both reference them. |
-| `etl/loader.py` | Four-phase ETL: extraction from the SACMEX CSV files, validation and cleaning, `COPY` to staging and population of the dimensions, and the fact load with surrogate-key resolution. `--dry-run` prints the exclusion report without touching a database. |
-| `etl/queries.sql` | The parameterised retrieval queries behind the API endpoints and the benchmark, including the atypicality score `A_g`. All user-supplied values are bound parameters; no query is assembled by string concatenation. |
-| `evaluacion-ml/eval_anomalias.py` | Controlled evaluation of the atypical-consumption module: builds the synthetic panel, injects 3 % labelled anomalies (70 % spikes, 30 % drops), and compares the `A_g` z-score, Isolation Forest and LOF at the operating points stated in the paper, under a fixed seed. |
-
-```bash
-pip install -r evaluacion-ml/requirements.txt
-python evaluacion-ml/eval_anomalias.py --latex
-```
-
-### Provenance and scope
-
-Two points of scope, stated so that readers can calibrate what this repository
-does and does not demonstrate.
-
-**The files under `etl/` and `evaluacion-ml/` are reconstructions.** They were
-written for this camera-ready artefact from the process described in the paper.
-They are not the original scripts used to produce the submitted results, which
-were not published with the upstream repository. They are provided so that the
-described pipeline can be inspected, criticised and re-executed — not as
-evidence of what was executed previously. Any figure obtained by running them
-should be reported as such.
-
-**The dataset shipped with the static demonstration is illustrative.** The
-`consumo.json` file bundled with the demo is a generated dataset for
-browser-side display, as its own `nota` field records. The experimental results
-in the paper were obtained over the original warehouse built from SACMEX open
-data, which is not distributed here. The static demo shows the behaviour of the
-retrieval interface; it does not reproduce the paper's measurements.
+The `consumo.json` bundled with the demonstration at the repository root is a
+generated dataset for browser-side rendering, as its own `nota` field records: it
+spans five years and six bimesters, while the warehouse covers 2019 bimesters 1–3
+only. It exercises the retrieval interface faithfully — filters, aggregations and
+the choropleth all behave as they do against the warehouse — but it is not an
+export of the warehouse and reproduces none of the reported measurements. Those
+come from `warehouse/`.
 
 ### Citing this artefact
 
-The version cited by the paper is frozen as release `v1.0-icokg2026`. This
-repository is a fork of
-[`Uriel1024/Data_Warehouse_static`](https://github.com/Uriel1024/Data_Warehouse_static);
-authorship of the original static demonstration remains with its author, and the
-fork relationship is preserved on GitHub so that attribution is visible.
+The version cited by the paper is frozen as release `v1.1-icokg2026`. This
+repository is a fork; authorship of the original static demonstration remains
+with its author and the fork relationship is preserved on GitHub so that
+attribution stays visible.
