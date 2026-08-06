@@ -1,10 +1,17 @@
 -- ============================================
--- 2b_geo.sql -- Coordenadas en dim_ubicacion
+-- 2_geo.sql -- Coordenadas en dim_ubicacion
 -- ============================================
 -- Añadido para el camera-ready de ICOKG 2026.
 -- NO modifica ningún archivo de Omar Pulido Morales: se ejecuta entre
--- 2_dim.sql y 3_fact.sql por orden alfabético en el entrypoint de Postgres,
--- mientras staging_consumo todavía existe.
+-- 2_dim.sql y 3_fact.sql, mientras staging_consumo todavía existe.
+--
+-- SOBRE EL NOMBRE DEL ARCHIVO: el entrypoint de PostgreSQL ejecuta
+--   for f in /docker-entrypoint-initdb.d/*
+-- y el glob usa la colación del locale, no el orden ASCII. La colación de
+-- diccionario ignora el guion bajo, así que "2b_geo" se compara como "2bgeo"
+-- contra "2dim" y quedaría ANTES de 2_dim.sql, con dim_ubicacion todavía
+-- vacía. Con "2_geo" la comparación es "2geo" vs "2dim" (d < g) y el orden es
+-- correcto bajo ambas colaciones. No renombrar sin comprobar esto.
 --
 -- Motivo: el CSV fuente trae latitud y longitud para los 71,102 registros
 -- (todas dentro del bounding box de la CDMX), pero el esquema original las
@@ -14,6 +21,16 @@
 -- No requiere PostGIS: la geometría se expone como WKT construido con
 -- concatenación, que es lo que consume mapping.r2rml.ttl.
 -- ============================================
+
+-- Falla ruidosamente si el orden de ejecución se rompe otra vez.
+DO $$
+BEGIN
+    IF (SELECT count(*) FROM dim_ubicacion) = 0 THEN
+        RAISE EXCEPTION
+          '2_geo.sql corrio con dim_ubicacion vacia: el orden de los scripts de '
+          'init esta mal. Debe ejecutarse DESPUES de 2_dim.sql.';
+    END IF;
+END $$;
 
 ALTER TABLE dim_ubicacion ADD COLUMN IF NOT EXISTS latitud  NUMERIC(9,6);
 ALTER TABLE dim_ubicacion ADD COLUMN IF NOT EXISTS longitud NUMERIC(9,6);
@@ -82,6 +99,9 @@ DECLARE n_geo INT; n_ady INT;
 BEGIN
     SELECT COUNT(*) INTO n_geo FROM dim_ubicacion WHERE latitud IS NOT NULL;
     SELECT COUNT(*) INTO n_ady FROM dim_ubicacion_adyacencia;
-    RAISE NOTICE '2b_geo: % ubicaciones con coordenada, % pares adyacentes',
+    IF n_geo = 0 THEN
+        RAISE EXCEPTION '2_geo.sql no asigno ninguna coordenada';
+    END IF;
+    RAISE NOTICE '2_geo: % ubicaciones con coordenada, % pares adyacentes',
                  n_geo, n_ady;
 END $$;

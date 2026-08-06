@@ -79,7 +79,24 @@ jobs:
             UNION ALL SELECT 'dim_tiempo',     count(*) FROM dim_tiempo
             UNION ALL SELECT 'dim_indice_des', count(*) FROM dim_indice_des
             UNION ALL SELECT 'con coordenada', count(*) FROM dim_ubicacion
-                                               WHERE latitud IS NOT NULL;"
+                                               WHERE latitud IS NOT NULL
+            UNION ALL SELECT 'pares adyacentes', count(*)
+                                               FROM dim_ubicacion_adyacencia;"
+
+      - name: Comprobar que 2_geo.sql corrio
+        run: |
+          # El entrypoint de Postgres ordena por colacion de locale, no ASCII.
+          # Si 2_geo.sql corre antes que 2_dim.sql, las coordenadas quedan NULL
+          # y la exportacion falla mas adelante sin decir por que. Se detecta aqui.
+          n=$(docker exec data_warehouse_cdmx psql -U postgres -d data_warehouse \
+                -tAc "SELECT count(*) FROM dim_ubicacion WHERE latitud IS NOT NULL")
+          echo "Ubicaciones con coordenada: ${n:-0}"
+          if [ "${n:-0}" -lt 1500 ]; then
+            echo "::error::Solo ${n:-0} ubicaciones con coordenada (se esperaban 1,553)."
+            echo "::error::Revisa el orden de ejecucion de los scripts de init:"
+            docker logs data_warehouse_cdmx 2>&1 | grep -E "running .*\.sql|2_geo" | head -20
+            exit 1
+          fi
 
       - name: Instalar dependencias de Python
         run: pip install --quiet psycopg2-binary
