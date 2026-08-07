@@ -23,7 +23,7 @@ HOJAS = ('<link rel="stylesheet" href="assets/estilo.css">\n'
          '    <link rel="stylesheet" href="assets/paginas.css">')
 
 SCRIPTS = {
-    'index.html': ['assets/nav.js', 'assets/paginacion.js'],
+    'index.html': ['assets/nav.js', 'assets/paginacion.js', 'assets/atipicos.js'],
     'mapa.html':  ['assets/nav.js', 'assets/enlace-vecindad.js'],
 }
 CABEZA = {'index.html': ['assets/tema-graficas.js'], 'mapa.html': []}

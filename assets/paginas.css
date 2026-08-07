@@ -265,3 +265,16 @@
 .data-section tbody td:first-child,.data-section tbody td:nth-child(2){
   max-width:16rem; overflow-x:auto; scrollbar-width:thin;
 }
+
+/* ---------- modulo de consumos atipicos ---------- */
+.atipicos{margin-bottom:1.25rem}
+.atip-cuerpo{padding:1.1rem}
+.atip-nota{margin:0 0 .8rem; font-size:.83rem; color:var(--texto-2); line-height:1.5}
+.atip-controles{display:flex; gap:.8rem; align-items:end; flex-wrap:wrap; margin-bottom:.9rem}
+.atip-controles label{margin:0 0 .25rem}
+.atip-controles select{min-width:180px; width:auto}
+.atip-sent{font-size:.78rem; font-weight:700; white-space:nowrap}
+.atip-sent.alto{color:var(--alerta)}
+.atip-sent.bajo{color:var(--marca-600)}
+.atip-por{font-size:.8rem; color:var(--texto-2); white-space:nowrap}
+.atipicos .tabla-env{max-height:none}
