@@ -1,117 +1,44 @@
-# Consumo de Agua CDMX — versión estática
+# Territorial Information Retrieval from Heterogeneous Open Data through the Construction of a Data Warehouse for Water Management in Mexico City
 
-Sitio estático (HTML + JavaScript + JSON + GeoJSON) que permite consultar y visualizar el consumo de agua de la Ciudad de México sin depender de un servidor backend. Esta versión corresponde a la demostración pública del proyecto y está lista para publicarse en **GitHub Pages** o cualquier servicio de alojamiento estático.
+Reproducible artefact of the paper presented at the **5th International Conference
+on Ontologies and Knowledge Graphs (ICOKG 2026)**, Benemérita Universidad Autónoma
+de Puebla, 25 September 2026. Proceedings published by Springer in the series
+*Advances in Computer Science Applications and Research* (ACSAR).
 
-## Contenido
+**Live demonstration → <https://gabrielhuav.github.io/Data_Warehouse_static/>**
 
-| Archivo             | Descripción                                                                         |
-| ------------------- | ----------------------------------------------------------------------------------- |
-| `index.html`        | Dashboard con indicadores, gráficos interactivos (Plotly) y tabla de consulta.      |
-| `mapa.html`         | Mapa coroplético interactivo de las 16 alcaldías utilizando Leaflet.                |
-| `consumo.json`      | Conjunto de datos exportado desde el almacén de datos para la demostración pública. |
-| `alcaldias.geojson` | Polígonos geográficos de las 16 alcaldías de la Ciudad de México.                   |
+The demonstration needs no server. It runs from static files, including a SPARQL
+1.1 engine that queries an RDF knowledge graph entirely in the browser.
 
-## Datos
+---
 
-Los datos utilizados en esta versión fueron exportados desde el almacén de datos construido durante el proyecto, el cual integra información proveniente de los conjuntos de datos abiertos publicados por el Sistema de Aguas de la Ciudad de México (SACMEX).
+## What this repository contains
 
-La versión estática contiene la información necesaria para ejecutar las consultas, filtros y visualizaciones del sistema directamente en el navegador, sin requerir conexión a una base de datos.
+A water-consumption data warehouse for Mexico City built from open government
+data, the declarative mapping that projects it onto an RDF knowledge graph, and
+a static interface that queries both without a backend.
 
-## Funcionalidades
-
-* Consulta por alcaldía.
-* Consulta por colonia.
-* Filtros por año y bimestre.
-* Visualización mediante mapa coroplético.
-* Indicadores y gráficas interactivas.
-* Detección exploratoria de consumos atípicos.
-
-## Publicación en GitHub Pages
-
-1. Subir el contenido del repositorio a GitHub.
-2. Ir a **Settings → Pages**.
-3. Seleccionar:
-
-* **Deploy from a branch**
-* Rama `main`
-* Carpeta correspondiente al sitio
-
-Una vez publicado, el sistema estará disponible mediante GitHub Pages como demostración pública del proyecto.
-
-## Ejecución local
-
-```bash
-python3 -m http.server 8000
-```
-
-Después abrir:
-
-```
-http://127.0.0.1:8000/
-```
-
-## Notas
-
-* La versión publicada corresponde a una implementación completamente estática destinada a la demostración y consulta del sistema.
-* Toda la recuperación de información se realiza mediante procesamiento de los archivos JSON cargados en el navegador.
-* El backend desarrollado con FastAPI y PostgreSQL forma parte de la implementación completa del proyecto, pero no es necesario para ejecutar esta versión de demostración.
-
-## ICOKG 2026 camera-ready
-
-This section documents the artefacts added to this fork for the camera-ready
-version of the ICOKG 2026 paper on the Mexico City water-consumption data
-warehouse. Nothing above this line has been modified; the original static
-demonstration and its documentation are preserved as published by its author.
-
-### Provenance of each component
-
-This repository now aggregates work by three different hands, and it matters
-which is which:
-
-| Component | Author | Status |
-| --- | --- | --- |
-| `index.html`, `mapa.html`, `consumo.json`, `alcaldias.geojson` | upstream author (see fork parent) | original static demonstration |
-| `warehouse/` | **Omar Fernando Pulido Morales** | **the implementation that produced the reported results**, imported from [`omarpulidom/data_warehouse_cdmx`](https://github.com/omarpulidom/data_warehouse_cdmx) |
-| `scripts/reproducir_cifras.py` | added for the camera-ready | recomputes the paper's figures from the published CSVs |
-| `mapping.r2rml.ttl` | added for the camera-ready | R2RML mapping described in Section 4 |
-| `evaluacion-ml/eval_anomalias.py` | added for the camera-ready | **reconstruction** — see the caveat below |
-| `paper/` | the authors | manuscript sources |
-
-### `warehouse/` — the data warehouse implementation
-
-Imported unmodified from Omar Fernando Pulido Morales' repository, with his
-authorship recorded here and in the paper. This is the code that built the
-warehouse whose figures the article reports:
-
-| File | Description |
+| | |
 | --- | --- |
-| `ddl/0_schema.sql` | Star schema: `fact_consumo_agua` and `fact_clima` over `dim_tiempo`, `dim_ubicacion` and `dim_indice_des`, plus the two staging tables. |
-| `etl/1_copy.sql` | Phase 1–2: `COPY` of both source CSVs into staging, with `NULL 'NA'`. |
-| `etl/2_dim.sql` | Phase 3: populates the three dimensions. `dim_tiempo` is derived from the daily climate series; `dim_ubicacion` from distinct borough–neighbourhood pairs. |
-| `etl/3_fact.sql` | Phase 4: populates both fact tables and drops staging. The `INNER JOIN`s against the dimensions are the cleaning step. |
-| `scripts/consulta.sql` | Bimestral correlation between water consumption and climate. |
-| `data/consumo_agua_historico_2019.csv` | SACMEX open data, 71,102 records, 2019 bimesters 1–3. |
-| `data/open-meteo-19.44N99.11W2233m.csv` | Hourly climate series for Mexico City, 1 Jan – 30 Jun 2019 (Open-Meteo). |
-| `Dockerfile`, `compose.yml` | PostgreSQL 16 image that runs the whole pipeline on start-up. |
+| `warehouse/` | The data warehouse: star schema, ETL, source data and container |
+| `mapping.r2rml.ttl` | R2RML mapping from the relational schema to RDF |
+| `index.html`, `mapa.html` | Dashboard and choropleth map |
+| `grafo.html` | SPARQL 1.1 explorer, running client-side |
+| `vecindad.html` | Territorial adjacency as interactive graph traversal |
+| `scripts/` | Reproduction, export and benchmark scripts |
+| `paper/` | Manuscript sources |
+| `evaluacion-ml/` | Anomaly-detection evaluation protocol |
 
-```bash
-cd warehouse && docker compose up -d
-docker exec -it data_warehouse_cdmx psql -U postgres -d data_warehouse
-```
+## Reproducing the figures reported in the paper
 
-### `scripts/reproducir_cifras.py`
-
-Recomputes the volume and cleaning figures of the paper straight from the two
-CSVs, with no database, by replicating what the SQL ETL does. It exists so that a
-reader can verify the reported numbers in one command:
+Every quantity in the article can be recomputed from the two source files
+distributed here. No database required:
 
 ```bash
 python scripts/reproducir_cifras.py \
     --consumo warehouse/data/consumo_agua_historico_2019.csv \
-    --clima   warehouse/data/open-meteo-19.44N99.11W2233m.csv --correlacion
+    --clima   warehouse/data/open-meteo-19.44N99.11W2233m.csv
 ```
-
-Verified output:
 
 ```
 Source records read: 71,102
@@ -123,98 +50,87 @@ fact_consumo_agua   70,886      dim_ubicacion    1,553
 dim_tiempo             181      dim_indice_des       4
 ```
 
-Two facts about the data that the numbers make explicit. The 181 rows of
-`dim_tiempo` are daily climate observations, not reading dates: the consumption
-source carries three reading dates (28 Feb, 30 Apr, 30 Jun 2019). And
-`dim_indice_des` has four members because the source scale is `ALTO`, `BAJO`,
-`MEDIO` and `POPULAR`.
-
-### `mapping.r2rml.ttl`
-
-The R2RML mapping that projects the relational star schema onto an RDF knowledge
-graph, as described in Section 4 of the paper, reusing RDF Data Cube, GeoSPARQL,
-SKOS and OWL-Time. It runs under any R2RML engine:
+To rebuild the warehouse itself:
 
 ```bash
-java -jar rmlmapper.jar -m mapping.r2rml.ttl -o kg.nt
+cd warehouse && docker compose up -d --build
 ```
 
-Two limitations are recorded in the file and repeated here. The topological
-relation `geo:sfTouches` used by the SPARQL example is not produced by the
-mapping; it is derived after materialisation. And the geometry triples map reads
-`latitud`/`longitud` from the location dimension, columns which the warehouse
-DDL currently does not retain although they are present in the source CSV —
-materialising geometry therefore requires extending `dim_ubicacion` first.
+The container loads both CSV files, runs the ETL and exposes PostgreSQL on port
+5433. The four cardinalities above are printed during start-up.
 
-### `evaluacion-ml/eval_anomalias.py` — reconstruction
+## The knowledge graph
 
-This is the one component that is **not** the original code. The script that
-produced the anomaly-detection table of the paper was not preserved, so this file
-reimplements the protocol as the paper describes it (N ≈ 11,460, 3 % injected
-anomalies, 70 % spikes / 30 % drops, log-scaled consumption and ratio to the
-neighbourhood mean as features, thresholds A_g > 3, IF s > 0.60, LOF s > 1.5,
-fixed seed). It is provided so the protocol can be inspected and re-executed, not
-as evidence of what was executed previously. Figures obtained by running it
-should be reported as such.
+`mapping.r2rml.ttl` declares seven triples maps over the real schema, reusing
+**RDF Data Cube** for observations, **GeoSPARQL** for territory and adjacency,
+**SKOS** for the ordinal development index and **OWL-Time** for periods.
+Materialising it yields about 761,000 triples:
 
-### `paper/`
+```bash
+python scripts/materializar_grafo.py \
+    --dsn "postgresql://postgres:postgres@localhost:5433/data_warehouse"
+```
 
-| File | Description |
-| --- | --- |
-| `dw_agua_camera_ready.tex` | LaTeX source of the camera-ready manuscript. |
-| `dw_agua_camera_ready.pdf` | Compiled manuscript. |
-| `Mapa.png` | Choropleth figure of the 16 boroughs. |
-| `llncs.cls` | Springer LNCS document class. |
+`grafo.html` and `vecindad.html` query `kg_demo.ttl`, a browser-sized subset of
+about 138,000 triples: every location with its centroid geometry, adjacency
+limited to the six nearest neighbours within 1.5 km, and observations aggregated
+to the neighbourhood-period grain. The vocabulary is identical to the full
+mapping, so a query written against the subset runs unchanged against the whole
+graph. The subset declares itself as such through `agua:isSubsetOf`.
 
-### Scope of the static demonstration
+## Scope of the data
 
-The `consumo.json` bundled with the demonstration at the repository root is a
-generated dataset for browser-side rendering, as its own `nota` field records: it
-spans five years and six bimesters, while the warehouse covers 2019 bimesters 1–3
-only. It exercises the retrieval interface faithfully — filters, aggregations and
-the choropleth all behave as they do against the warehouse — but it is not an
-export of the warehouse and reproduces none of the reported measurements. Those
-come from `warehouse/`.
+The source publishes the **first three bimesters of 2019** and no more; this
+bounds every result reported in the article. The limitation belongs to the portal
+rather than to the design, and is itself an instance of the fragmentation the
+article studies. The climate series covers the 181 days from 1 January to 30 June
+2019 at daily grain, which is why the time dimension is larger than the number of
+reading dates.
 
-### Geometry and automated regeneration
+## Provenance
 
-Two additions made after importing `warehouse/`.
+This repository is a **fork**; the fork relationship is preserved on GitHub so
+that authorship of the original static demonstration stays visible.
 
-**`warehouse/etl/2b_geo.sql`** restores the coordinates. The source CSV carries
-latitude and longitude for all 71,102 records, every one of them inside the
-Mexico City bounding box, but the original DDL does not retain them. This file
-adds the two columns to `dim_ubicacion` and fills them with the centroid of each
-neighbourhood, exposes a `v_ubicacion_geom` view that renders the point as WKT by
-string concatenation — so no PostGIS is needed — and materialises
-`dim_ubicacion_adyacencia`, a proximity relation between neighbourhoods whose
-centroids lie within 1.5 km. It runs between `2_dim.sql` and `3_fact.sql` by
-alphabetical order in the PostgreSQL entrypoint, while the staging table still
-exists, and **modifies none of the imported files**.
+| Component | Author | Status |
+| --- | --- | --- |
+| Original static demonstration | see fork parent | as published |
+| `warehouse/` | **Omar Fernando Pulido Morales** | the implementation that produced the reported results, imported unmodified from [`omarpulidom/data_warehouse_cdmx`](https://github.com/omarpulidom/data_warehouse_cdmx) (MIT) |
+| `warehouse/etl/2_geo.sql` | added for the camera-ready | restores the coordinates the original schema discarded |
+| `mapping.r2rml.ttl`, `grafo.html`, `vecindad.html`, `scripts/` | added for the camera-ready | — |
+| `evaluacion-ml/eval_anomalias.py` | added for the camera-ready | **reconstruction**: the original script was not preserved |
 
-The adjacency is proximity between centroids, not polygon topology: the
-warehouse stores points, not geometries. `mapping.r2rml.ttl` projects it as
-`geo:sfTouches` and the paper describes it as what it is.
+## Data sources and licences
 
-**`.github/workflows/regenerar-demo.yml`** rebuilds the static demonstration from
-the warehouse. It starts the `warehouse/` container, waits for the ETL to finish,
-verifies the four cardinalities, exports the JSON with
-`scripts/exportar_estatico.py`, and commits it only if validation passes —
-sixteen boroughs present, no empty measures, every row carrying a coordinate.
-GitHub Pages redeploys on the commit.
+- **Consumption**: [SACMEX](https://datos.cdmx.gob.mx/dataset/consumo-agua),
+  Mexico City Open Data Portal. Accessed May 2026.
+- **Climate**: [Open-Meteo](https://open-meteo.com/), CC BY 4.0.
+- **Base map**: © [OpenStreetMap](https://www.openstreetmap.org/copyright)
+  contributors, ODbL.
 
-The first run is manual (`workflow_dispatch`) and defaults to *not* publishing,
-so the output can be inspected as a build artefact before anything reaches the
-live demonstration. The original generated JSON is preserved once as
-`consumo_demo_generado_original.json` when the first publication happens.
+Code in this repository is released under the MIT licence. The redistributed data
+files keep the licences of their publishers.
 
-This is what closes the gap between the demonstration and the warehouse: the
-published JSON stops being a generated dataset and becomes an export of the same
-data the article reports.
+## Citation
 
+```bibtex
+@inproceedings{velazquez2026territorial,
+  title     = {Territorial Information Retrieval from Heterogeneous Open Data
+               through the Construction of a Data Warehouse for Water Management
+               in Mexico City},
+  author    = {Vel{\'a}zquez Arrieta, Eduardo Uriel and
+               Pulido Morales, Omar Fernando and
+               Garc{\'i}a L{\'o}pez, Emilio and
+               Hern{\'a}ndez Mart{\'i}nez, Clara Aide and
+               Hurtado Avil{\'e}s, Gabriel},
+  booktitle = {Proceedings of the 5th International Conference on Ontologies and
+               Knowledge Graphs (ICOKG 2026)},
+  series    = {Advances in Computer Science Applications and Research (ACSAR)},
+  publisher = {Springer},
+  year      = {2026}
+}
+```
 
-### Citing this artefact
-
-The version cited by the paper is frozen as release `v1.1-icokg2026`. This
-repository is a fork; authorship of the original static demonstration remains
-with its author and the fork relationship is preserved on GitHub so that
-attribution stays visible.
+The version cited by the article is frozen as release
+[`v1.2-icokg2026`](https://github.com/gabrielhuav/Data_Warehouse_static/releases/tag/v1.2-icokg2026).
+The repository head may evolve; the release will not.

@@ -20,15 +20,27 @@
   }
   .sugerencias.abierto{display:block}
   .sug{padding:.45rem .7rem; cursor:pointer; font-size:.85rem}
-  .sug:hover,.sug.sel{background:var(--guinda-100)}
+  .sug:hover,.sug.sel{background:var(--marca-100)}
   .sug small{display:block; color:var(--texto-3); font-size:.74rem}
   .consulta-viva{
     font-family:var(--mono); font-size:.76rem; line-height:1.55; white-space:pre-wrap;
     background:var(--superficie-2); border:1px solid var(--borde); border-radius:var(--r-s);
     padding:.7rem .8rem; color:var(--texto-2); max-height:210px; overflow:auto; margin:0;
   }
+  .aviso-filtro{
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    flex-wrap:wrap; margin-bottom:1rem; padding:.7rem 1rem; font-size:.88rem;
+    background:var(--superficie); color:var(--texto);
+    border:1px solid var(--borde); border-left:3px solid var(--marca-600);
+    border-radius:var(--r-m); box-shadow:var(--sombra-1);
+  }
+  .aviso-filtro .quitar{
+    font-size:.82rem; font-weight:600; color:var(--marca-700);
+    border:1px solid var(--borde); border-radius:var(--r-s); padding:.3rem .7rem;
+  }
+  .aviso-filtro .quitar:hover{background:var(--marca-100); text-decoration:none}
   .aviso{padding:.7rem .9rem; border-radius:var(--r-s); font-size:.84rem;
-         background:var(--guinda-100); color:var(--guinda-700); border:1px solid var(--borde)}
+         background:var(--marca-100); color:var(--marca-700); border:1px solid var(--borde)}
   .aviso.err{background:rgba(185,28,28,.1); color:var(--error); border-color:rgba(185,28,28,.3)}
   .leyenda{display:flex; gap:1rem; flex-wrap:wrap; font-size:.78rem; color:var(--texto-2); margin-top:.6rem}
   .punto{display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:.3rem; vertical-align:-1px}
@@ -42,9 +54,11 @@
   <div class="kpis">
     <div class="kpi"><div class="kpi-et">Unidades territoriales</div><div class="kpi-val" id="kCol">—</div><div class="kpi-nota">colonias con centroide</div></div>
     <div class="kpi t2"><div class="kpi-et">Relaciones de vecindad</div><div class="kpi-val" id="kAdy">—</div><div class="kpi-nota">geo:sfTouches, ≤ 1.5 km</div></div>
-    <div class="kpi t3"><div class="kpi-et">Seleccionada</div><div class="kpi-val" id="kSel" style="font-size:1.05rem">ninguna</div><div class="kpi-nota" id="kSelAlc">elige una en el mapa</div></div>
+    <div class="kpi t3"><div class="kpi-et">Seleccionada</div><div class="kpi-val nombre-largo" id="kSel">ninguna</div><div class="kpi-nota" id="kSelAlc">elige una en el mapa</div></div>
     <div class="kpi"><div class="kpi-et">Vecinas encontradas</div><div class="kpi-val" id="kVec">—</div><div class="kpi-nota" id="kTiempo">—</div></div>
   </div>
+
+  <div id="avisoFiltro" class="aviso-filtro" style="display:none"></div>
 
   <div class="tarjeta" style="margin-bottom:1.25rem">
     <div class="tarjeta-cuerpo" style="padding:.9rem 1.1rem">
@@ -71,9 +85,9 @@
         </div>
         <div id="mapa"></div>
         <div class="leyenda">
-          <span><span class="punto" style="background:#6f1d46"></span>seleccionada</span>
-          <span><span class="punto" style="background:#c9962a"></span>vecina directa</span>
-          <span><span class="punto" style="background:#c8b4bd"></span>resto</span>
+          <span><span class="punto" style="background:var(--marca-700)"></span>seleccionada</span>
+          <span><span class="punto" style="background:var(--acento-500)"></span>vecina directa</span>
+          <span><span class="punto" style="background:var(--marca-200)"></span>resto</span>
         </div>
       </div>
     </section>
@@ -112,6 +126,15 @@ PREFIX geo:  <http://www.opengis.net/ont/geosparql#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 `;
 
+  // Filtro que llega desde el mapa: vecindad.html?alcaldia=IZTAPALAPA
+  // Comparación insensible a acentos: el mapa muestra "Cuauhtémoc" y el
+  // almacén guarda "CUAUHTEMOC".
+  const plano = t => (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                              .trim().toUpperCase();
+  const params = new URLSearchParams(location.search);
+  const filtroAlcaldia = plano(params.get('alcaldia'));
+  const coloniaPedida  = plano(params.get('colonia'));
+
   let store = null, engine = null, mapa = null, capaLineas = null;
   const marcadores = new Map();      // id -> circleMarker
   const colonias = [];               // {id, nombre, alcaldia, lat, lon}
@@ -127,10 +150,24 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
   }).addTo(mapa);
   capaLineas = L.layerGroup().addTo(mapa);
 
-  // Guinda IPN para la seleccion, oro para las vecinas, gris tenue el resto.
-  const ESTILO_BASE = { radius:4, color:'#8d7681', weight:1, fillColor:'#c8b4bd', fillOpacity:.7 };
-  const ESTILO_SEL  = { radius:10, color:'#3d0f26', weight:2.5, fillColor:'#6f1d46', fillOpacity:1 };
-  const ESTILO_VEC  = { radius:7, color:'#8a6414', weight:2, fillColor:'#c9962a', fillOpacity:.95 };
+  // Los marcadores toman su color del tema activo, leyendo las variables CSS.
+  // Marca = seleccion, acento = vecinas, gris del texto = el resto.
+  function css(v) {
+    return getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#666';
+  }
+  let ESTILO_BASE, ESTILO_SEL, ESTILO_VEC, COLOR_LINEA;
+  function paleta() {
+    ESTILO_BASE = { radius:4,  color:css('--texto-3'),   weight:1,   fillColor:css('--marca-200'), fillOpacity:.7 };
+    ESTILO_SEL  = { radius:10, color:css('--marca-900'), weight:2.5, fillColor:css('--marca-700'), fillOpacity:1 };
+    ESTILO_VEC  = { radius:7,  color:css('--acento-700'),    weight:2,   fillColor:css('--acento-500'),    fillOpacity:.95 };
+    COLOR_LINEA = css('--marca-600');
+  }
+  paleta();
+  document.addEventListener('temacambiado', () => {
+    paleta();
+    marcadores.forEach(m => m.setStyle(ESTILO_BASE));
+    if (seleccion) seleccionar(seleccion.id);
+  });
 
   // ---------------- carga ----------------
   async function cargar() {
@@ -162,8 +199,11 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
       await construirColonias();
       estado('<span class="chip ok">' + fmt(colonias.length) + ' colonias listas</span>');
       $('buscar').disabled = false;
-      const inicial = colonias.find(c => /CENTRO|JUAREZ|ROMA/.test(c.nombre)) || colonias[0];
-      if (inicial) seleccionar(inicial.id);
+      const candidatas = filtroAlcaldia ? colonias.filter(c => c.enFiltro) : colonias;
+      const inicial =
+        (coloniaPedida && colonias.find(c => plano(c.nombre) === coloniaPedida)) ||
+        candidatas.find(c => /CENTRO|JUAREZ|ROMA/.test(c.nombre)) || candidatas[0];
+      if (inicial) { seleccionar(inicial.id); mapa.setView([inicial.lat, inicial.lon], 14); }
     } catch (e) {
       estado('error');
       const esFile = location.protocol === 'file:';
@@ -191,6 +231,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
       const lat = parseFloat(f.get('lat').value), lon = parseFloat(f.get('lon').value);
       const c = { id, uri, nombre: f.get('nombre').value, alcaldia: f.get('alc').value, lat, lon };
       colonias.push(c);
+      c.enFiltro = !filtroAlcaldia || plano(c.alcaldia) === filtroAlcaldia;
       const m = L.circleMarker([lat, lon], ESTILO_BASE).addTo(mapa);
       m.bindTooltip(c.nombre + ' — ' + c.alcaldia, { direction:'top' });
       m.on('click', () => seleccionar(id));
@@ -198,6 +239,30 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     }
     colonias.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
     $('kCol').textContent = fmt(colonias.length);
+    aplicarFiltro();
+  }
+
+  // ---------------- filtro por alcaldía ----------------
+  function aplicarFiltro() {
+    if (!filtroAlcaldia) return;
+    const dentro = colonias.filter(c => c.enFiltro);
+    if (!dentro.length) {
+      $('avisoFiltro').innerHTML =
+        'No hay colonias para <b>' + filtroAlcaldia + '</b>. Mostrando toda la ciudad.';
+      $('avisoFiltro').style.display = 'flex';
+      return;
+    }
+    // atenúa lo que queda fuera y encuadra la alcaldía
+    colonias.forEach(c => {
+      const m = marcadores.get(c.id);
+      if (m && !c.enFiltro) m.setStyle({ opacity:.18, fillOpacity:.14 });
+    });
+    mapa.fitBounds(L.latLngBounds(dentro.map(c => [c.lat, c.lon])).pad(0.12));
+    $('avisoFiltro').innerHTML =
+      '<span><b>' + dentro.length + '</b> colonias de <b>' + dentro[0].alcaldia + '</b></span>' +
+      '<a href="vecindad.html" class="quitar">Ver toda la ciudad</a>';
+    $('avisoFiltro').style.display = 'flex';
+    $('buscar').placeholder = 'Buscar en ' + dentro[0].alcaldia + '…';
   }
 
   // ---------------- traversal ----------------
@@ -206,6 +271,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     if (!c || !engine) return;
     seleccion = c;
     $('kSel').textContent = c.nombre;
+    $('kSel').title = c.nombre + ' — ' + c.alcaldia;
     $('kSelAlc').textContent = c.alcaldia;
 
     const q = PREFIJOS + `
@@ -240,12 +306,13 @@ ORDER BY DESC(?consumo)`;
           const m = marcadores.get(o.id);
           if (m) { m.setStyle(ESTILO_VEC).bringToFront();
             L.polyline([[c.lat, c.lon], [o.lat, o.lon]],
-              { color:'#87275a', weight:1.8, opacity:.6 }).addTo(capaLineas); }
+              { color:COLOR_LINEA, weight:1.8, opacity:.6 }).addTo(capaLineas); }
         }
       });
 
       const tr = filas.map(f =>
-        `<tr><td>${f.get('vecina').value}</td><td>${f.get('alcaldia').value}</td>` +
+        `<tr><td class="nombre-largo" title="${f.get('vecina').value}">${f.get('vecina').value}</td>` +
+        `<td>${f.get('alcaldia').value}</td>` +
         `<td class="num">${fmt(f.get('consumo').value)}</td></tr>`).join('');
       $('salida').innerHTML =
         `<div class="tabla-env"><table><thead><tr><th>Colonia vecina</th><th>Alcaldía</th>` +
@@ -262,7 +329,8 @@ ORDER BY DESC(?consumo)`;
   inp.addEventListener('input', () => {
     const t = inp.value.trim().toUpperCase();
     if (t.length < 3) { sug.classList.remove('abierto'); return; }
-    lista = colonias.filter(c => c.nombre.toUpperCase().includes(t)).slice(0, 40);
+    lista = colonias.filter(c => plano(c.nombre).includes(plano(t)) &&
+                                 (!filtroAlcaldia || c.enFiltro)).slice(0, 40);
     idx = -1;
     sug.innerHTML = lista.length
       ? lista.map((c, i) => `<div class="sug" data-i="${i}">${c.nombre}<small>${c.alcaldia}</small></div>`).join('')

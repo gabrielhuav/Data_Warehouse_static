@@ -1,5 +1,45 @@
-/* Barra de navegación compartida. Marca la página actual sola. */
+/* Barra de navegación, temas y modo claro/oscuro. Compartido por las 4 páginas. */
 (function () {
+  const TEMAS = [
+    { id:'escom',  nombre:'Azul',   muestra:'#123f8f' },
+    { id:'guinda', nombre:'Guinda', muestra:'#6f1d46' },
+  ];
+  const K_TEMA = 'dwagua-tema', K_MODO = 'dwagua-modo';
+  const leer = (k, d) => { try { return localStorage.getItem(k) || d; } catch (e) { return d; } };
+  const guardar = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+
+  let tema = leer(K_TEMA, 'escom');
+  if (!TEMAS.some(t => t.id === tema)) tema = 'escom';
+  let modo = leer(K_MODO, 'claro');           // auto | claro | oscuro
+
+  const svg = d => '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" ' +
+    'stroke="currentColor" stroke-width="2" stroke-linecap="round" ' +
+    'stroke-linejoin="round" aria-hidden="true">' + d + '</svg>';
+  const ICONO = {
+    claro:  svg('<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/>'),
+    oscuro: svg('<path d="M20.5 14.3A8.5 8.5 0 1 1 9.7 3.5a6.8 6.8 0 0 0 10.8 10.8z"/>'),
+    auto:   svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17" /><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor" stroke="none"/>'),
+  };
+  const ETIQUETA = { claro:'Modo claro', oscuro:'Modo oscuro', auto:'Automático' };
+
+  const raiz = document.documentElement;
+  function pintar() {
+    raiz.setAttribute('data-tema', tema);
+    if (modo === 'auto') raiz.removeAttribute('data-modo');
+    else raiz.setAttribute('data-modo', modo);
+    document.querySelectorAll('.tema-btn').forEach(b =>
+      b.setAttribute('aria-pressed', String(b.dataset.tema === tema)));
+    const b = document.querySelector('.modo-btn');
+    if (b) {
+      b.innerHTML = ICONO[modo];
+      b.title = ETIQUETA[modo] + ' — clic para cambiar';
+      b.setAttribute('aria-label', b.title);
+      b.dataset.modo = modo;
+    }
+    document.dispatchEvent(new CustomEvent('temacambiado', { detail:{ tema, modo } }));
+  }
+  pintar();   // antes de renderizar, para que no parpadee
+
   const paginas = [
     ['index.html',    'Panel'],
     ['mapa.html',     'Mapa'],
@@ -7,9 +47,8 @@
     ['vecindad.html', 'Vecindad territorial'],
   ];
   const actual = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  const enlaces = paginas.map(([href, texto]) =>
-    `<a href="${href}"${href.toLowerCase() === actual ? ' aria-current="page"' : ''}>${texto}</a>`
-  ).join('');
+  const enlaces = paginas.map(([h, t]) =>
+    `<a href="${h}"${h.toLowerCase() === actual ? ' aria-current="page"' : ''}>${t}</a>`).join('');
 
   document.querySelectorAll('[data-barra]').forEach(el => {
     el.className = 'barra';
@@ -18,17 +57,35 @@
         <div class="marca">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M12 2.5c-3.6 4.4-6.5 8-6.5 11.4a6.5 6.5 0 0 0 13 0C18.5 10.5 15.6 6.9 12 2.5z"
-                  fill="#e8c877"/>
-            <path d="M9.2 14.2a2.8 2.8 0 0 0 2.8 2.8" stroke="#6f1d46"
+                  fill="var(--acento-300)"/>
+            <path d="M9.2 14.2a2.8 2.8 0 0 0 2.8 2.8" stroke="var(--marca-700)"
                   stroke-width="1.5" stroke-linecap="round"/>
           </svg>
           <span>Consumo de Agua CDMX
-            <small>Instituto Politécnico Nacional · Almacén de datos y grafo de conocimiento</small>
+            <small>Almacén de datos y grafo de conocimiento territorial</small>
           </span>
         </div>
         <nav class="nav">${enlaces}</nav>
+        <div class="temas">
+          <div class="segmentado" role="group" aria-label="Tema de color">
+            ${TEMAS.map(t => `<button class="tema-btn" type="button" data-tema="${t.id}"
+               title="${t.nombre}"><i style="background:${t.muestra}"></i>${t.nombre}</button>`).join('')}
+          </div>
+          <button class="modo-btn" type="button"></button>
+        </div>
       </div>`;
   });
+
+  pintar();   // otra vez: ahora la barra ya existe y el boton puede recibir su icono
+
+  document.querySelectorAll('.tema-btn').forEach(b =>
+    b.addEventListener('click', () => { tema = b.dataset.tema; guardar(K_TEMA, tema); pintar(); }));
+  const mb = document.querySelector('.modo-btn');
+  if (mb) mb.addEventListener('click', () => {
+    modo = modo === 'auto' ? 'claro' : modo === 'claro' ? 'oscuro' : 'auto';
+    guardar(K_MODO, modo); pintar();
+  });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (modo === 'auto') pintar(); });
 
   document.querySelectorAll('[data-pie]').forEach(el => {
     el.className = 'pie';
@@ -37,9 +94,8 @@
       Portal de Datos Abiertos de la Ciudad de México (2019, bimestres 1–3) &middot;
       Clima: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> (CC BY 4.0) &middot;
       Mapa base: &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL)<br>
-      <strong>Instituto Politécnico Nacional</strong> &middot;
       Artefacto de <em>Territorial Information Retrieval from Heterogeneous Open Data through the
-      Construction of a Data Warehouse for Water Management in Mexico City</em>, ICOKG 2026 &middot;
+      Construction of a Data Warehouse for Water Management in Mexico City</em> &middot;
       <a href="https://github.com/gabrielhuav/Data_Warehouse_static" target="_blank" rel="noopener">Repositorio</a>`;
   });
 })();
