@@ -22,7 +22,7 @@ html[data-tema="guinda"]{
   --agua-500:#0e9bb8;
   --ok:#1a7a4c; --alerta:#b45309; --error:#a11d2b;
   --bg:#faf8f9; --superficie:#ffffff; --superficie-2:#f3edf0;
-  --borde:#e3d7dd; --texto:#241019; --texto-2:#5c4650; --texto-3:#8d7681;
+  --borde:#e3d7dd; --texto:#241019; --texto-2:#513c46; --texto-3:#6b5560;
   --sombra-color:61,15,38;
 }
 /* ---------- claro: azul ESCOM ---------- */
@@ -31,7 +31,7 @@ html[data-tema="escom"]{
   --marca-600:#1c52ad; --marca-500:#3a72c9; --marca-200:#c3d5f0; --marca-100:#eaf1fb;
   --acento-700:#8a6414; --acento-500:#d4a017; --acento-300:#eccb72; --acento-100:#fbf3dc;
   --bg:#f8f9fc; --superficie:#ffffff; --superficie-2:#eef2f8;
-  --borde:#d6dfec; --texto:#0c1a2e; --texto-2:#465468; --texto-3:#7b899c;
+  --borde:#d6dfec; --texto:#0c1a2e; --texto-2:#3d4a5c; --texto-3:#5c6a7d;
   --sombra-color:7,31,77;
 }
 
@@ -297,3 +297,14 @@ tbody td{overflow-wrap:anywhere}
 .nombre-largo::-webkit-scrollbar-thumb{background:var(--marca-200); border-radius:3px}
 .nombre-largo::-webkit-scrollbar-track{background:transparent}
 #kSel{font-size:1.05rem; line-height:1.3}
+
+
+/* ---------- accesibilidad (Lighthouse) ----------
+   Contraste AA en etiquetas y pie, y enlaces que no dependan solo del color. */
+.kpi .label,.kpi-et{color:var(--texto-2)}
+.pie{color:var(--texto-2)}
+.pie a{color:var(--marca-700); text-decoration:underline; text-underline-offset:2px}
+.tarjeta-cab h2,.panel h3{color:var(--texto)}
+a:not(.btn):not(.nav a):not(.tema-btn):not(.ir-vecindad){text-decoration-skip-ink:auto}
+.sub,.kpi-nota,.atip-nota{color:var(--texto-2)}
+main:focus{outline:none}

@@ -15,7 +15,9 @@
     var el = document.createElement('div');
     el.className = 'panel atipicos';
     el.innerHTML =
-      '<h3>Zonas con consumo atipico</h3>' +
+      '<h3 class="atip-cab"><span>Zonas con consumo atipico</span>' +
+      '<button type="button" id="atipToggle" class="atip-toggle" aria-expanded="true">' +
+      'Ocultar</button></h3>' +
       '<div class="atip-cuerpo">' +
         '<p class="atip-nota">Score <b>A<sub>g</sub></b> = |x &minus; &mu;| / (&sigma; + &epsilon;), ' +
         'calculado para cada colonia frente a la media de su alcaldia. Es un criterio de ' +
@@ -97,9 +99,28 @@
       : '<p class="atip-nota">Sin datos para esta combinacion.</p>';
   }
 
+  function alternar() {
+    var b = document.getElementById('atipToggle');
+    var c = document.querySelector('.atipicos .atip-cuerpo');
+    if (!b || !c) return;
+    var abierto = localStorage.getItem('dwagua-atipicos') !== 'oculto';
+    var aplicar = function () {
+      c.style.display = abierto ? '' : 'none';
+      b.textContent = abierto ? 'Ocultar' : 'Mostrar';
+      b.setAttribute('aria-expanded', String(abierto));
+    };
+    aplicar();
+    b.addEventListener('click', function () {
+      abierto = !abierto;
+      try { localStorage.setItem('dwagua-atipicos', abierto ? 'visible' : 'oculto'); } catch (e) {}
+      aplicar();
+    });
+  }
+
   function iniciar() {
     if (!document.querySelector('.app-container')) return;
     insertar(tarjeta());
+    alternar();
     fetch('consumo.json').then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();

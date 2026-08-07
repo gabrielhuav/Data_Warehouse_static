@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consumo de Agua CDMX - Dashboard</title>
-    <script src="https://cdn.plot.ly/plotly-3.0.1.min.js" charset="utf-8"></script>
-                            <!-- sistema de diseño compartido: inicio -->
+    <script src="https://cdn.plot.ly/plotly-3.0.1.min.js" defer charset="utf-8"></script>
+                                <link rel="preload" as="fetch" href="consumo.json" crossorigin>
+    <link rel="preconnect" href="https://cdn.plot.ly">
+    <link rel="preconnect" href="https://unpkg.com">
+    <meta name="description" content="Almacen de datos y grafo de conocimiento del consumo de agua en la Ciudad de Mexico, construido con datos abiertos de SACMEX. Consulta por alcaldia y colonia, mapa coropletico y SPARQL en el navegador.">
+    <!-- sistema de diseño compartido: inicio -->
     <link rel="stylesheet" href="assets/estilo.css">
     <link rel="stylesheet" href="assets/paginas.css">
     <script src="assets/tema-graficas.js"></script>
@@ -13,7 +17,7 @@
 </head>
 <body>
 <header data-barra></header>
-    <div class="app-container">
+    <div class="app-container" role="main">
         <div class="header">
             <h1>💧 Consumo de Agua en CDMX</h1>
             <nav class="nav">

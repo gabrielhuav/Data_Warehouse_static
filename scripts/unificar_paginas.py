@@ -37,6 +37,11 @@ def limpiar(h: str) -> str:
     h = re.sub(r'[ \t]*<header data-barra></header>\n?', '', h)
     h = re.sub(r'[ \t]*<footer data-pie></footer>\n?', '', h)
     h = re.sub(r'[ \t]*<!-- sistema de diseño compartido -->\n?', '', h)
+    h = re.sub(r'[ \t]*<meta name="description"[^>]*>\n?', '', h)
+    h = re.sub(r'[ \t]*<link rel="preload" as="fetch"[^>]*>\n?', '', h)
+    h = re.sub(r'[ \t]*<link rel="preconnect"[^>]*>\n?', '', h)
+    h = h.replace('<div class="app-container" role="main">', '<div class="app-container">')
+    h = h.replace('<main class="app-container">', '<div class="app-container">')
     return h
 
 
@@ -47,6 +52,37 @@ def parchar(ruta: str, pagina: str) -> str:
 
     quitados = 0
     h, quitados = re.subn(r'[ \t]*<style>.*?</style>\n?', '', h, flags=re.S)
+
+    # --- Lighthouse: quitar el bloqueo de renderizado ---------------
+    # Plotly y Leaflet en el <head> bloquean el primer pintado: 2.8 s en
+    # escritorio y 9.2 s en movil segun el informe. Con defer el navegador
+    # pinta primero y ejecuta despues, sin cambiar el orden entre ellos.
+    h = re.sub(r'(<script src="https://(?:cdn\.plot\.ly|unpkg\.com)/[^"]+")(?![^>]*defer)',
+               r'\1 defer', h)
+    # Leaflet CSS: se precarga sin bloquear
+    h = h.replace('<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">',
+                  '<link rel="preload" as="style" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" '
+                  'onload="this.rel=\'stylesheet\'">\n    '
+                  '<noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></noscript>')
+    # los datos se piden en cuanto se puede, no al final del parseo
+    if 'rel="preload" as="fetch"' not in h:
+        h = h.replace('</head>',
+            '    <link rel="preload" as="fetch" href="consumo.json" crossorigin>\n'
+            '    <link rel="preconnect" href="https://cdn.plot.ly">\n'
+            '    <link rel="preconnect" href="https://unpkg.com">\n</head>', 1)
+
+    # --- SEO: metadescripcion ---------------------------------------
+    if 'name="description"' not in h:
+        desc = ('Almacen de datos y grafo de conocimiento del consumo de agua en la '
+                'Ciudad de Mexico, construido con datos abiertos de SACMEX. '
+                'Consulta por alcaldia y colonia, mapa coropletico y SPARQL en el navegador.')
+        h = h.replace('</head>', f'    <meta name="description" content="{desc}">\n</head>', 1)
+
+    # --- Accesibilidad: punto de referencia principal ----------------
+    # role="main" en vez de cambiar la etiqueta: satisface la auditoria sin
+    # arriesgar el emparejamiento de <div> del marcado original.
+    h = h.replace('<main class="app-container">', '<div class="app-container">')
+    h = h.replace('<div class="app-container">', '<div class="app-container" role="main">', 1)
 
     # hojas + scripts que deben cargar antes que el cuerpo
     cabeza = INI + '\n    ' + HOJAS
