@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vecindad territorial — Consumo de Agua CDMX</title>
+<meta name="description" content="Recorrido de grafo sobre la relación geo:sfTouches: elige una colonia y consulta sus vecinas con SPARQL.">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="assets/estilo.css">
+<style>
+  .split{display:grid; gap:1.1rem; grid-template-columns:minmax(0,3fr) minmax(0,2fr); align-items:start}
+  @media (max-width:1000px){ .split{grid-template-columns:1fr} }
+  #mapa{height:min(68vh,620px); border-radius:var(--r-m); z-index:1}
+  .leaflet-container{background:var(--superficie-2); font:inherit}
+  .buscador{position:relative}
+  .sugerencias{
+    position:absolute; z-index:20; left:0; right:0; top:100%; margin-top:2px;
+    background:var(--superficie); border:1px solid var(--borde); border-radius:var(--r-s);
+    box-shadow:var(--sombra-3); max-height:240px; overflow:auto; display:none;
+  }
+  .sugerencias.abierto{display:block}
+  .sug{padding:.45rem .7rem; cursor:pointer; font-size:.85rem}
+  .sug:hover,.sug.sel{background:var(--guinda-100)}
+  .sug small{display:block; color:var(--texto-3); font-size:.74rem}
+  .consulta-viva{
+    font-family:var(--mono); font-size:.76rem; line-height:1.55; white-space:pre-wrap;
+    background:var(--superficie-2); border:1px solid var(--borde); border-radius:var(--r-s);
+    padding:.7rem .8rem; color:var(--texto-2); max-height:210px; overflow:auto; margin:0;
+  }
+  .aviso{padding:.7rem .9rem; border-radius:var(--r-s); font-size:.84rem;
+         background:var(--guinda-100); color:var(--guinda-700); border:1px solid var(--borde)}
+  .aviso.err{background:rgba(185,28,28,.1); color:var(--error); border-color:rgba(185,28,28,.3)}
+  .leyenda{display:flex; gap:1rem; flex-wrap:wrap; font-size:.78rem; color:var(--texto-2); margin-top:.6rem}
+  .punto{display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:.3rem; vertical-align:-1px}
+</style>
+</head>
+<body>
+<header data-barra></header>
+
+<main class="envoltura">
+
+  <div class="kpis">
+    <div class="kpi"><div class="kpi-et">Unidades territoriales</div><div class="kpi-val" id="kCol">—</div><div class="kpi-nota">colonias con centroide</div></div>
+    <div class="kpi t2"><div class="kpi-et">Relaciones de vecindad</div><div class="kpi-val" id="kAdy">—</div><div class="kpi-nota">geo:sfTouches, ≤ 1.5 km</div></div>
+    <div class="kpi t3"><div class="kpi-et">Seleccionada</div><div class="kpi-val" id="kSel" style="font-size:1.05rem">ninguna</div><div class="kpi-nota" id="kSelAlc">elige una en el mapa</div></div>
+    <div class="kpi"><div class="kpi-et">Vecinas encontradas</div><div class="kpi-val" id="kVec">—</div><div class="kpi-nota" id="kTiempo">—</div></div>
+  </div>
+
+  <div class="tarjeta" style="margin-bottom:1.25rem">
+    <div class="tarjeta-cuerpo" style="padding:.9rem 1.1rem">
+      <p class="sub" style="margin:0">
+        Cada punto es una colonia, representada por el centroide de sus lecturas. Al elegir una,
+        se lanza una consulta <b>SPARQL</b> que recorre <code>geo:sfTouches</code> sobre el grafo RDF
+        y suma el consumo de cada vecina. La consulta que se ejecuta aparece abajo, tal cual.
+        Todo ocurre en tu navegador.
+      </p>
+    </div>
+  </div>
+
+  <div class="split">
+    <section class="tarjeta">
+      <div class="tarjeta-cab">
+        <h2>Mapa territorial</h2>
+        <span class="estado" id="estado" style="margin-left:auto"><span class="spinner"></span> cargando el grafo…</span>
+      </div>
+      <div class="tarjeta-cuerpo">
+        <div class="buscador" style="margin-bottom:.8rem">
+          <label for="buscar">Buscar colonia</label>
+          <input id="buscar" type="text" placeholder="Escribe al menos tres letras…" autocomplete="off" disabled>
+          <div class="sugerencias" id="sugerencias"></div>
+        </div>
+        <div id="mapa"></div>
+        <div class="leyenda">
+          <span><span class="punto" style="background:#6f1d46"></span>seleccionada</span>
+          <span><span class="punto" style="background:#c9962a"></span>vecina directa</span>
+          <span><span class="punto" style="background:#c8b4bd"></span>resto</span>
+        </div>
+      </div>
+    </section>
+
+    <div style="display:grid; gap:1.1rem">
+      <section class="tarjeta">
+        <div class="tarjeta-cab"><h2>Consulta ejecutada</h2></div>
+        <div class="tarjeta-cuerpo"><pre class="consulta-viva" id="sparql">Elige una colonia.</pre></div>
+      </section>
+      <section class="tarjeta">
+        <div class="tarjeta-cab"><h2>Vecinas</h2></div>
+        <div class="tarjeta-cuerpo" style="padding:0">
+          <div id="salida" style="padding:1.1rem"><span class="sub">Sin selección.</span></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+</main>
+<footer data-pie></footer>
+
+<script src="assets/nav.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/n3@1.17.2/browser/n3.min.js"></script>
+<script src="https://rdf.js.org/comunica-browser/versions/v3/engines/query-sparql/comunica-browser.js"></script>
+<script>
+(function () {
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const fmt = n => new Intl.NumberFormat('es-MX').format(Math.round(n));
+
+  const PREFIJOS =
+`PREFIX agua: <https://w3id.org/cdmx/agua/>
+PREFIX col:  <https://w3id.org/cdmx/agua/colonia/>
+PREFIX geo:  <http://www.opengis.net/ont/geosparql#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+`;
+
+  let store = null, engine = null, mapa = null, capaLineas = null;
+  const marcadores = new Map();      // id -> circleMarker
+  const colonias = [];               // {id, nombre, alcaldia, lat, lon}
+  let seleccion = null;
+
+  function estado(html) { $('estado').innerHTML = html; }
+
+  // ---------------- mapa ----------------
+  mapa = L.map('mapa', { preferCanvas: true, zoomControl: true }).setView([19.38, -99.13], 11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(mapa);
+  capaLineas = L.layerGroup().addTo(mapa);
+
+  // Guinda IPN para la seleccion, oro para las vecinas, gris tenue el resto.
+  const ESTILO_BASE = { radius:4, color:'#8d7681', weight:1, fillColor:'#c8b4bd', fillOpacity:.7 };
+  const ESTILO_SEL  = { radius:10, color:'#3d0f26', weight:2.5, fillColor:'#6f1d46', fillOpacity:1 };
+  const ESTILO_VEC  = { radius:7, color:'#8a6414', weight:2, fillColor:'#c9962a', fillOpacity:.95 };
+
+  // ---------------- carga ----------------
+  async function cargar() {
+    if (typeof N3 === 'undefined' || typeof Comunica === 'undefined') {
+      estado('sin bibliotecas RDF');
+      $('salida').innerHTML = '<div class="aviso err">Este explorador necesita N3.js y Comunica desde CDN.</div>';
+      return;
+    }
+    try {
+      const resp = await fetch('kg_demo.ttl');
+      if (!resp.ok) throw new Error('HTTP ' + resp.status + ' al pedir kg_demo.ttl');
+      const texto = await resp.text();
+      estado('<span class="spinner"></span> analizando ' + (texto.length/1048576).toFixed(1) + ' MB…');
+
+      store = new N3.Store();
+      const parser = new N3.Parser({ format: 'text/turtle' });
+      await new Promise((res, rej) => {
+        parser.parse(texto, (err, quad) => {
+          if (err) return rej(err); if (quad) store.addQuad(quad); else res();
+        });
+      });
+      engine = new Comunica.QueryEngine();
+
+      const { namedNode } = N3.DataFactory;
+      $('kAdy').textContent = fmt(store.countQuads(
+        null, namedNode('http://www.opengis.net/ont/geosparql#sfTouches'), null, null));
+
+      estado('<span class="spinner"></span> ubicando colonias…');
+      await construirColonias();
+      estado('<span class="chip ok">' + fmt(colonias.length) + ' colonias listas</span>');
+      $('buscar').disabled = false;
+      const inicial = colonias.find(c => /CENTRO|JUAREZ|ROMA/.test(c.nombre)) || colonias[0];
+      if (inicial) seleccionar(inicial.id);
+    } catch (e) {
+      estado('error');
+      const esFile = location.protocol === 'file:';
+      const pista = esFile
+        ? '<br><br><b>Est&aacute;s abriendo la p&aacute;gina como archivo local</b> (<code>file://</code>). ' +
+          'Los navegadores bloquean <code>fetch</code> en ese modo por seguridad, aunque el archivo exista. ' +
+          'Sirve la carpeta por HTTP:<br><code>python -m http.server 8000</code><br>' +
+          'y abre <code>http://localhost:8000/vecindad.html</code>'
+        : '<br><br>Revisa que <code>kg_demo.ttl</code> est&eacute; publicado en el repositorio. ' +
+          'Lo genera <code>publicar_demo_grafo.ps1</code>.';
+      $('salida').innerHTML = '<div class="aviso err"><b>No se pudo cargar el grafo.</b><br>' +
+        String(e.message || e) + pista + '</div>';
+    }
+  }
+
+  async function construirColonias() {
+    const q = PREFIJOS + `SELECT ?c ?nombre ?alc ?lat ?lon WHERE {
+  ?c a geo:Feature ; rdfs:label ?nombre ; agua:borough ?alc ;
+     agua:latitude ?lat ; agua:longitude ?lon .
+}`;
+    const filas = await (await engine.queryBindings(q, { sources: [store] })).toArray();
+    for (const f of filas) {
+      const uri = f.get('c').value;
+      const id = uri.split('/').pop();
+      const lat = parseFloat(f.get('lat').value), lon = parseFloat(f.get('lon').value);
+      const c = { id, uri, nombre: f.get('nombre').value, alcaldia: f.get('alc').value, lat, lon };
+      colonias.push(c);
+      const m = L.circleMarker([lat, lon], ESTILO_BASE).addTo(mapa);
+      m.bindTooltip(c.nombre + ' — ' + c.alcaldia, { direction:'top' });
+      m.on('click', () => seleccionar(id));
+      marcadores.set(id, m);
+    }
+    colonias.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+    $('kCol').textContent = fmt(colonias.length);
+  }
+
+  // ---------------- traversal ----------------
+  async function seleccionar(id) {
+    const c = colonias.find(x => x.id === id);
+    if (!c || !engine) return;
+    seleccion = c;
+    $('kSel').textContent = c.nombre;
+    $('kSelAlc').textContent = c.alcaldia;
+
+    const q = PREFIJOS + `
+SELECT ?vecina ?alcaldia (ROUND(SUM(?c)) AS ?consumo) WHERE {
+  col:${id} geo:sfTouches ?v .
+  ?v rdfs:label ?vecina ; agua:borough ?alcaldia .
+  ?o agua:location ?v ; agua:totalConsumption ?c .
+}
+GROUP BY ?vecina ?alcaldia
+ORDER BY DESC(?consumo)`;
+    $('sparql').textContent = q.trim();
+
+    marcadores.forEach(m => m.setStyle(ESTILO_BASE));
+    capaLineas.clearLayers();
+    marcadores.get(id).setStyle(ESTILO_SEL).bringToFront();
+    mapa.setView([c.lat, c.lon], Math.max(mapa.getZoom(), 13), { animate:true });
+
+    const t0 = performance.now();
+    try {
+      const filas = await (await engine.queryBindings(q, { sources: [store] })).toArray();
+      const ms = performance.now() - t0;
+      $('kVec').textContent = filas.length;
+      $('kTiempo').textContent = (ms < 1000 ? Math.round(ms) + ' ms' : (ms/1000).toFixed(1) + ' s') + ' de SPARQL';
+
+      if (!filas.length) {
+        $('salida').innerHTML = '<div class="aviso">Esta colonia no tiene vecinas dentro de 1.5 km en el grafo.</div>';
+        return;
+      }
+      const nombres = new Set(filas.map(f => f.get('vecina').value));
+      colonias.forEach(o => {
+        if (nombres.has(o.nombre) && o.id !== id) {
+          const m = marcadores.get(o.id);
+          if (m) { m.setStyle(ESTILO_VEC).bringToFront();
+            L.polyline([[c.lat, c.lon], [o.lat, o.lon]],
+              { color:'#87275a', weight:1.8, opacity:.6 }).addTo(capaLineas); }
+        }
+      });
+
+      const tr = filas.map(f =>
+        `<tr><td>${f.get('vecina').value}</td><td>${f.get('alcaldia').value}</td>` +
+        `<td class="num">${fmt(f.get('consumo').value)}</td></tr>`).join('');
+      $('salida').innerHTML =
+        `<div class="tabla-env"><table><thead><tr><th>Colonia vecina</th><th>Alcaldía</th>` +
+        `<th class="num">Consumo total (m³)</th></tr></thead><tbody>${tr}</tbody></table></div>`;
+    } catch (e) {
+      $('salida').innerHTML = '<div class="aviso err">Error en la consulta: ' +
+        String(e.message || e).replace(/</g,'&lt;') + '</div>';
+    }
+  }
+
+  // ---------------- buscador ----------------
+  const inp = $('buscar'), sug = $('sugerencias');
+  let idx = -1, lista = [];
+  inp.addEventListener('input', () => {
+    const t = inp.value.trim().toUpperCase();
+    if (t.length < 3) { sug.classList.remove('abierto'); return; }
+    lista = colonias.filter(c => c.nombre.toUpperCase().includes(t)).slice(0, 40);
+    idx = -1;
+    sug.innerHTML = lista.length
+      ? lista.map((c, i) => `<div class="sug" data-i="${i}">${c.nombre}<small>${c.alcaldia}</small></div>`).join('')
+      : '<div class="sug" style="color:var(--texto-3)">Sin coincidencias</div>';
+    sug.classList.add('abierto');
+    sug.querySelectorAll('.sug[data-i]').forEach(d => {
+      d.onclick = () => { elegir(lista[+d.dataset.i]); };
+    });
+  });
+  function elegir(c) {
+    if (!c) return;
+    inp.value = c.nombre; sug.classList.remove('abierto'); seleccionar(c.id);
+  }
+  inp.addEventListener('keydown', e => {
+    const items = sug.querySelectorAll('.sug[data-i]');
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault(); if (!items.length) return;
+      idx = e.key === 'ArrowDown' ? Math.min(idx + 1, items.length - 1) : Math.max(idx - 1, 0);
+      items.forEach(x => x.classList.remove('sel')); items[idx].classList.add('sel');
+      items[idx].scrollIntoView({ block:'nearest' });
+    } else if (e.key === 'Enter') { e.preventDefault(); elegir(lista[idx >= 0 ? idx : 0]); }
+    else if (e.key === 'Escape') sug.classList.remove('abierto');
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.buscador')) sug.classList.remove('abierto');
+  });
+
+  cargar();
+})();
+</script>
+</body>
+</html>
