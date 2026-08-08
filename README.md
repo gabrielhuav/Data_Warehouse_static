@@ -1,9 +1,8 @@
 # Territorial Information Retrieval from Heterogeneous Open Data through the Construction of a Data Warehouse for Water Management in Mexico City
 
-Reproducible artefact of the paper presented at the **5th International Conference
+Reproducible artefact of a paper accepted at the **5th International Conference
 on Ontologies and Knowledge Graphs (ICOKG 2026)**, Benemérita Universidad Autónoma
-de Puebla, 25 September 2026. Proceedings published by Springer in the series
-*Advances in Computer Science Applications and Research* (ACSAR).
+de Puebla, 25 September 2026.
 
 **Live demonstration → <https://gabrielhuav.github.io/Data_Warehouse_static/>**
 
@@ -111,26 +110,12 @@ that authorship of the original static demonstration stays visible.
 Code in this repository is released under the MIT licence. The redistributed data
 files keep the licences of their publishers.
 
-## Citation
+## Status
 
-```bibtex
-@inproceedings{velazquez2026territorial,
-  title     = {Territorial Information Retrieval from Heterogeneous Open Data
-               through the Construction of a Data Warehouse for Water Management
-               in Mexico City},
-  author    = {Vel{\'a}zquez Arrieta, Eduardo Uriel and
-               Pulido Morales, Omar Fernando and
-               Garc{\'i}a L{\'o}pez, Emilio and
-               Hern{\'a}ndez Mart{\'i}nez, Clara Aide and
-               Hurtado Avil{\'e}s, Gabriel},
-  booktitle = {Proceedings of the 5th International Conference on Ontologies and
-               Knowledge Graphs (ICOKG 2026)},
-  series    = {Advances in Computer Science Applications and Research (ACSAR)},
-  publisher = {Springer},
-  year      = {2026}
-}
-```
+This repository is the reproducible artefact of a paper accepted at ICOKG 2026
+and currently undergoing final review. Full publication details will be added
+once the proceedings are published.
 
-The version cited by the article is frozen as release
-[`v1.2-icokg2026`](https://github.com/gabrielhuav/Data_Warehouse_static/releases/tag/v1.2-icokg2026).
+The version cited by the manuscript is frozen as release
+[`v1.3-icokg2026`](https://github.com/gabrielhuav/Data_Warehouse_static/releases/tag/v1.3-icokg2026).
 The repository head may evolve; the release will not.
