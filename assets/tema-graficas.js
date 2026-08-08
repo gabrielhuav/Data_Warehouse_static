@@ -31,6 +31,29 @@
     return Object.assign(r, extra || {});
   };
 
+  /* Para repintar hay que pasar por relayout con notación de punto.
+     Con un objeto anidado, relayout sustituye el contenedor entero: un
+     {xaxis:{gridcolor…}} se lleva por delante xaxis.title, y los títulos
+     de eje desaparecían al cambiar de tema. Con 'xaxis.gridcolor' sólo se
+     tocan las hojas y lo que puso la página sigue en pie.
+     El margen se excluye a propósito: es geometría de cada gráfica —el
+     panel usa 220 px a la izquierda para los nombres largos— y un cambio
+     de tema no tiene por qué recolocarla. */
+  function aplanar(obj, prefijo, salida) {
+    salida = salida || {};
+    Object.keys(obj).forEach(k => {
+      const v = obj[k], ruta = prefijo ? prefijo + '.' + k : k;
+      if (v && typeof v === 'object' && !Array.isArray(v)) aplanar(v, ruta, salida);
+      else salida[ruta] = v;
+    });
+    return salida;
+  }
+  function soloColores() {
+    const plano = aplanar(layoutTema());
+    Object.keys(plano).forEach(k => { if (k.indexOf('margin.') === 0) delete plano[k]; });
+    return plano;
+  }
+
   /* Etiquetas largas -------------------------------------------------
      Nombres como "SAN JERONIMO ACULCO - LIDICE (PBLO) (LA MAGDALENA
      CONTRERAS)" no caben en el eje y Plotly los encima. Se recortan para
@@ -80,6 +103,33 @@
     });
   }
 
+  /* Trazas sin color propio ----------------------------------------
+     Plotly resuelve el colorway al dibujar y escribe el color elegido en
+     _fullData, así que un relayout posterior del colorway ya no las
+     alcanza: al cambiar de tema las barras se quedaban del color viejo.
+     Se anota qué trazas venían sin marker.color para poder recolorearlas.
+     Las que sí lo traen —la de correlación lleva la temperatura en el
+     color, con su escala secuencial— no se tocan nunca. */
+  const LIBRES = new WeakMap();
+
+  function anotarLibres(gd, data) {
+    const nodo = typeof gd === 'string' ? document.getElementById(gd) : gd;
+    if (!nodo || !Array.isArray(data)) return;
+    const libres = [];
+    data.forEach((tr, i) => {
+      const c = tr && tr.marker && tr.marker.color;
+      if (c === undefined || c === null) libres.push(i);
+    });
+    LIBRES.set(nodo, libres);
+  }
+
+  function recolorear(gd) {
+    const libres = LIBRES.get(gd);
+    if (!libres || !libres.length) return;
+    const via = layoutTema().colorway;
+    return Plotly.restyle(gd, { 'marker.color': libres.map(i => via[i % via.length]) }, libres);
+  }
+
   function registrar(gd, data) {
     const nodo = typeof gd === 'string' ? document.getElementById(gd) : gd;
     if (!nodo || !Array.isArray(data)) return;
@@ -96,18 +146,23 @@
     return Promise.resolve(p).then(r => { setTimeout(() => anotarEjes(gd), 0); return r; });
   }
   Plotly.newPlot = function (gd, data, layout, config) {
-    registrar(gd, data);
+    registrar(gd, data); anotarLibres(gd, data);
     return tras(nuevo.call(Plotly, gd, acorta(data), fundir(layout), config), gd);
   };
   Plotly.react = function (gd, data, layout, config) {
-    registrar(gd, data);
+    registrar(gd, data); anotarLibres(gd, data);
     return tras(react.call(Plotly, gd, acorta(data), fundir(layout), config), gd);
   };
 
   document.addEventListener('temacambiado', () => {
     requestAnimationFrame(() => {
+      const colores = soloColores();
       document.querySelectorAll('.js-plotly-plot').forEach(gd => {
-        try { Plotly.relayout(gd, layoutTema()).then(() => anotarEjes(gd)); } catch (e) {}
+        try {
+          Plotly.relayout(gd, colores)
+            .then(() => recolorear(gd))
+            .then(() => anotarEjes(gd));
+        } catch (e) {}
       });
     });
   });

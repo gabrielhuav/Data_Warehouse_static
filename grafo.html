@@ -6,6 +6,7 @@
 <title>Grafo de conocimiento — Consumo de Agua CDMX</title>
 <meta name="description" content="Explorador SPARQL sobre el grafo RDF materializado desde el almacén de datos de consumo de agua de la Ciudad de México.">
 <link rel="stylesheet" href="assets/estilo.css">
+<script src="assets/i18n.js"></script>
 <style>
   .split{display:grid; gap:1.1rem; grid-template-columns:minmax(0,4fr) minmax(0,5fr); align-items:start}
   @media (max-width:1000px){ .split{grid-template-columns:1fr} }
@@ -36,15 +37,15 @@
 <main class="envoltura">
 
   <div class="kpis" id="kpis">
-    <div class="kpi"><div class="kpi-et">Triples cargados</div><div class="kpi-val" id="kTriples">—</div><div class="kpi-nota" id="kCarga">esperando…</div></div>
-    <div class="kpi t2"><div class="kpi-et">Observaciones</div><div class="kpi-val" id="kObs">—</div><div class="kpi-nota">qb:Observation</div></div>
-    <div class="kpi t3"><div class="kpi-et">Unidades territoriales</div><div class="kpi-val" id="kFeat">—</div><div class="kpi-nota">geo:Feature con geometría</div></div>
-    <div class="kpi"><div class="kpi-et">Relaciones de vecindad</div><div class="kpi-val" id="kAdy">—</div><div class="kpi-nota">geo:sfTouches</div></div>
+    <div class="kpi"><div class="kpi-et" data-i18n="gr.kpi.triples">Triples cargados</div><div class="kpi-val" id="kTriples">—</div><div class="kpi-nota" id="kCarga" data-i18n="gr.kpi.esperando">esperando…</div></div>
+    <div class="kpi t2"><div class="kpi-et" data-i18n="gr.kpi.obs">Observaciones</div><div class="kpi-val" id="kObs">—</div><div class="kpi-nota">qb:Observation</div></div>
+    <div class="kpi t3"><div class="kpi-et" data-i18n="gr.kpi.feat">Unidades territoriales</div><div class="kpi-val" id="kFeat">—</div><div class="kpi-nota" data-i18n="gr.kpi.featNota">geo:Feature con geometría</div></div>
+    <div class="kpi"><div class="kpi-et" data-i18n="gr.kpi.ady">Relaciones de vecindad</div><div class="kpi-val" id="kAdy">—</div><div class="kpi-nota">geo:sfTouches</div></div>
   </div>
 
   <div class="tarjeta" style="margin-bottom:1.25rem">
     <div class="tarjeta-cuerpo" style="padding:.9rem 1.1rem">
-      <p class="sub" style="margin:0">
+      <p class="sub" style="margin:0" data-i18n-html="gr.intro">
         Este grafo se materializa desde el almacén relacional con un mapeo
         <b>R2RML</b> declarativo, alineado a <b>RDF Data Cube</b> (el cubo de observaciones),
         <b>GeoSPARQL</b> (territorio y vecindad), <b>SKOS</b> (índice de desarrollo) y
@@ -57,7 +58,7 @@
   <div class="split">
 
     <section class="tarjeta">
-      <div class="tarjeta-cab"><h2>Consultas de ejemplo</h2></div>
+      <div class="tarjeta-cab"><h2 data-i18n="gr.ejemplos">Consultas de ejemplo</h2></div>
       <div class="tarjeta-cuerpo">
         <div class="ejemplos" id="ejemplos"></div>
       </div>
@@ -66,14 +67,14 @@
     <section class="tarjeta">
       <div class="tarjeta-cab">
         <h2>SPARQL 1.1</h2>
-        <span class="chip" id="motor">motor en el navegador</span>
+        <span class="chip" id="motor" data-i18n="gr.motor">motor en el navegador</span>
       </div>
       <div class="tarjeta-cuerpo">
-        <label for="consulta">Consulta — puedes editarla libremente</label>
+        <label for="consulta" data-i18n="gr.etiqueta">Consulta — puedes editarla libremente</label>
         <textarea id="consulta" spellcheck="false"></textarea>
         <div class="barra-acc">
-          <button class="btn" id="btnRun" disabled>Ejecutar</button>
-          <button class="btn sec" id="btnCopiar">Copiar</button>
+          <button class="btn" id="btnRun" disabled data-i18n="gr.ejecutar">Ejecutar</button>
+          <button class="btn sec" id="btnCopiar" data-i18n="gr.copiar">Copiar</button>
           <span class="estado" id="estado"><span class="spinner"></span> cargando el grafo…</span>
         </div>
       </div>
@@ -82,14 +83,14 @@
 
   <section class="tarjeta" style="margin-top:1.25rem">
     <div class="tarjeta-cab">
-      <h2>Resultados</h2>
+      <h2 data-i18n="gr.resultados">Resultados</h2>
       <span class="metrica" style="margin-left:auto">
-        <span>Filas <b id="mFilas">—</b></span>
-        <span>Tiempo <b id="mTiempo">—</b></span>
+        <span><span data-i18n="gr.filas">Filas</span> <b id="mFilas">—</b></span>
+        <span><span data-i18n="gr.tiempo">Tiempo</span> <b id="mTiempo">—</b></span>
       </span>
     </div>
     <div class="tarjeta-cuerpo" style="padding:0">
-      <div id="salida" style="padding:1.1rem"><span class="sub">Elige una consulta o escribe la tuya.</span></div>
+      <div id="salida" style="padding:1.1rem"><span class="sub" data-i18n="gr.elige">Elige una consulta o escribe la tuya.</span></div>
     </div>
   </section>
 
@@ -103,7 +104,9 @@
 (function () {
   "use strict";
   const $ = id => document.getElementById(id);
-  const fmt = n => new Intl.NumberFormat('es-MX').format(n);
+  const T = (k, v) => I18N.t(k, v);
+  const fmt = n => I18N.num(n);
+  const SPINNER = '<span class="spinner"></span> ';
 
   const PREFIJOS = [
     'PREFIX agua: <https://w3id.org/cdmx/agua/>',
@@ -115,17 +118,17 @@
     ''
   ].join('\n');
 
+  /* El texto de cada ejemplo vive en el diccionario (gr.ej.<clave>.t y .d);
+     la consulta no se traduce: es SPARQL sobre el mismo vocabulario. */
   const EJEMPLOS = [
-    { t:'Vecindad territorial',
-      d:'Recorre geo:sfTouches para hallar las colonias contiguas a una dada y suma su consumo. Esto es traversal de grafo: la consulta tabular equivalente necesitaría un self-join espacial.',
+    { k:'vecindad',
       q:`SELECT ?vecina (ROUND(SUM(?c)) AS ?consumo) WHERE {
   col:500 geo:sfTouches ?v .
   ?v rdfs:label ?vecina .
   ?o agua:location ?v ; agua:totalConsumption ?c .
 } GROUP BY ?vecina ORDER BY DESC(?consumo)` },
 
-    { t:'Agua y clima, unidos por el tiempo',
-      d:'Dos tablas de hechos distintas comparten la dimensión temporal. En el grafo, unirlas es seguir agua:period desde ambas.',
+    { k:'clima',
       q:`SELECT ?bimestre ?agua ?tempMedia WHERE {
   { SELECT ?bimestre (ROUND(SUM(?c)) AS ?agua) WHERE {
       ?o qb:dataSet agua:consumoCDMX ; agua:period ?p ; agua:totalConsumption ?c .
@@ -137,8 +140,7 @@
     } GROUP BY ?bimestre }
 } ORDER BY ?bimestre` },
 
-    { t:'Alcaldías por proporción no doméstica',
-      d:'El artículo argumenta que el consumo total no es un indicador per cápita. Esta consulta lo muestra: separa la demanda comercial de la residencial.',
+    { k:'noDom',
       q:`SELECT ?alcaldia (ROUND(100*SUM(?nd)/SUM(?t)) AS ?pctNoDomestico) WHERE {
   ?o agua:location ?l ;
      agua:nonDomesticConsumption ?nd ;
@@ -146,48 +148,63 @@
   ?l agua:borough ?alcaldia .
 } GROUP BY ?alcaldia ORDER BY DESC(?pctNoDomestico)` },
 
-    { t:'Consumo por nivel de desarrollo',
-      d:'Navega el esquema SKOS del índice de desarrollo, cuya escala tiene cuatro niveles: alto, medio, bajo y popular.',
+    { k:'indice',
       q:`SELECT ?nivel (COUNT(?o) AS ?observaciones) (ROUND(SUM(?c)) AS ?total) WHERE {
   ?o agua:developmentIndex ?i ; agua:totalConsumption ?c .
   ?i skos:prefLabel ?nivel .
 } GROUP BY ?nivel ORDER BY DESC(?total)` },
 
-    { t:'Grado en el grafo territorial',
-      d:'¿Qué colonias tienen más vecinas? Una pregunta de topología de red que el modelo relacional no expresa de forma natural.',
+    { k:'grado',
       q:`SELECT ?colonia (COUNT(?v) AS ?vecinas) WHERE {
   ?c geo:sfTouches ?v ; rdfs:label ?colonia .
 } GROUP BY ?colonia ORDER BY DESC(?vecinas) LIMIT 15` },
 
-    { t:'Composición del grafo',
-      d:'Cuántas instancias hay de cada clase. Útil para ver de qué está hecho el grafo.',
+    { k:'clases',
       q:`SELECT ?clase (COUNT(?s) AS ?instancias) WHERE {
   ?s a ?clase .
 } GROUP BY ?clase ORDER BY DESC(?instancias)` },
   ];
 
-  let store = null, engine = null;
+  let store = null, engine = null, segCarga = null, ultimasFilas = null;
 
   // ---------------- interfaz de ejemplos ----------------
+  /* El ejemplo activo se guarda por índice, no por texto: al cambiar de
+     idioma se rehacen los botones y el resaltado sobrevive. Vale -1 en
+     cuanto el usuario edita la consulta, para no señalar un ejemplo que
+     ya no es el que está en el editor. */
   const cont = $('ejemplos');
-  EJEMPLOS.forEach((e, i) => {
-    const b = document.createElement('button');
-    b.className = 'ejemplo'; b.type = 'button'; b.setAttribute('aria-pressed', 'false');
-    b.innerHTML = `${e.t}<b>${e.d}</b>`;
-    b.onclick = () => {
-      cont.querySelectorAll('.ejemplo').forEach(x => x.setAttribute('aria-pressed', 'false'));
-      b.setAttribute('aria-pressed', 'true');
-      $('consulta').value = PREFIJOS + e.q;
-      if (engine) ejecutar();
-    };
-    cont.appendChild(b);
-    if (i === 0) $('consulta').value = PREFIJOS + e.q;
+  let elegido = 0;
+
+  function pintarEjemplos() {
+    cont.innerHTML = '';
+    EJEMPLOS.forEach((e, i) => {
+      const b = document.createElement('button');
+      b.className = 'ejemplo'; b.type = 'button';
+      b.setAttribute('aria-pressed', String(i === elegido));
+      b.innerHTML = `${T('gr.ej.' + e.k + '.t')}<b>${T('gr.ej.' + e.k + '.d')}</b>`;
+      b.onclick = () => {
+        elegido = i;
+        cont.querySelectorAll('.ejemplo').forEach((x, j) =>
+          x.setAttribute('aria-pressed', String(j === i)));
+        $('consulta').value = PREFIJOS + e.q;
+        if (engine) ejecutar();
+      };
+      cont.appendChild(b);
+    });
+  }
+  pintarEjemplos();
+  $('consulta').value = PREFIJOS + EJEMPLOS[0].q;
+  $('consulta').addEventListener('input', () => {
+    if (elegido < 0) return;
+    elegido = -1;
+    cont.querySelectorAll('.ejemplo').forEach(x => x.setAttribute('aria-pressed', 'false'));
   });
 
   $('btnCopiar').onclick = async () => {
     try { await navigator.clipboard.writeText($('consulta').value);
-          $('btnCopiar').textContent = 'Copiado'; setTimeout(()=>$('btnCopiar').textContent='Copiar', 1400); }
-    catch { $('btnCopiar').textContent = 'No se pudo'; }
+          $('btnCopiar').textContent = T('gr.copiado');
+          setTimeout(()=>$('btnCopiar').textContent = T('gr.copiar'), 1400); }
+    catch { $('btnCopiar').textContent = T('gr.noCopio'); }
   };
 
   function estado(html, clase) {
@@ -195,19 +212,28 @@
     $('estado').className = 'estado' + (clase ? ' ' + clase : '');
   }
 
+  /* Los estados estables se recuerdan por clave para poder rehacerlos en
+     el otro idioma; los transitorios (spinner) no hace falta. */
+  let claveEstado = null, claseChip = '';
+  function estadoChip(clave, clase) {
+    claveEstado = clave; claseChip = clase;
+    estado(`<span class="chip ${clase}">${T(clave)}</span>`);
+  }
+  estado(SPINNER + T('gr.est.cargando'));
+
   // ---------------- carga del grafo ----------------
   async function cargar() {
     if (typeof N3 === 'undefined' || typeof Comunica === 'undefined') {
-      estado('No se pudieron cargar las bibliotecas RDF (revisa tu conexión).', '');
-      $('salida').innerHTML = '<div class="aviso err">Este explorador necesita N3.js y Comunica desde CDN. Si estás sin conexión, el resto del sitio funciona igual.</div>';
+      estado(T('gr.est.sinLibs'), '');
+      $('salida').innerHTML = `<div class="aviso err">${T('gr.av.sinLibs')}</div>`;
       return;
     }
     const t0 = performance.now();
     try {
       const resp = await fetch('kg_demo.ttl');
-      if (!resp.ok) throw new Error('HTTP ' + resp.status + ' al pedir kg_demo.ttl');
+      if (!resp.ok) throw new Error(T('gr.av.http', { codigo: resp.status }));
       const texto = await resp.text();
-      estado('<span class="spinner"></span> analizando ' + (texto.length/1048576).toFixed(1) + ' MB de Turtle…');
+      estado(SPINNER + T('gr.est.analizando', { mb: (texto.length/1048576).toFixed(1) }));
 
       store = new N3.Store();
       const parser = new N3.Parser({ format: 'text/turtle' });
@@ -219,24 +245,20 @@
       });
 
       engine = new Comunica.QueryEngine();
-      const seg = ((performance.now() - t0) / 1000).toFixed(1);
+      segCarga = ((performance.now() - t0) / 1000).toFixed(1);
       $('kTriples').textContent = fmt(store.size);
-      $('kCarga').textContent = 'en ' + seg + ' s, en tu navegador';
+      $('kCarga').textContent = T('gr.kpi.enSegundos', { seg: segCarga });
+      $('kCarga').removeAttribute('data-i18n');
       contarClases();
       $('btnRun').disabled = false;
-      estado('<span class="chip ok">grafo listo</span>');
+      estadoChip('gr.est.listo', 'ok');
       ejecutar();
     } catch (e) {
-      estado('Error al cargar el grafo', '');
-      const esFile = location.protocol === 'file:';
-      const pista = esFile
-        ? '<br><br><b>Est&aacute;s abriendo la p&aacute;gina como archivo local</b> (<code>file://</code>). ' +
-          'Los navegadores bloquean <code>fetch</code> en ese modo por seguridad, aunque el archivo exista. ' +
-          'Sirve la carpeta por HTTP:<br><code>python -m http.server 8000</code><br>' +
-          'y abre <code>http://localhost:8000/grafo.html</code>'
-        : '<br><br>Revisa que <code>kg_demo.ttl</code> est&eacute; publicado en el repositorio. ' +
-          'Lo genera <code>publicar_demo_grafo.ps1</code>.';
-      $('salida').innerHTML = '<div class="aviso err"><b>No se pudo cargar el grafo.</b><br>' +
+      estado(T('gr.est.errorCarga'), '');
+      const pista = '<br><br>' + (location.protocol === 'file:'
+        ? T('gr.av.file', { pagina: 'grafo.html' })
+        : T('gr.av.publicado'));
+      $('salida').innerHTML = `<div class="aviso err"><b>${T('gr.av.noCarga')}</b><br>` +
         String(e.message || e) + pista + '</div>';
     }
   }
@@ -256,7 +278,7 @@
   async function ejecutar() {
     if (!engine || corriendo) return;
     corriendo = true; $('btnRun').disabled = true;
-    estado('<span class="spinner"></span> ejecutando…');
+    estado(SPINNER + T('gr.est.ejecutando'));
     const t0 = performance.now();
     try {
       const bindings = await engine.queryBindings($('consulta').value, { sources: [store] });
@@ -265,12 +287,13 @@
       $('mFilas').textContent = fmt(filas.length);
       $('mTiempo').textContent = ms < 1000 ? Math.round(ms) + ' ms' : (ms/1000).toFixed(1) + ' s';
       pintar(filas);
-      estado('<span class="chip ok">listo</span>');
+      estadoChip('gr.est.ok', 'ok');
     } catch (e) {
+      ultimasFilas = null;
       $('mFilas').textContent = '—'; $('mTiempo').textContent = '—';
-      $('salida').innerHTML = '<div class="aviso err"><b>La consulta no se pudo ejecutar.</b><br>' +
+      $('salida').innerHTML = `<div class="aviso err"><b>${T('gr.av.consulta')}</b><br>` +
         String(e.message || e).replace(/</g,'&lt;') + '</div>';
-      estado('<span class="chip err">error</span>');
+      estadoChip('gr.est.error', 'err');
     } finally {
       corriendo = false; $('btnRun').disabled = false;
     }
@@ -288,8 +311,9 @@
   }
 
   function pintar(filas) {
+    ultimasFilas = filas;
     if (!filas.length) {
-      $('salida').innerHTML = '<div class="aviso">La consulta es válida pero no devolvió filas.</div>';
+      $('salida').innerHTML = `<div class="aviso">${T('gr.av.sinFilas')}</div>`;
       return;
     }
     const cols = [...filas[0].keys()].map(k => k.value);
@@ -303,7 +327,7 @@
         `<td class="${numericas.has(c)?'num':''}">${corto(f.get(c))}</td>`).join('') + '</tr>'
     ).join('');
     const extra = filas.length > 500
-      ? `<p class="sub" style="padding:.6rem 1.1rem">Mostrando las primeras 500 de ${fmt(filas.length)} filas.</p>` : '';
+      ? `<p class="sub" style="padding:.6rem 1.1rem">${T('gr.primeras', { total: fmt(filas.length) })}</p>` : '';
     $('salida').innerHTML =
       `<div class="tabla-env"><table><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div>${extra}`;
   }
@@ -311,6 +335,22 @@
   $('btnRun').onclick = ejecutar;
   $('consulta').addEventListener('keydown', e => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); ejecutar(); }
+  });
+
+  /* Cambio de idioma: se rehace lo que este script escribe. La consulta
+     del editor no se toca —puede ser la del usuario— y el resultado se
+     vuelve a pintar desde las filas que ya están en memoria, sin
+     consultar el grafo otra vez. Los nombres de columna son variables
+     SPARQL, así que se quedan como están. */
+  document.addEventListener('idiomacambiado', () => {
+    pintarEjemplos();
+    if (segCarga !== null) $('kCarga').textContent = T('gr.kpi.enSegundos', { seg: segCarga });
+    /* Si hay una consulta en vuelo, el estado visible es su spinner: se
+       repinta en el idioma nuevo en vez de restaurar el chip anterior,
+       que ya no describe lo que está pasando. */
+    if (corriendo) estado(SPINNER + T('gr.est.ejecutando'));
+    else if (claveEstado) estadoChip(claveEstado, claseChip);
+    if (ultimasFilas) pintar(ultimasFilas);
   });
 
   cargar();

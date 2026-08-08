@@ -1,8 +1,14 @@
-/* Barra de navegación, temas y modo claro/oscuro. Compartido por las 4 páginas. */
+/* Barra de navegación, temas, modo claro/oscuro e idioma. Compartido por las 4 páginas. */
 (function () {
+  /* i18n.js se carga antes que este script. El respaldo evita que la barra
+     desaparezca si alguna página se abriera sin él: se queda sin selector
+     de idioma, pero sigue funcionando. */
+  const I = window.I18N || { t: k => k, idioma: 'es', idiomas: [], set: () => {} };
+  const T = (k, v) => I.t(k, v);
+
   const TEMAS = [
-    { id:'escom',  nombre:'Azul',   muestra:'#123f8f' },
-    { id:'guinda', nombre:'Guinda', muestra:'#6f1d46' },
+    { id:'escom',  clave:'tema.escom',  muestra:'#123f8f' },
+    { id:'guinda', clave:'tema.guinda', muestra:'#6f1d46' },
   ];
   const K_TEMA = 'dwagua-tema', K_MODO = 'dwagua-modo';
   const leer = (k, d) => { try { return localStorage.getItem(k) || d; } catch (e) { return d; } };
@@ -20,39 +26,57 @@
     oscuro: svg('<path d="M20.5 14.3A8.5 8.5 0 1 1 9.7 3.5a6.8 6.8 0 0 0 10.8 10.8z"/>'),
     auto:   svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17" /><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor" stroke="none"/>'),
   };
-  const ETIQUETA = { claro:'Modo claro', oscuro:'Modo oscuro', auto:'Automático' };
+  const CLAVE_MODO = { claro:'modo.claro', oscuro:'modo.oscuro', auto:'modo.auto' };
 
   const raiz = document.documentElement;
-  function pintar() {
+  /* avisar = false cuando sólo se refresca la barra tras cambiar de idioma:
+     el tema no ha cambiado y no hay que hacer repintar a quien lo escucha. */
+  function pintar(avisar) {
     raiz.setAttribute('data-tema', tema);
     if (modo === 'auto') raiz.removeAttribute('data-modo');
     else raiz.setAttribute('data-modo', modo);
     document.querySelectorAll('.tema-btn').forEach(b =>
       b.setAttribute('aria-pressed', String(b.dataset.tema === tema)));
+    document.querySelectorAll('.idioma-btn').forEach(b =>
+      b.setAttribute('aria-pressed', String(b.dataset.idioma === I.idioma)));
     const b = document.querySelector('.modo-btn');
     if (b) {
       b.innerHTML = ICONO[modo];
-      b.title = ETIQUETA[modo] + ' — clic para cambiar';
+      b.title = T('modo.cambiar', { modo: T(CLAVE_MODO[modo]) });
       b.setAttribute('aria-label', b.title);
       b.dataset.modo = modo;
     }
-    document.dispatchEvent(new CustomEvent('temacambiado', { detail:{ tema, modo } }));
+    if (avisar !== false) {
+      document.dispatchEvent(new CustomEvent('temacambiado', { detail:{ tema, modo } }));
+    }
   }
   pintar();   // antes de renderizar, para que no parpadee
 
   const paginas = [
-    ['index.html',    'Panel'],
-    ['mapa.html',     'Mapa'],
-    ['grafo.html',    'Grafo de conocimiento'],
-    ['vecindad.html', 'Vecindad territorial'],
+    ['index.html',    'nav.index'],
+    ['mapa.html',     'nav.mapa'],
+    ['grafo.html',    'nav.grafo'],
+    ['vecindad.html', 'nav.vecindad'],
   ];
   const actual = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  const enlaces = paginas.map(([h, t]) =>
-    `<a href="${h}"${h.toLowerCase() === actual ? ' aria-current="page"' : ''}>${t}</a>`).join('');
 
-  document.querySelectorAll('[data-barra]').forEach(el => {
-    el.className = 'barra';
-    el.innerHTML = `
+  function construirBarra() {
+    const enlaces = paginas.map(([h, k]) =>
+      `<a href="${h}"${h.toLowerCase() === actual ? ' aria-current="page"' : ''}>${T(k)}</a>`).join('');
+
+    /* Un segmentado igual que el del tema: dos botones excluyentes con
+       aria-pressed. El nombre accesible es la propia etiqueta visible
+       ("ES"/"EN"); el atributo lang hace que se lea en su idioma. */
+    const idiomas = I.idiomas.map(l =>
+      `<button class="idioma-btn" type="button" data-idioma="${l.id}" lang="${l.id}"
+         title="${l.nombre}">${l.etiqueta}</button>`).join('');
+    const selectorIdioma = idiomas
+      ? `<div class="segmentado" role="group" aria-label="${T('barra.idioma')}">${idiomas}</div>`
+      : '';
+
+    document.querySelectorAll('[data-barra]').forEach(el => {
+      el.className = 'barra';
+      el.innerHTML = `
       <div class="barra-in">
         <div class="marca">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -61,41 +85,59 @@
             <path d="M9.2 14.2a2.8 2.8 0 0 0 2.8 2.8" stroke="var(--marca-700)"
                   stroke-width="1.5" stroke-linecap="round"/>
           </svg>
-          <span>Consumo de Agua CDMX
-            <small>Almacén de datos y grafo de conocimiento territorial</small>
+          <span>${T('barra.marca')}
+            <small>${T('barra.lema')}</small>
           </span>
         </div>
         <nav class="nav">${enlaces}</nav>
         <div class="temas">
-          <div class="segmentado" role="group" aria-label="Tema de color">
+          <div class="segmentado" role="group" aria-label="${T('barra.tema')}">
             ${TEMAS.map(t => `<button class="tema-btn" type="button" data-tema="${t.id}"
-               title="${t.nombre}"><i style="background:${t.muestra}"></i>${t.nombre}</button>`).join('')}
+               title="${T(t.clave)}"><i style="background:${t.muestra}"></i>${T(t.clave)}</button>`).join('')}
           </div>
+          ${selectorIdioma}
           <button class="modo-btn" type="button"></button>
         </div>
       </div>`;
-  });
+    });
+
+    document.querySelectorAll('.tema-btn').forEach(b =>
+      b.addEventListener('click', () => { tema = b.dataset.tema; guardar(K_TEMA, tema); pintar(); }));
+    document.querySelectorAll('.idioma-btn').forEach(b =>
+      b.addEventListener('click', () => I.set(b.dataset.idioma)));
+    const mb = document.querySelector('.modo-btn');
+    if (mb) mb.addEventListener('click', () => {
+      modo = modo === 'auto' ? 'claro' : modo === 'claro' ? 'oscuro' : 'auto';
+      guardar(K_MODO, modo); pintar();
+    });
+  }
+
+  function construirPie() {
+    document.querySelectorAll('[data-pie]').forEach(el => {
+      el.className = 'pie';
+      el.innerHTML = `
+      ${T('pie.datos')} <a href="https://datos.cdmx.gob.mx/dataset/consumo-agua" target="_blank" rel="noopener">SACMEX</a>,
+      ${T('pie.portal')} &middot;
+      ${T('pie.clima')} <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> (CC BY 4.0) &middot;
+      ${T('pie.mapabase')} &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL)<br>
+      ${T('pie.artefacto')} <em>Territorial Information Retrieval from Heterogeneous Open Data through the
+      Construction of a Data Warehouse for Water Management in Mexico City</em> &middot;
+      <a href="https://github.com/gabrielhuav/Data_Warehouse_static" target="_blank" rel="noopener">${T('pie.repo')}</a>`;
+    });
+  }
+
+  construirBarra();
+  construirPie();
 
   pintar();   // otra vez: ahora la barra ya existe y el boton puede recibir su icono
 
-  document.querySelectorAll('.tema-btn').forEach(b =>
-    b.addEventListener('click', () => { tema = b.dataset.tema; guardar(K_TEMA, tema); pintar(); }));
-  const mb = document.querySelector('.modo-btn');
-  if (mb) mb.addEventListener('click', () => {
-    modo = modo === 'auto' ? 'claro' : modo === 'claro' ? 'oscuro' : 'auto';
-    guardar(K_MODO, modo); pintar();
-  });
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (modo === 'auto') pintar(); });
 
-  document.querySelectorAll('[data-pie]').forEach(el => {
-    el.className = 'pie';
-    el.innerHTML = `
-      Datos: <a href="https://datos.cdmx.gob.mx/dataset/consumo-agua" target="_blank" rel="noopener">SACMEX</a>,
-      Portal de Datos Abiertos de la Ciudad de México (2019, bimestres 1–3) &middot;
-      Clima: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> (CC BY 4.0) &middot;
-      Mapa base: &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL)<br>
-      Artefacto de <em>Territorial Information Retrieval from Heterogeneous Open Data through the
-      Construction of a Data Warehouse for Water Management in Mexico City</em> &middot;
-      <a href="https://github.com/gabrielhuav/Data_Warehouse_static" target="_blank" rel="noopener">Repositorio</a>`;
+  /* La barra y el pie se generan aquí, así que se rehacen enteros al
+     cambiar de idioma; el tema y el modo se conservan tal como estaban. */
+  document.addEventListener('idiomacambiado', () => {
+    construirBarra();
+    construirPie();
+    pintar(false);
   });
 })();

@@ -26,14 +26,28 @@ SCRIPTS = {
     'index.html': ['assets/nav.js', 'assets/paginacion.js', 'assets/atipicos.js'],
     'mapa.html':  ['assets/nav.js', 'assets/enlace-vecindad.js'],
 }
-CABEZA = {'index.html': ['assets/tema-graficas.js'], 'mapa.html': []}
+# i18n.js va en el <head> y sin defer, delante de todo lo demás: fija el
+# idioma del documento antes del primer pintado y el resto de los scripts
+# lo dan por presente.
+CABEZA = {
+    'index.html': ['assets/i18n.js', 'assets/tema-graficas.js'],
+    'mapa.html':  ['assets/i18n.js'],
+}
+
+# tema-graficas.js envuelve Plotly.newPlot, así que no puede correr antes que
+# Plotly. Plotly va con defer y por tanto se ejecuta al terminar el análisis;
+# sin defer aquí, este módulo se ejecutaba en la cabecera, encontraba Plotly
+# indefinido, se rendía en su primera línea y no llegaba a envolver nada: las
+# gráficas nunca siguieron el tema. Los scripts diferidos se ejecutan en orden
+# de documento y este va detrás del de Plotly, así que diferirlo los ordena.
+DIFERIDOS = {'assets/tema-graficas.js'}
 
 
 def limpiar(h: str) -> str:
     """Retira todo lo que inyectaron corridas anteriores."""
     h = re.sub(re.escape(INI) + r'.*?' + re.escape(FIN) + r'\n?', '', h, flags=re.S)
     h = re.sub(r'[ \t]*<link rel="stylesheet" href="assets/(estilo|paginas)\.css">\n?', '', h)
-    h = re.sub(r'[ \t]*<script src="assets/[\w.-]+"></script>\n?', '', h)
+    h = re.sub(r'[ \t]*<script src="assets/[\w.-]+"( defer)?></script>\n?', '', h)
     h = re.sub(r'[ \t]*<header data-barra></header>\n?', '', h)
     h = re.sub(r'[ \t]*<footer data-pie></footer>\n?', '', h)
     h = re.sub(r'[ \t]*<!-- sistema de diseño compartido -->\n?', '', h)
@@ -87,7 +101,8 @@ def parchar(ruta: str, pagina: str) -> str:
     # hojas + scripts que deben cargar antes que el cuerpo
     cabeza = INI + '\n    ' + HOJAS
     for s in CABEZA[pagina]:
-        cabeza += f'\n    <script src="{s}"></script>'
+        d = ' defer' if s in DIFERIDOS else ''
+        cabeza += f'\n    <script src="{s}"{d}></script>'
     cabeza += '\n    ' + FIN
     if '</head>' not in h:
         return 'ERROR: no tiene </head>'

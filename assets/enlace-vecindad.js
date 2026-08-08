@@ -32,23 +32,26 @@
   }
 
   function agregar(popup) {
-    if (!popup || popup.querySelector('.ir-vecindad')) return;
+    if (!popup) return;
     var titulo = popup.querySelector('.popup-title');
     if (!titulo) return;
     var nombre = normalizar(titulo.textContent);
     if (!nombre) return;
 
-    var a = document.createElement('a');
-    a.className = 'ir-vecindad';
+    /* Si el enlace ya está se reutiliza: así el cambio de idioma sólo le
+       cambia el texto en vez de duplicarlo. */
+    var a = popup.querySelector('.ir-vecindad');
+    var nuevo = !a;
+    if (nuevo) { a = document.createElement('a'); a.className = 'ir-vecindad'; }
+
     if (esAlcaldia(nombre)) {
       a.href = 'vecindad.html?alcaldia=' + encodeURIComponent(sinAcentos(nombre));
-      a.innerHTML = 'Ver colonias y su vecindad &rarr;';
+      a.innerHTML = window.I18N.t('ev.alcaldia');
     } else {
       a.href = 'vecindad.html?colonia=' + encodeURIComponent(sinAcentos(nombre));
-      a.innerHTML = 'Ver sus colonias vecinas &rarr;';
+      a.innerHTML = window.I18N.t('ev.colonia');
     }
-    var cont = popup.querySelector('.leaflet-popup-content') || popup;
-    cont.appendChild(a);
+    if (nuevo) (popup.querySelector('.leaflet-popup-content') || popup).appendChild(a);
   }
 
   function revisar(nodo) {
@@ -66,4 +69,15 @@
 
   // por si ya hubiera uno abierto al cargar
   document.querySelectorAll('.leaflet-popup').forEach(agregar);
+
+  /* Al cambiar de idioma, mapa.html reescribe el contenido del globo con
+     setPopupContent y se lleva por delante este enlace, sin que eso pase
+     por el observador. Se vuelve a poner después: el setTimeout deja que
+     corran antes todos los suscriptores del evento, así no depende del
+     orden en que se registraron. */
+  document.addEventListener('idiomacambiado', function () {
+    setTimeout(function () {
+      document.querySelectorAll('.leaflet-popup').forEach(agregar);
+    }, 0);
+  });
 })();
