@@ -42,6 +42,14 @@ CABEZA = {
 # de documento y este va detrás del de Plotly, así que diferirlo los ordena.
 DIFERIDOS = {'assets/tema-graficas.js'}
 
+# Cada página precalienta sólo el origen que de verdad usa: el panel trae
+# Plotly de cdn.plot.ly y el mapa trae Leaflet de unpkg. Precalentar el otro
+# gasta un DNS + TLS para nada.
+PRECONNECT = {
+    'index.html': ['https://cdn.plot.ly'],
+    'mapa.html':  ['https://unpkg.com'],
+}
+
 
 def limpiar(h: str) -> str:
     """Retira todo lo que inyectaron corridas anteriores."""
@@ -78,12 +86,22 @@ def parchar(ruta: str, pagina: str) -> str:
                   '<link rel="preload" as="style" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" '
                   'onload="this.rel=\'stylesheet\'">\n    '
                   '<noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></noscript>')
+    # --- peso: bundle parcial de Plotly -----------------------------
+    # El panel sólo dibuja barras y dispersión. El bundle completo pesa
+    # 1379 KB comprimidos y arrastra mapas 3D, sankey, contornos y demás:
+    # Lighthouse reportaba ~1000 KiB de JavaScript sin usar y el bloqueo del
+    # hilo principal se disparaba. plotly-basic (347 KB) trae bar, pie y
+    # scatter, con escalas y barras de color incluidas, que es todo lo que
+    # usan las tres gráficas. La expresión no vuelve a casar una vez
+    # sustituida, así que reaplicar el script no encadena prefijos.
+    h = re.sub(r'(cdn\.plot\.ly/)plotly-(\d[\d.]*\.min\.js)', r'\1plotly-basic-\2', h)
+
     # los datos se piden en cuanto se puede, no al final del parseo
     if 'rel="preload" as="fetch"' not in h:
-        h = h.replace('</head>',
-            '    <link rel="preload" as="fetch" href="consumo.json" crossorigin>\n'
-            '    <link rel="preconnect" href="https://cdn.plot.ly">\n'
-            '    <link rel="preconnect" href="https://unpkg.com">\n</head>', 1)
+        pre = '    <link rel="preload" as="fetch" href="consumo.json" crossorigin>\n'
+        for origen in PRECONNECT[pagina]:
+            pre += f'    <link rel="preconnect" href="{origen}">\n'
+        h = h.replace('</head>', pre + '</head>', 1)
 
     # --- SEO: metadescripcion ---------------------------------------
     if 'name="description"' not in h:
