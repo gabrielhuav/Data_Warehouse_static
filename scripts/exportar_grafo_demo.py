@@ -4,8 +4,8 @@ exportar_grafo_demo.py -- Exports a browser-sized subset of the RDF knowledge
 graph, so that the SPARQL explorer of the static demonstration can run entirely
 on the client.
 
-The full materialisation of mapping.r2rml.ttl over the warehouse yields ~761,000
-triples, which is too large to parse in a browser. This script emits an
+The full materialisation of mapping.r2rml.ttl is too large to parse in a browser.
+This script emits an
 equivalent graph at a coarser grain:
 
   * every location, with its label, borough and WKT centroid  (1,553)

@@ -67,7 +67,8 @@ The container loads both CSV files, runs the ETL and exposes PostgreSQL on port
 `schema.ttl` supplies the consumption and climate Data Cube structures, the
 unit attribute for cubic metres, and an explicit ordinal rank for the four
 development-index concepts.
-Materialising it yields about 761,000 triples:
+The materialisation script reports the exact triple count for a configured
+warehouse instance:
 
 ```bash
 python scripts/materializar_grafo.py \
