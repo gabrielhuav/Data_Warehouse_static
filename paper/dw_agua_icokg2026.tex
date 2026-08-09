@@ -1,9 +1,21 @@
 \documentclass[runningheads]{llncs}
+% cmap must precede fontenc: fixes ToUnicode so fi/fl/ff can be copied,
+% searched and indexed (otherwise they extract as (cid:28) and break the
+% similarity check).
+\usepackage{cmap}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\input{glyphtounicode}
+\pdfgentounicode=1
 \usepackage[english]{babel}
 \usepackage{amsmath,amsfonts,amssymb}
 \usepackage{graphicx}
+% Mapa1.png y Mapa2.png viven en Imagenes/, pero se citan por su nombre a
+% secas: compilando desde esta carpeta LaTeX no las encontraba y las
+% sustituia por cajas vacias, lo que ademas anadia una pagina. Se buscan
+% primero en Imagenes/ y luego junto al .tex, asi funciona tanto con el
+% arbol actual como con un envio plano a la editorial.
+\graphicspath{{Imagenes/}{./}}
 \usepackage{subcaption}
 \usepackage{xcolor}
 \usepackage{booktabs}
@@ -38,15 +50,11 @@
 \hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue}
 \def\UrlBreaks{\do\/\do-\do_\do.}
 \emergencystretch=3em
-\linespread{0.985}\selectfont
+% interlineado: valor por defecto de LNCS
 % Colocacion de flotantes: evita paginas a medio llenar (Reviewer #4)
 \setcounter{topnumber}{3}\setcounter{bottomnumber}{2}\setcounter{totalnumber}{4}
 \renewcommand{\topfraction}{0.92}\renewcommand{\bottomfraction}{0.75}
 \renewcommand{\textfraction}{0.06}\renewcommand{\floatpagefraction}{0.80}
-\setlength{\textfloatsep}{9pt plus 2pt minus 2pt}
-\setlength{\intextsep}{9pt plus 2pt minus 2pt}
-\setlength{\abovecaptionskip}{4pt}
-\setlength{\belowcaptionskip}{2pt}
 % Line breaks in underscore identifiers (avoids margin overflow)
 \let\origunderscore\_
 \renewcommand{\_}{\origunderscore\allowbreak}
@@ -58,38 +66,44 @@
 \titlerunning{A Data Warehouse for Water Management in Mexico City}
 
 \author{%
-% PENDIENTE: ORCID de Uriel, Emilio y Clara.
-Eduardo Uriel Vel\'azquez Arrieta \and
-Omar Fernando Pulido Morales\orcidID{0009-0001-5698-987X} \and
-Emilio Garc\'ia L\'opez \and
-Clara Aide Hern\'andez Mart\'inez \and
-Gabriel Hurtado Avil\'es\orcidID{0009-0002-5686-1822}%
+Eduardo Uriel Vel\'azquez Arrieta\orcidID{\href{https://orcid.org/0009-0001-8745-2717}{0009-0001-8745-2717}} \and
+% ORCID enlazados a orcid.org. llncs mete \orcidID en modo matematico, asi que una X suelta saldria en
+% cursiva matematica y al copiarla del PDF da U+1D44B en vez de X: el ORCID
+% quedaria roto. \mathrm{X} la deja recta y copiable.
+Omar Fernando Pulido Morales\orcidID{\href{https://orcid.org/0009-0001-5698-987X}{0009-0001-5698-987\mathrm{X}}} \and
+Emilio Garc\'ia L\'opez\orcidID{\href{https://orcid.org/0009-0005-2550-0671}{0009-0005-2550-0671}} \and
+Clara Aide Hern\'andez Mart\'inez\orcidID{\href{https://orcid.org/0009-0008-0647-8458}{0009-0008-0647-8458}} \and
+Gabriel Hurtado Avil\'es\orcidID{\href{https://orcid.org/0009-0002-5686-1822}{0009-0002-5686-1822}}%
 }
 \authorrunning{E. U. Vel\'azquez Arrieta et al.}
-\institute{Instituto Polit\'ecnico Nacional, Mexico City, Mexico\\
+\institute{\icokg{Escuela Superior de C\'omputo (ESCOM),} Instituto Polit\'ecnico Nacional, Mexico City, Mexico\\
 \email{\{evelazqueza1900,opulidom2000,egarcial2001,chernandezm1903\}@alumno.ipn.mx}\\
-\email{ghurtadoa@ipn.mx}}
+\email{ghurtadoa@ipn.mx}\\
+% Correos personales, en el mismo orden de firma. Van en dos lineas: en una
+% sola, la linea se sale del margen 26pt.
+\email{velazquez.arrieta.uriel@gmail.com, pulido.morales.omar@gmail.com}\\
+\email{egarlo@hotmail.com, claraahm11@gmail.com, gabrielhuav@gmail.com}}
 
 \maketitle
 
 \begin{abstract}
-This work presents a data warehouse for the territorial information retrieval of water consumption in Mexico City (CDMX), built from heterogeneous open sources. The contribution lies in \icokg{three} methodological elements: an ETL process that consolidates official SACMEX data into a unified dimensional model, \icokg{a declarative R2RML mapping that republishes the resulting star schema as an RDF knowledge graph aligned with the RDF Data Cube and GeoSPARQL vocabularies, so that territorial retrieval can also be expressed as graph traversal,} and a deployment methodology that guarantees an accessible demonstration through a \icokg{static version published on GitHub Pages} and backed by an updated public repository. The prototype organizes the information in a dimensional model and exposes it through a retrieval interface with an interactive choropleth map; filters by year, bimester, borough (\emph{alcald\'ia}) and neighborhood (\emph{colonia}); and an exploratory module for detecting atypical consumption. The analysis reveals territorial and temporal consumption patterns, turning dispersed open data into queryable information for urban diagnosis, academic research, and citizen monitoring.
+This work presents a data warehouse for the territorial information retrieval of water consumption in Mexico City (CDMX), built from heterogeneous open sources. The contribution lies in \icokg{three} methodological elements: an ETL process that consolidates official SACMEX data into a unified dimensional model, \icokg{a declarative R2RML mapping that republishes the resulting star schema as an RDF knowledge graph whose Data Cube structure is validated against the vocabulary's integrity constraints, so that territorial retrieval can also be expressed as graph traversal,} and a deployment methodology that guarantees an accessible demonstration through a \icokg{static version published on GitHub Pages} and backed by an updated public repository. The prototype exposes the model through a retrieval interface with an interactive choropleth map, filters by year, bimester, borough (\emph{alcald\'ia}) and neighborhood (\emph{colonia}), and an exploratory module for atypical consumption, turning dispersed open data into queryable information for urban diagnosis, research and citizen monitoring.
 \end{abstract}
 
-\keywords{Data warehouse \and Information retrieval \and Open data \and ETL \and \icokg{Knowledge graph \and RDF Data Cube \and GeoSPARQL \and} Water consumption \and Mexico City \and Geospatial analysis}
+\keywords{Data warehouse \and Information retrieval \and Open data \and ETL \and \icokg{Knowledge graph \and RDF Data Cube \and} Water consumption \and Mexico City}
 
 \section{Introduction}
 
-Mexico City faces a water crisis characterized by aquifer overexploitation, leaks in the distribution network, and population growth that increases demand. Although open data on water consumption exist (SACMEX), they are in poorly accessible formats and without integrated query tools, which limits their use for evidence-based decision making.
+Mexico City faces a water crisis of aquifer overexploitation, network leaks and population growth. Open data on water consumption exist (SACMEX), but in poorly accessible formats and without query tools, which limits their use for evidence-based decision making.
 
-This work addresses the problem from two perspectives proper to information processing: the extraction of structured information from heterogeneous open sources through an ETL process, and the retrieval of that information through a parameterized query interface. The purpose is to transform dispersed datasets into a queryable dimensional repository that allows retrieving, filtering, and geospatially visualizing water consumption by neighborhood and borough, so that anyone can explore it.
+This work addresses the problem from two perspectives proper to information processing: the extraction of structured information from heterogeneous open sources through an ETL process, and the retrieval of that information through a parameterized query interface, transforming dispersed datasets into a queryable dimensional repository that anyone can filter and visualize geospatially by neighborhood and borough.
 
-The contribution of this work is twofold: (i) a reproducible ETL process to consolidate official open data into a dimensional data warehouse, and (ii) a continuous-deployment methodology that keeps a functional demonstration always accessible, combining a dynamic deployment connected to a database with a static version published in a public repository.
+The contribution of this work is \icokg{threefold}: (i) a reproducible ETL process to consolidate official open data into a dimensional data warehouse, \icokg{(ii) a declarative R2RML mapping that republishes it as a validated RDF knowledge graph,} and \icokg{(iii)} a continuous-deployment methodology that keeps a functional demonstration always accessible, combining a dynamic deployment connected to a database with a static version published in a public repository.
 
-The analysis of the 70,886 consolidated records reveals that the boroughs of Cuauht\'emoc and Miguel Hidalgo lead the total consumption (Table~\ref{tab:top5_alcaldias}), and that consumption varies across the available bimesters without a direct causal relationship with dry or rainy periods. \icokg{The system is designed for five kinds of use: citizens querying consumption in their own neighbourhood, public servants diagnosing territorial demand, researchers accessing structured data for statistical analysis, journalists producing data-driven reports, and civil organisations monitoring water management.} 
+The analysis of the 70,886 consolidated records reveals that the boroughs of Cuauht\'emoc and Miguel Hidalgo lead the total consumption (Table~\ref{tab:top5_alcaldias}), and that consumption varies across the available bimesters without a direct causal relationship with dry or rainy periods. \icokg{The system serves citizens querying their own neighbourhood, public servants diagnosing territorial demand, researchers, journalists and civil organisations monitoring water management.}
 
 
-The remainder of the article is organized as follows: Section~\ref{sec:edo} reviews related work; Section~\ref{sec:met} describes the methodology; Section~\ref{sec:res} presents the results and evaluation; and Section~\ref{sec:con} sets out the conclusions and future work.
+Section~\ref{sec:edo} reviews related work, Section~\ref{sec:met} describes the methodology, Section~\ref{sec:res} presents the results and Section~\ref{sec:con} the conclusions.
 
 \section{Related Work}
 \label{sec:edo}
@@ -100,7 +114,7 @@ Dimensional modeling and the star schema constitute the consolidated basis for t
 
 \subsection{Data Warehouses and Information Systems for Water Management}
 
-In the water domain, the most direct antecedent is that of Soares et al.~\cite{soares2019}, who implement a data warehouse with an ETL process to monitor water supply and consumption, integrating meter readings, reservoir volumes, and geographic location from management-application databases and heterogeneous files. Duque-M\'endez, Orozco-Alzate, and V\'elez~\cite{duque2014} develop a star schema with multidimensional analysis (OLAP) for historical hydro-climatological series, with emphasis on data-quality assessment. Abecker et al.~\cite{abecker2014} present a hybrid sensor-semantic architecture (the WatERP project) that combines a relational/PostGIS store with a triple store for integrated resource management. These systems, however, mostly start from operational data, SCADA, or proprietary sensor networks, and not from open government data.
+In the water domain, the most direct antecedent is that of Soares et al.~\cite{soares2019}, who implement a data warehouse with an ETL process to monitor water supply and consumption, integrating meter readings, reservoir volumes, and geographic location from management-application databases and heterogeneous files. Abecker et al.~\cite{abecker2014} present a hybrid sensor-semantic architecture (the WatERP project) that combines a relational/PostGIS store with a triple store for integrated resource management. These systems, however, mostly start from operational data, SCADA, or proprietary sensor networks, and not from open government data.
 
 \subsection{The Gap: ETL over Heterogeneous Open Data and Data Quality}
 
@@ -108,7 +122,7 @@ Integrating open government data into dimensional warehouses poses its own chall
 
 \subsection{Geospatial Information Retrieval and Visualization}
 
-Purves et al.~\cite{purves2018} offer a reference monograph on Geographic Information Retrieval (GIR) ---indexing, search, and spatial ranking--- that theoretically frames the territorial information-retrieval component of this work. On visualization, Han et al.~\cite{han2019} present an open-source web tool for exploring choropleth maps with automated class intervals and synchronous linking, a technique that directly supports our interactive choropleth visualization by borough.
+Purves et al.~\cite{purves2018} offer a reference monograph on Geographic Information Retrieval (GIR) ---indexing, search, and spatial ranking--- that theoretically frames the territorial information-retrieval component of this work.
 
 \begin{icokgblock}
 \subsection{Knowledge Graphs for Urban and Water Domains}
@@ -117,16 +131,14 @@ Republishing a relational warehouse as RDF is a mature practice with W3C
 standards for both ends. The RDF Data Cube vocabulary~\cite{datacube} models
 statistical observations over conformed dimensions, which is the same structure a
 star schema encodes; R2RML~\cite{r2rml} specifies the mapping declaratively, so
-the graph is derived rather than maintained by hand; and GeoSPARQL~1.1, whose
-motivations and compliance are documented by Car and Homburg~\cite{carhomburg2022}
-and benchmarked by Jovanovik et al.~\cite{jovanovik2021}, supplies the
-topological predicates that a flat territorial dimension cannot express. In the
+the graph is derived rather than maintained by hand; and GeoSPARQL~1.1, documented by Car and
+Homburg~\cite{carhomburg2022}, supplies the geometry model and the topological
+vocabulary that a flat territorial dimension cannot express. In the
 water and urban domains the direction is established: Roussey et
 al.~\cite{roussey2023} survey knowledge-graph technologies as the next frontier
-for food, agriculture and water; Papageorgiou et al.~
-manage industrial water-treatment knowledge as a graph;. What these works share is the premise this article adopts: the
-graph is valuable for interoperability and topological querying, not as a
-replacement for the analytical store.
+for food, agriculture and water. What these works share is the premise this
+article adopts: the graph is valuable for interoperability and topological
+querying, not as a replacement for the analytical store.
 \end{icokgblock}
 
 \subsection{Reproducibility and Deployment of Scientific Demonstrations}
@@ -135,80 +147,41 @@ Finally, Sandve et al.~\cite{sandve2013} formulate widely cited rules for comput
 
 \subsection{Positioning of the Contribution}
 
-Unlike existing water data warehouses ---which start from operational data, SCADA, or proprietary sensors~\cite{soares2019,duque2014,abecker2014}--- and recognizing that the integration of heterogeneous open data is a documented but unsolved problem in this domain~\cite{berro2015,vetro2016}, this work differs in three respects. First, an ETL process designed to consolidate official SACMEX open data into a dimensional star schema. Second, \icokg{the exposure of the information through parameterized queries and a choropleth geospatial visualization that enables territorial information retrieval~\cite{purves2018,han2019}, published as static artefacts that require no server}. Third, a continuous-deployment methodology accompanied by a reproducible static version that guarantees the indefinite verifiability of the system~\cite{sandve2013,hill2023}. This same approach of consolidating official open data was previously applied to the seismic-risk domain in Mexico~\cite{villa2026}, a direct methodological antecedent transferred here to the water domain. To the best of our review, no academic, peer-reviewed, and reproducible data warehouse built specifically over SACMEX/CDMX open data exists.
+Unlike existing water data warehouses ---which start from operational data, SCADA, or proprietary sensors~\cite{soares2019,abecker2014}--- and recognizing that the integration of heterogeneous open data is a documented but unsolved problem in this domain~\cite{berro2015,vetro2016}, this work differs in three respects. First, an ETL process designed to consolidate official SACMEX open data into a dimensional star schema. Second, \icokg{the exposure of the information through parameterized queries and a choropleth geospatial visualization that enables territorial information retrieval~\cite{purves2018}, published as static artefacts that require no server}. Third, a continuous-deployment methodology accompanied by a reproducible static version that guarantees the indefinite verifiability of the system~\cite{sandve2013,hill2023}. This same approach of consolidating official open data was previously applied to the seismic-risk domain in Mexico~\cite{villa2026}, a direct methodological antecedent transferred here to the water domain. To the best of our review, no academic, peer-reviewed, and reproducible data warehouse built specifically over SACMEX/CDMX open data exists.
 
 \section{Methodology}
 \label{sec:met}
 
 \subsection{General Architecture}
 
-The system follows a layered architecture: a data layer (PostgreSQL), a processing layer (ETL with Python and SQL), \icokg{a query layer of parameterized SQL and, over it, a declarative RDF projection}, and a presentation layer (HTML/CSS/JS frontend with Leaflet and Plotly). The warehouse implements a star schema with one fact table (\texttt{fact\_water\_consumption}) and three dimensions: \texttt{dim\_time} (year, bimester), \texttt{dim\_location} (borough, neighborhood, latitude, longitude), and \texttt{dim\_dev\_index} (development level).
+The system follows a layered architecture: a data layer (PostgreSQL), a processing layer (ETL with Python and SQL), \icokg{a query layer of parameterized SQL and, over it, a declarative RDF projection}, and a presentation layer (HTML/CSS/JS frontend with Leaflet and Plotly). The warehouse implements a star schema over \icokg{two fact tables ---\texttt{fact\_consumo\_agua}, the subject of this article, and \texttt{fact\_clima}, the climate series joined through the shared temporal dimension--- and three conformed dimensions: \texttt{dim\_tiempo} (date, year, bimester), \texttt{dim\_ubicacion} (borough, neighborhood, latitude, longitude) and \texttt{dim\_indice\_des} (development level). Identifiers are quoted verbatim from the published schema.}
 
 \subsection{ETL Consolidation Process}
 
-The first contribution of the work is the ETL process that consolidates the SACMEX open data into the dimensional warehouse. The complete detail of the process ---the SQL schema (DDL), the \texttt{loader.py} loading script, and the parameterized retrieval queries--- is documented in the project's public repository; this article presents only the architecture of the process (Fig.~\ref{fig:etl}).
+The first contribution of the work is the ETL process that consolidates the SACMEX open data into the dimensional warehouse. The complete detail of the process \icokg{---the DDL and the ETL scripts (\texttt{ddl/0\_schema.sql}, \texttt{etl/1\_copy.sql}, \texttt{etl/2\_dim.sql}, \texttt{etl/3\_fact.sql}) and the parameterized retrieval queries---} is documented in the project's public repository; this article presents only the architecture of the process.
 
-\begin{figure}[tbp]
-\centering
-\resizebox{0.96\textwidth}{!}{%
-\begin{tikzpicture}[
-    node distance=6mm and 9mm,
-    font=\footnotesize,
-    src/.style={draw, rounded corners, fill=blue!8, minimum height=9mm, minimum width=20mm, align=center},
-    proc/.style={draw, fill=gray!8, minimum height=9mm, minimum width=20mm, align=center},
-    store/.style={draw, cylinder, shape border rotate=90, aspect=0.25, fill=blue!12, minimum height=12mm, minimum width=16mm, align=center},
-    endpt/.style={draw, rounded corners, fill=green!8, minimum height=9mm, minimum width=18mm, align=center},
-    flow/.style={-{Stealth[length=2.2mm]}, thick}
-]
-\node[src] (csv) {Open data\\SACMEX (CSV)};
-\node[proc, right=of csv] (ext) {Extraction};
-\node[proc, right=of ext] (val) {Validation\\and cleaning};
-\node[store, right=of val] (stg) {Staging\\(COPY)};
-\node[proc, below=10mm of stg] (dim) {Populate\\dimensions};
-\node[store, left=of dim] (fact) {Fact table\\(star schema)};
-\node[endpt, left=of fact] (api) {Parameterized\\queries};
+The pipeline operates in four phases. (1) \textbf{Extraction}: reading the open SACMEX CSV files. (2) \textbf{Validation and cleaning}: discarding records with empty fields, inconsistent coordinates, or incompatible formats. (3) \textbf{Loading to staging and populating dimensions}: \texttt{COPY} of the data into temporary tables and extraction of the unique values into \icokg{\texttt{dim\_tiempo}, \texttt{dim\_ubicacion} and \texttt{dim\_indice\_des}}. (4) \textbf{Populating the fact tables}: a join between staging and dimensions \icokg{that populates \texttt{fact\_consumo\_agua} and \texttt{fact\_clima}}, finally dropping the staging tables. \icokg{The information thus consolidated becomes available for retrieval through the parameterized queries distributed with the archived release.}\footnote{SACMEX operates a proprietary platform integrating SCADA and multiple sources; it is distinguished from a reproducible academic work over open data such as this one.}
 
-\draw[flow] (csv) -- (ext);
-\draw[flow] (ext) -- (val);
-\draw[flow] (val) -- (stg);
-\draw[flow] (stg) -- (dim);
-\draw[flow] (dim) -- (fact);
-\draw[flow] (fact) -- (api);
-\end{tikzpicture}%
-}
-\caption{ETL process architecture: from SACMEX heterogeneous open data to the star schema \icokg{exposed through parameterized queries}.}
-\label{fig:etl}
-\end{figure}
-
-The pipeline operates in four phases. (1) \textbf{Extraction}: reading the open SACMEX CSV files. (2) \textbf{Validation and cleaning}: discarding records with empty fields, inconsistent coordinates, or incompatible formats. (3) \textbf{Loading to staging and populating dimensions}: \texttt{COPY} of the data into temporary tables and extraction of the unique values into \texttt{dim\_time}, \texttt{dim\_location}, and \texttt{dim\_dev\_index}. (4) \textbf{Populating the fact table}: a join between staging and dimensions to populate \texttt{fact\_water\_consumption} under the star schema, finally dropping the staging tables. \icokg{The information thus consolidated becomes available for retrieval through the parameterized queries distributed with the archived release.}\footnote{SACMEX operates a proprietary industrial-grade data platform (commercial technology introduced in 2021) that integrates SCADA and multiple sources; it is distinguished from a reproducible academic work over open data such as the present one.}
-
-
-This duality solves a recurring practical problem in academic prototypes ---that the demo stops working after evaluation--- and makes the work reproducible indefinitely.
 
 \subsection{Continuous Deployment Methodology}
 
-To guarantee that the demonstration remains available and reproducible without
-depending on the availability of a server, the system is published in two
-complementary modalities. The \textbf{dynamic deployment} keeps the complete
-architecture \icokg{over PostgreSQL} and serves parameterized queries and
-aggregations against the data warehouse; it was used to obtain the experimental
-results reported here, and its availability depends on the hosting service. The
-\textbf{static version} exports the consolidated data as \texttt{JSON} and
-\texttt{GeoJSON} files that the frontend consumes directly, so that querying,
-filtering, aggregation and visualization work on the client without an active
-backend. \icokg{This duality addresses the recurring practical problem that
-academic prototypes stop working shortly after
-evaluation~\cite{sandve2013,hill2023}.} The system is available at:
-
-\begin{itemize}\setlength{\itemsep}{1pt}
-    \item \textbf{Public repository:} \icokg{\url{https://github.com/gabrielhuav/Data_Warehouse_static}}
-    \item \textbf{Static demo (permanent, no backend required):} \icokg{\url{https://gabrielhuav.github.io/Data_Warehouse_static/}}
-    \item \textbf{Warehouse, preservation fork:} \icokg{\url{https://github.com/gabrielhuav/data_warehouse_cdmx}}
-\end{itemize}
+So that the demonstration survives without a server, the system is published in
+two modalities. The \textbf{dynamic deployment} keeps the complete architecture
+\icokg{over PostgreSQL}, serves parameterized queries and produced the results
+reported here. The \textbf{static version} exports the data as \texttt{JSON} and
+\texttt{GeoJSON} that the frontend consumes directly, so querying, filtering,
+aggregation and visualization run on the client.
+\icokg{The duality addresses the recurring problem that academic prototypes stop
+working shortly after evaluation~\cite{sandve2013,hill2023}.} The system is
+available at \icokg{\url{https://github.com/gabrielhuav/Data_Warehouse_static}
+(repository), \url{https://gabrielhuav.github.io/Data_Warehouse_static/} (static
+demo, no backend required) and
+\url{https://github.com/gabrielhuav/data_warehouse_cdmx} (warehouse,
+preservation fork)}.
 
 \begin{icokgblock}
 \noindent What is preserved deserves precision. The archived release
-(\url{https://github.com/gabrielhuav/Data_Warehouse_static/releases/tag/v1.3-icokg2026})
+(\url{https://github.com/gabrielhuav/Data_Warehouse_static/releases/tag/v1.5-icokg2026})
 distributes the warehouse itself ---schema, ETL, both source files and the
 container definition that rebuilds the database, vendored unmodified from its
 author's repository and additionally preserved as a fork--- together with the
@@ -223,7 +196,7 @@ frozen release; the repository head may evolve, the release will not.
 
 Three properties of the source bound every result reported below.
 \emph{Extent}: the resource is published as \emph{Consumo Agua (1er Semestre
-2019)} and contains exactly that ---the first three bimesters of 2019, one
+2019)}~\cite{sacmex} and contains exactly that ---the first three bimesters of 2019, one
 reading date each, in 71,102 records--- so the warehouse is not a multi-year
 series and the seasonal variation it supports is a within-semester comparison.
 The bound is declared by the publisher in the title of the resource, not chosen
@@ -276,15 +249,54 @@ wherever the map is reproduced.
 
 \subsection{Frontend and Geospatial Visualization}
 
-The frontend offers a dashboard with indicators, interactive charts (Plotly), and a choropleth map of the 16 boroughs (Leaflet + GeoJSON), where color represents the consumption level and each borough displays a popup with its detail.
+The frontend offers a dashboard with indicators, interactive charts (Plotly), and
+a choropleth map of the 16 boroughs (Leaflet + GeoJSON), where color represents
+the consumption level and each borough displays a popup with its detail
+(Fig.~\ref{fig:mapa-a}). \icokg{Alongside it, and over the same exported data, a
+second view resolves territorial adjacency by traversing the knowledge graph of
+Section~\ref{sec:kg} rather than by filtering the cube: selecting a neighbourhood
+returns its neighbours ranked by consumption, together with the
+\icokg{\texttt{agua:nearbyWithin1500m}} query that produced them (Fig.~\ref{fig:mapa-b}). The two
+views in Fig.~\ref{fig:mapa} are therefore the same warehouse read through its
+two representations, and both run in the browser with no server behind them.}
+
+\begin{figure}[tbp]
+\centering
+\begin{subfigure}[t]{0.485\textwidth}
+  \centering
+  \includegraphics[width=\linewidth,keepaspectratio]{Mapa1.png}
+  \caption{Choropleth retrieval by borough.\\
+  \icokg{\scriptsize\url{https://gabrielhuav.github.io/Data_Warehouse_static/mapa.html}}}
+  \label{fig:mapa-a}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.485\textwidth}
+  \centering
+  \includegraphics[width=\linewidth,keepaspectratio]{Mapa2.png}
+  \caption{\icokg{Adjacency as graph traversal, with the \texttt{agua:nearbyWithin1500m}
+  query and its result.\\
+  \scriptsize\url{https://gabrielhuav.github.io/Data_Warehouse_static/vecindad.html?alcaldia=AZCAPOTZALCO}}}
+  \label{fig:mapa-b}
+\end{subfigure}
+\caption{\icokg{The two retrieval modes of the static demonstration, both
+running in the browser without a server; each caption links to the exact view
+captured. Base map \copyright{} OpenStreetMap contributors (ODbL).}}
+\label{fig:mapa}
+\end{figure}
+
 
 \subsection{Implementation of the Atypical-Consumption Module}
 
-The current version replaces the idea of a traditional supervised prediction with an atypical-consumption detection module oriented to analytical retrieval. Instead of training a model with historical anomaly labels ---which are not available in the open source--- the system computes statistical indicators over the filtered records and detects zones whose consumption departs significantly from the aggregate behavior.
+The current version replaces supervised prediction with an exploratory detection
+module oriented to analytical retrieval: because the open source carries no
+anomaly labels, the system computes statistical indicators over the retrieved
+records instead of training a model. \icokg{The procedure runs unsupervised on the
+frontend. Consumption is aggregated by neighbourhood, each neighbourhood is
+compared against the others of its own borough, and the units with the largest
+deviation are ranked as candidates for inspection.} Flagging patterns that
+require later review keeps the practical value of the component without
+presenting a prediction as if it had been trained against ground truth.
 
-The procedure is implemented as an unsupervised analysis on the frontend: first, the records are grouped by borough, neighborhood, year, and bimester; then reference measures such as total consumption, average consumption, and relative dispersion are computed; finally, the zones with the largest deviation are ordered to show them as possible atypical consumption. This approach avoids presenting a prediction as if it were a model trained with reference data (ground truth), but keeps the practical value of the ML/analysis component by flagging patterns that require later inspection.
-
-Formally, for each territorial group $g$ an atypicality score $A_g$ is computed from the normalized deviation with respect to the mean of the filtered set:
+Formally, each neighbourhood $g$ receives an atypicality score:
 \begingroup
 \setlength{\abovedisplayskip}{3pt}
 \setlength{\belowdisplayskip}{3pt}
@@ -294,33 +306,19 @@ Formally, for each territorial group $g$ an atypicality score $A_g$ is computed 
 A_g = \left| \frac{x_g - \mu}{\sigma + \epsilon} \right|,
 \end{equation}
 \endgroup
-where $x_g$ represents the aggregate consumption of the group, $\mu$ is the average consumption of comparable groups, $\sigma$ is the standard deviation, and $\epsilon$ prevents division by zero. The groups with the largest $A_g$ are reported in the interface as zones with atypical consumption. Therefore, the module must be interpreted as exploratory anomaly detection and not as a causal prediction of consumption.
-
-\begin{figure}[tbp]
-\centering
-\includegraphics[width=0.72\linewidth,keepaspectratio]{Mapa.png}
-\caption{Interactive map of water consumption by borough in Mexico City.}
-\label{fig:mapa}
-\end{figure}
+where $x_g$ is the aggregate consumption of a neighbourhood, \icokg{$\mu$ and $\sigma$ are the mean and standard deviation of the neighbourhoods of its own borough ---the comparison set implemented in \texttt{assets/atipicos.js}---}, and $\epsilon$ prevents division by zero. The groups with the largest $A_g$ are reported in the interface as zones with atypical consumption.
 
 \begin{icokgblock}
-Two clarifications delimit what this module does. First, it is an
-\emph{exploratory} detector and not a causal predictor: a high $A_g$ states that
-a zone departs from its comparison set, not why. Second, it does \emph{not}
-perform real-time leak detection. No leak reports, work orders or network
-telemetry are integrated into the warehouse, and the evaluation reported in
-Section~\ref{sec:res} was obtained exclusively over synthetically injected
-perturbations. Its operational role is to prioritise zones for later inspection,
-which is a retrieval task ---ranking territorial units by a computed score--- and
-not a diagnostic one. Read that way the module is not an add-on but the ranking
-function of the retrieval framework: the choropleth answers ``how much is
-consumed here'', while the module answers ``which units should I look at
-first'', which is the ordering problem at the centre of information
-retrieval~\cite{purves2018}.
+Two clarifications delimit the module. It is \emph{exploratory} and not a causal
+predictor: a high $A_g$ states that a zone departs from its comparison set, not
+why. And it does \emph{not} perform real-time leak detection, since no leak
+reports, work orders or network telemetry are integrated into the warehouse and
+the evaluation in Section~\ref{sec:res} rests exclusively on synthetically
+injected perturbations. Its role is the ranking function of the retrieval
+framework: the choropleth answers ``how much is consumed here'', the module
+answers ``which units should I look at first'', which is the ordering problem at
+the centre of information retrieval~\cite{purves2018}.
 \end{icokgblock}
-
-\subsection{Technologies Used}
-
 
 \begin{icokgblock}
 \section{From the Dimensional Model to a Knowledge Graph}
@@ -338,8 +336,10 @@ vocabulary makes the resource linkable to other municipal datasets without prior
 agreement, the recurring obstacle in the open-data literature~\cite{vetro2016}; \emph{topological expressiveness}, since
 questions such as ``which neighbourhoods adjacent to an atypical zone also exceed
 the borough mean'' are natural traversals and awkward over a flat territorial
-dimension; and \emph{entity reconciliation}, since dereferenceable identifiers
-resolve the label heterogeneity our ETL absorbs through normalisation rules. We
+dimension; and \emph{entity reconciliation}, since \icokg{stable identifiers would resolve
+the label heterogeneity our ETL absorbs through normalisation rules ---the
+\texttt{w3id} namespace used here is not yet registered for dereferencing, which
+we leave as future work}. We
 therefore keep the star schema as the analytical store and derive the RDF layer
 by a declarative mapping, so that neither representation is maintained by hand.
 
@@ -351,55 +351,76 @@ fact row becomes a \texttt{qb:Observation}, the measures become
 \texttt{qb:MeasureProperty}, the time and location dimensions become
 \texttt{qb:DimensionProperty}, the neighbourhood entity becomes a
 \texttt{geo:Feature} with its \texttt{geo:asWKT} geometry, territorial adjacency
-becomes \texttt{agua:nearbyWithin1500m}, and the development index becomes a
-\texttt{skos:Concept} in an ordinal scheme. The mapping is expressed in
-R2RML~\cite{r2rml} and
-distributed complete with the archived release, where it declares seven triples
-maps covering both fact tables, the territorial dimension and its geometry, the
-derived adjacency, the temporal dimension and the development-index scheme.
-Materialising it over the warehouse yields \textbf{761{,}072 triples}: 71{,}067
-observations over 1{,}553 territorial features, their geometries, 181 temporal
-entities and the four members of the index scheme.
+becomes \icokg{the project-defined \texttt{agua:nearbyWithin1500m}}, and the development index becomes a
+\texttt{skos:Concept} \icokg{in a declared \texttt{skos:ConceptScheme} with an explicit numeric rank}. The mapping is expressed in R2RML~\cite{r2rml} and distributed with the archived
+release, declaring seven triples maps over both fact tables, the territorial
+dimension and its geometry, the derived adjacency, the temporal dimension and the
+index scheme. \icokg{A companion \texttt{schema.ttl} supplies what the mapping alone
+cannot: the \texttt{qb:DataStructureDefinition} for both cubes, its components
+typed as dimension, measure or attribute, the cubic-metre unit and the ordinal
+scale. Loaded together with the browser
+graph, it satisfies the Data Cube integrity constraints IC-1, IC-2, IC-3 and
+IC-11 with zero violations, reproducible with \texttt{scripts/validar\_datacube.py};
+the check is stated for the published demonstration graph, not for the complete
+materialisation. The alignment is therefore a validated property rather than a
+nominal reuse of two terms.}
+Materialising it yields \icokg{on the order of $7.6\times10^{5}$ triples} over
+71{,}067 observations, 1{,}553 territorial features, 181 temporal entities and
+the four index members.
 
 
 Two properties of the geospatial layer bound what the traversal can claim. The
 warehouse stores \emph{points}, not polygons: each neighbourhood is the centroid
 of its readings, recovered from coordinates present in the source export but
-dropped by the original loading schema. The substitution is defensible at the
-scale at which the interface operates ---the 22,930 distinct coordinates are
-never shared between two neighbourhoods, and the neighbourhood diameter has a
-median of 0.63~km--- although for the ten neighbourhoods above three kilometres
-the point is coarse. Consequently \texttt{agua:nearbyWithin1500m} expresses proximity
-within 1.5~km rather than shared boundaries; replacing the centroids with
-official polygons would make it topological in the strict sense, which is a
-substitution in the source data and not a change to the mapping.
+dropped by the original loading schema. The substitution is defensible at
+this scale ---the 22,930 distinct coordinates are never shared between two
+neighbourhoods and the median neighbourhood diameter is 0.63~km--- though coarse
+for the ten neighbourhoods above three kilometres. \icokg{Because centroids are points, no Simple Features boundary relation applies:
+\texttt{geo:sfTouches} is undefined for point/point geometries, and relabelling a
+distance threshold as a standardised topological predicate would misstate what
+the data support. The mapping therefore declares its own
+\texttt{agua:nearbyWithin1500m}, documented in \texttt{schema.ttl} as centroid
+proximity below 1.5~km. Official polygons would allow \texttt{geo:sfTouches} in
+the strict sense; that is a substitution in the source data, and we leave it as
+future work.}
 
 \subsection{Territorial Retrieval as Graph Traversal}
 \label{sec:sparql}
 
 The value of the layer is that it makes a class of questions expressible that the
-tabular interface does not naturally support. GeoSPARQL supplies the topological
-predicates~\cite{carhomburg2022,jovanovik2021}; the query below retrieves the
-neighbourhoods adjacent to a flagged zone together with their own consumption, a
+tabular interface does not naturally support. GeoSPARQL supplies the geometry
+model~\cite{carhomburg2022}; \icokg{Listing~\ref{lst:sparql} is
+the query the published interface executes verbatim}, retrieving the
+neighbourhoods near a selected zone together with their own consumption, a
 single traversal that the relational interface resolves only through an ad-hoc
-spatial self-join.
+spatial self-join, and which Fig.~\ref{fig:mapa-b} shows executing in the
+published demonstration.
 
-\begin{lstlisting}[caption={Territorial traversal over the knowledge graph.},label={lst:sparql}]
-SELECT ?neighbour (SUM(?c) AS ?consumption) WHERE {
-  agua:colonia/500 agua:nearbyWithin1500m ?n . ?n rdfs:label ?neighbour .
-  ?o agua:location ?n ; agua:totalConsumption ?c .
-} GROUP BY ?neighbour ORDER BY DESC(?consumption)
+\begin{lstlisting}[caption={\icokg{Territorial traversal over the knowledge graph, as executed by \texttt{vecindad.html}.}},label={lst:sparql}]
+PREFIX agua: <https://w3id.org/cdmx/agua/>
+PREFIX col:  <https://w3id.org/cdmx/agua/colonia/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?vecina ?alcaldia (ROUND(SUM(?c)) AS ?consumo) WHERE {
+  col:465 agua:nearbyWithin1500m ?v .
+  ?v rdfs:label ?vecina ; agua:borough ?alcaldiaIri .
+  ?alcaldiaIri rdfs:label ?alcaldia .
+  ?o agua:location ?v ; agua:totalConsumption ?c .
+} GROUP BY ?vecina ?alcaldia ORDER BY DESC(?consumo)
 \end{lstlisting}
 
 That the graph is queryable, and not merely declarable, is shown without any
-server: the static deployment ships a browser-sized subset ---140,499 triples
-with a SPARQL~1.1 engine running on the client, so a
-reader can edit a query and read the answer without installing a triple store.
-The two representations agree where they overlap: aggregating consumption by
-bimester through SPARQL, joining consumption and climate on their shared temporal
-dimension, returns the same totals the reproduction script obtains in SQL over
-the source files. The graph is a projection of the warehouse, not a second
-version of it.
+server: the static deployment ships a browser-sized subset of \icokg{140,499} triples
+with a SPARQL~1.1 engine \icokg{vendored in the release itself, so the
+demonstration depends on no external service}. \icokg{The subset is an aggregate, not a slice: its observations live at the
+neighbourhood-period grain in a separate \texttt{agua:aggobs/} namespace under
+\texttt{agua:consumoCDMXDemo}, linked to the complete dataset through PROV-O.
+Distinct identities avoid the contradictory RDF that reusing an IRI across grains
+would produce if the graphs were merged; the price is that a query written
+against the subset is not guaranteed to run unchanged against the full
+materialisation.} The two
+representations agree where they overlap: aggregating consumption by bimester
+through SPARQL returns the same totals the reproduction script obtains in SQL.
 \end{icokgblock}
 
 \section{Results and Evaluation}
@@ -417,10 +438,10 @@ The ETL process consolidated the water-consumption information of Mexico City in
 \hline
 \textbf{Table} & \textbf{Records} \\
 \hline
-fact\_water\_consumption & 70,886 \\
-dim\_location & 1,553 \\
-dim\_time & 181 \\
-dim\_dev\_index & 4 \\
+\icokg{fact\_consumo\_agua} & 70,886 \\
+\icokg{dim\_ubicacion} & 1,553 \\
+\icokg{dim\_tiempo} & 181 \\
+\icokg{dim\_indice\_des} & 4 \\
 \hline
 \end{tabular}
 \end{table}
@@ -432,7 +453,7 @@ The analysis of the 70,886 consolidated records reveals the following consumptio
 \begin{itemize}
     \item \textbf{Territorial concentration:} The boroughs with the highest total consumption are Cuauht\'emoc and Miguel Hidalgo, followed by Benito Ju\'arez and Gustavo A. Madero (Table~\ref{tab:top5_alcaldias}).
     \item \textbf{Temporal distribution:} Consumption shows variations across the bimesters available in the warehouse. In the aggregated query by bimester, the highest total consumption was observed in bimester 2, followed by bimester 3 and bimester 1. Therefore, no direct causal relationship with dry or rainy periods is established without integrating additional climatic variables.
-    \item \textbf{Relationship with the development index:} Neighborhoods with a High development index show a higher average consumption than those with a Low index. This is a descriptive observation over the warehouse; attributing it to a socioeconomic factor would require an external development-index source and is therefore left as future work rather than claimed as a causal relationship.
+    \item \textbf{Relationship with the development index:} Neighborhoods with a High development index show a higher average consumption than those with a Low index, a descriptive association discussed in Section~\ref{sec:con}.
 \end{itemize}
 
 \begin{table}[tbp]
@@ -453,58 +474,62 @@ Gustavo A. Madero & 13\,480\,100.57 \\
 \end{table}
 
 
-The consistency of the reported volumes was verified directly on the original data warehouse. The fact table contains 70,886 records, while the dimensions contain 1,553 locations, 181 time records, and 4 development-index levels. In particular, the \texttt{dim\_time} dimension does not represent only year--bimester combinations, but complete dates with derived attributes (\texttt{date}, \texttt{year}, \texttt{month}, \texttt{day}, and \texttt{bimester}), so the 181 records correspond to distinct dates present in the source.
-
-The interface dynamically generates the list of neighborhoods with the highest total consumption according to the filters selected by the user.
-
 
 \subsection{Quantitative Evaluation of the Atypical-Consumption Module}
 
-Although the module operates in an unsupervised manner in production ---the open source provides no anomaly labels--- its performance was evaluated through a controlled and reproducible protocol with injected anomalies acting as ground truth. Over a synthetic set with the structure of the warehouse ($N\approx11{,}460$ records from 16 boroughs), 3\% of labeled anomalies were injected (70\% high spikes, 30\% drops) and three detectors were compared: the $A_g$ z-score of this work (threshold $A_g>3$), Isolation Forest, and LOF, using as features the log-scaled consumption and its ratio to the neighborhood mean. Table~\ref{tab:eval_ml} reports precision, recall, F1, and the areas under the ROC and precision--recall curves.
+With no anomaly labels in the open source, the module is evaluated against
+injected ground truth. \icokg{The protocol scores \emph{the deployed
+function itself}, not a proxy: consumption is aggregated by neighbourhood, $\mu$
+and $\sigma$ are computed over the neighbourhoods of each borough, and $A_g$
+ranks them, which is exactly what \texttt{assets/atipicos.js} computes. The
+synthetic set reproduces the structure of the warehouse ---1,553
+borough--neighbourhood pairs over three bimesters--- with 47 injected anomalies
+per run, and the experiment is repeated over 20 seeds. The three detectors are
+compared at equalised operating points, each emitting as many alerts as there are
+injected anomalies, so precision, recall and F1 coincide by construction and the
+areas under the curves characterise the ranking independently of any threshold
+(Table~\ref{tab:eval_ml}).}
 
 \begin{table}[tbp]
 \centering
-\caption{\icokg{Evaluation of the atypical-consumption detection module on injected anomalies (synthetic ground truth; $N=11{,}460$, 3\,\% anomalies, seed~42, scikit-learn~1.7). Produced by \texttt{evaluacion-ml/eval\_anomalias.py} in the archived release; the figures are exactly what that script emits.}}
+\caption{\icokg{Detection of injected anomalies, mean $\pm$ standard deviation over 20 seeds at equalised operating points. Reproducible with \texttt{evaluacion-ml/eval\_anomalias.py}, a script reconstructed for this artefact.}}
 \label{tab:eval_ml}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{|l|c|c|c|c|c|}
+\begin{tabular}{@{}lccc@{}}
 \hline
-\textbf{Method} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{ROC-AUC} & \textbf{PR-AUC} \\
+\textbf{Method} & \textbf{P\,=\,R\,=\,F1} & \textbf{ROC-AUC} & \textbf{PR-AUC} \\
 \hline
-z-score $A_g$ (this work) & 0.914 & 0.677 & 0.778 & 0.983 & 0.836 \\
+$A_g$ (deployed) & $0.581\pm0.040$ & $0.966\pm0.013$ & $0.677\pm0.047$ \\
+Isolation Forest & $0.650\pm0.053$ & $0.971\pm0.013$ & $0.728\pm0.058$ \\
+LOF & $0.493\pm0.075$ & $0.846\pm0.036$ & $0.464\pm0.075$ \\
 \hline
-Isolation Forest & 0.963 & 0.983 & 0.973 & 1.000 & 0.999 \\
-\hline
-LOF & 0.330 & 0.084 & 0.134 & 0.583 & 0.102 \\
-\hline
-\end{tabular}%
-}
+\end{tabular}
 \end{table}
 
-\icokg{The z-score favours precision over recall: it flags few false positives (0.91) but recovers two thirds of the injected anomalies (0.68), detecting extreme spikes reliably while its fixed threshold misses part of the drops. The asymmetry follows from the shape of the data rather than from the statistic: consumption is bounded below by zero, so an injected drop produces a smaller absolute deviation than a spike of the same relative magnitude, and a symmetric threshold captures the spikes while leaving part of the drops below the cut. Isolation Forest offers the best trade-off (F1 $=0.97$), while LOF proves poorly suited to this type of global-magnitude anomaly (F1 $=0.13$), since it looks for locally sparse neighbourhoods whereas the injected perturbations are departures in global magnitude. These results support the z-score as a conservative exploratory filter, one that ranks a short list a utility can afford to inspect, and point to Isolation Forest as the natural improvement.}
+\icokg{The deployed statistic is competitive with the strongest baseline: its
+ROC-AUC of 0.966 lies within one standard deviation of the 0.971 of Isolation
+Forest, and it recovers 58\,\% of the injected anomalies against 65\,\%. That
+0.069 difference is modest relative to the combined between-seed variability,
+although Isolation Forest remains consistently superior at the evaluated
+operating point. LOF is clearly worse (0.846), since
+it looks for locally sparse neighbourhoods whereas the injected perturbations are
+departures in global magnitude. An interpretable borough-relative z-score therefore
+loses little ranking quality against an ensemble method a municipal analyst could
+not inspect, which supports $A_g$ as a conservative exploratory filter, one that ranks a short list a utility can afford to inspect, and point to Isolation Forest as the natural improvement.}
 
-\icokg{Three limitations of the protocol must be stated. The features used are aligned with the mechanism by which the anomalies were injected, which inflates separability and explains the near-perfect areas under the curve; the figures are an upper bound, not expected field performance. The thresholds were not equalised across methods, so a comparison at a single operating point favours the methods whose threshold was chosen. And none of this constitutes evidence about real-time leak detection, for which the system is not designed and for which no labelled data were available.}
-
-\textbf{Validity of the protocol.} These metrics do not represent performance against real leaks or observed anomalies, but rather the ability of each method to recover injected synthetic anomalies under a controlled protocol. This decision is due to the fact that the open source does not provide real anomaly labels. Therefore, the results should be interpreted as a reproducible evaluation of sensitivity to known perturbations, not as a definitive operational validation.
-
-The z-score threshold was set at $A_g>3$, following the usual statistical criterion for extreme values. For Isolation Forest, $s>0.60$ was used, and for LOF, $s>1.5$, criteria defined before the comparison. In future work, the complete precision--recall curve will be reported and the thresholds will be tuned through validation with labeled data, when available.
+\icokg{Two limitations remain. The perturbations are synthetic and their magnitude
+is chosen, so the figures measure sensitivity to known deviations rather than
+field performance against real leaks, for which the system is not designed and no
+labelled data exist. And the comparison rests on a single injection model; a
+different anomaly shape could reorder the methods.}
 
 \subsection{Performance Metrics}
 
-\icokg{Frontend performance was measured with Lighthouse~13.4.1 against the
-permanent static deployment, which is the version that remains available. On
-emulated desktop the first contentful paint is 0.2~s, the largest contentful
-paint 0.3~s, the speed index 0.6~s and the total blocking time 200~ms, for a
-performance score of 89; on emulated mobile over throttled 4G they are 1.1~s,
-3.7~s, 1.6~s and 530~ms, scoring 76. Accessibility, best practices and
-search-engine optimisation score 100 on both profiles. Reaching these values
-required deferring the third-party plotting and mapping libraries, which were
-originally loaded synchronously in the document head and delayed the first paint
-by 2.8~s on desktop and 9.2~s on mobile. The remaining bound is structural: the
-static version downloads the full 3.9~MB export and filters and aggregates on
-the client, so what a server would compute once is computed by each visitor, and
-the largest contentful paint on mobile reflects that transfer. That is the price
-of removing the server dependency.}
+\icokg{Lighthouse~13.4.1, run against the permanent static deployment, scores 89
+on emulated desktop (first contentful paint 0.2~s, largest 0.3~s, total blocking
+time 200~ms) and 76 on emulated mobile over throttled 4G; accessibility, best
+practices and SEO score 100 on both. The remaining bound is structural: the
+static version downloads the full 3.9~MB export and aggregates on the client, so
+what a server computes once is computed by each visitor.}
 
 
 \subsubsection*{Query Performance over the Total Data Volume.}
@@ -514,13 +539,13 @@ Frontend metrics do not characterise the retrieval layer, so four analytical
 workloads were timed directly against the warehouse over all 70,886 fact rows: a
 paginated retrieval, a full-scan aggregation by borough, a full-scan aggregation
 by neighbourhood and bimester ---the heaviest query the dashboard issues--- and a
-top-$N$ ranking. Each ran 200 times after ten warm-up calls on twelve logical
-cores with 32~GB of RAM and PostgreSQL~16.14 in a container, which is what makes
-the reported percentile meaningful, unlike the ten executions of a single
-\icokg{workload} reported in the submitted version. These are SQL latencies measured at
+top-$N$ ranking. Each ran 200 times after ten warm-up calls on twelve logical cores with 32~GB of
+RAM and PostgreSQL~16.14 in a container, which is what makes the reported
+percentile meaningful. These are SQL latencies measured at
 the database, excluding serialisation and transport.
 
-The profile is the expected one for a star schema of this size: the three
+The profile, reported in Table~\ref{tab:api_perf}, is the expected one for a
+star schema of this size: the three
 workloads that resolve through the dimensions stay near 25~ms while scanning the
 full fact table, whereas the aggregation by neighbourhood and bimester costs four
 times more because it groups over 1,553 locations rather than sixteen. The
@@ -549,28 +574,21 @@ Top-10 neighbourhoods with ordering        &  23.1 &  23.6 & 200 \\
 
 \subsection{Functional Tests}
 
-\icokg{The operation of the ETL processes, the persistence in PostgreSQL, the parameterized queries and the information retrieval was verified.} The tests included queries parameterized by year, bimester, borough, and neighborhood; aggregated retrieval (total and average consumption by neighborhood); generation of JSON responses; geospatial retrieval for visualization; and pagination with configurable limits. All modules produced results consistent with the expected structure.
-
-\subsection{Information-Retrieval Capability}
-
-The dimensional model allows retrieving territorial information through combined filters of time, location, and development index, executing analytical queries over 70,886 records without directly accessing the original sources. The supported operations include querying consumption by neighborhood and by borough, temporal aggregation by year and bimester, coordinate retrieval, geospatial exploration, and ordering by total consumption (top 10 neighborhoods).
+\icokg{The operation of the ETL processes, the persistence in PostgreSQL, the parameterized queries and the information retrieval was verified.} The tests included queries parameterized by year, bimester, borough, and neighborhood; aggregated retrieval (total and average consumption by neighborhood); generation of JSON responses; geospatial retrieval for visualization; and pagination with configurable limits. All modules produced results consistent with the expected structure. The dimensional model thus retrieves territorial information through combined filters of time, location and development index over the 70,886 records, supporting consumption queries by neighborhood and borough, temporal aggregation, coordinate retrieval, geospatial exploration and ordering by total consumption.
 
 \begin{icokgblock}
 \section{Discussion}
 \label{sec:disc}
 
 Against the closest antecedents the contribution is one of \emph{provenance and
-preservation} rather than of scale. Soares et al.~\cite{soares2019},
-Duque-M\'endez et al.~\cite{duque2014} and Abecker et al.~\cite{abecker2014} all
-begin from data an organisation already controls ---operational readings, curated
-series, a sensor network. This work begins from a public export with no schema,
-no versioning and no documented update cadence, which moves the difficulty from
-modelling to consolidation and is why the cleaning criteria and their yield are
-reported explicitly rather than assumed. The second difference is durability:
-those systems depend on a running service, whereas here the interface, the graph
-and the data are preserved as static artefacts any reader can re-execute,
-addressing the recurring problem that academic prototypes stop working shortly
-after evaluation~\cite{sandve2013,hill2023}.
+preservation} rather than of scale. Soares et al.~\cite{soares2019} and Abecker
+et al.~\cite{abecker2014} begin from data an organisation already controls; this
+work begins from a public export with no schema, versioning or update cadence,
+which moves the difficulty from modelling to consolidation and is why the
+cleaning criteria and their yield are reported explicitly. The second difference
+is durability: those systems depend on a running service, whereas here interface,
+graph and data are preserved as static artefacts any reader can
+re-execute~\cite{sandve2013,hill2023}.
 
 The practical implication is a caution about how the totals should be read. The
 boroughs that consume most are not those that consume most per inhabitant:
@@ -590,9 +608,9 @@ per-account average, also stored, is the appropriate measure.
 
 A data warehouse was presented for the territorial information retrieval of water consumption in Mexico City, built from open sources through a reproducible ETL process and published with a continuous-deployment methodology that guarantees a permanent functional demonstration. The solution consolidated 70,886 consumption records and 1,553 locations across the 16 boroughs into a dimensional star schema on PostgreSQL.
 
-The findings reveal that water consumption in Mexico City is concentrated in the boroughs of Cuauht\'emoc and Miguel Hidalgo (Table~\ref{tab:top5_alcaldias}), and that it varies across the available bimesters without establishing in this work a causal relationship with dry or rainy periods. These results show that the system not only consolidates data, but also allows extracting knowledge useful for water management.
+The findings reveal that water consumption in Mexico City is concentrated in the boroughs of Cuauht\'emoc and Miguel Hidalgo (Table~\ref{tab:top5_alcaldias}), and that it varies across the available bimesters without establishing in this work a causal relationship with dry or rainy periods.
 
-The two central contributions ---the consolidation ETL and the always-accessible demo methodology (dynamic deployment + reproducible static version)--- constitute a replicable method for bringing heterogeneous official open data to queryable and verifiable territorial information.
+\icokg{The three central contributions ---the consolidation ETL, the validated graph layer derived from it, and the always-accessible demo methodology--- constitute} a replicable method for bringing heterogeneous official open data to queryable and verifiable territorial information.
 
 \begin{icokgblock}
 \subsection{Threats to Validity and Limitations}
@@ -605,7 +623,7 @@ The second concerns the anomaly module, whose evaluation uses synthetic
 perturbations aligned with the detectors; its figures are an upper bound and say
 nothing about real leaks. The third is geometric: neighbourhoods are represented
 by centroids rather than polygons, so the adjacency projected as
-\texttt{agua:nearbyWithin1500m} is proximity within 1.5~km and not shared boundaries. The
+\icokg{\texttt{agua:nearbyWithin1500m}} is proximity within 1.5~km and not shared boundaries. The
 fourth is descriptive: the association between development index and consumption
 is an observation over the warehouse, and attributing it to a socioeconomic
 mechanism would require an external source the warehouse does not
@@ -616,36 +634,28 @@ integrate.
 The most immediate line is to materialise the knowledge graph into a persistent
 triple store with a public SPARQL endpoint, and to replace the centroid-based
 adjacency with official neighbourhood polygons, which would make the topological
-predicates exact rather than approximate. Aligning the territorial identifiers
-with external authorities would let the resource be joined with other municipal
-datasets without prior schema agreement, which is the interoperability argument
-that motivates the graph layer. On the retrieval side, the anomaly module should
-be re-evaluated when labelled leak data exist, reporting complete
-precision--recall curves instead of a single operating point, with Isolation
-Forest as the candidate production detector. Finally, the method transfers to
-other open urban-data domains ---mobility, air quality and seismic risk--- where
-the same combination of dispersed official files and absent query tooling
-recurs.
+predicates exact. Aligning the territorial identifiers with external authorities
+would let the resource be joined with other municipal datasets without prior
+schema agreement, which is the interoperability argument that motivates the graph
+layer. The anomaly module should be re-evaluated when labelled leak data exist,
+reporting complete precision--recall curves instead of a single operating point.
+Finally, the method transfers to other open urban-data domains ---mobility, air
+quality and seismic risk--- where the same combination of dispersed official
+files and absent query tooling recurs.
 \end{icokgblock}
 
 \begin{icokgblock}
 \section*{Declaration on the Use of Generative AI}
 
-The authors used a generative AI assistant under their direction during the
-preparation of this camera-ready version. Its scope was language editing and
-\LaTeX{} formatting; drafting passages the authors then revised and approved,
-principally the statements of scope, provenance and attribution added for the
-reviewers; writing the auxiliary scripts distributed with the artefact, the R2RML
-mapping and the SQL restoring the coordinates; and cross-checking the manuscript
-against the published data, which is how several inconsistencies with an earlier
-draft were located. The research questions, the dimensional design, the ETL, the
-data collection, the experiments and the interpretation are the authors' own
-work. No figure reported here originates with the assistant: every quantity was
-recomputed from the two published source files and independently checked, and the
-scripts that perform that recomputation are distributed with the release. The
-authors verified every cited reference against its original source, confirm that
-no text was reproduced from third-party works, and take full responsibility for
-the content.
+The authors used a generative AI assistant, under their direction, for language
+editing, \LaTeX{} formatting, drafting text subsequently revised and approved by
+the authors, and writing the auxiliary scripts distributed with the artefact. The
+research questions, the dimensional design, the ETL, the data collection, the
+experiments and the interpretation of the results are the authors' own work.
+Every reported quantity was recomputed from the two published source files and
+verified by the authors, and the scripts that perform that recomputation are
+distributed with the release. The authors take full responsibility for the
+content.
 \end{icokgblock}
 
 \section*{Disclosure of Interests}
@@ -656,15 +666,13 @@ The authors declare that they have no conflicts of interest relevant to the cont
 
 \begingroup\footnotesize\setlength{\parskip}{0pt}
 \begin{thebibliography}{99}
-\setlength{\itemsep}{-1pt}
+\setlength{\itemsep}{0pt}
 
 \bibitem{kimball} Kimball, R., Ross, M.: The Data Warehouse Toolkit: The Definitive Guide to Dimensional Modeling. 3rd edn. Wiley, Indianapolis (2013). ISBN 9781118530801
 
 \bibitem{vassiliadis2009} Vassiliadis, P.: A Survey of Extract--Transform--Load Technology. International Journal of Data Warehousing and Mining \textbf{5}(3), 1--27 (2009). \url{https://doi.org/10.4018/jdwm.2009070101}
 
 \bibitem{soares2019} Soares, J., Leite, P., Teixeira, P., Lopes, N., Silva, J.P.: Data Warehouse for the Monitoring and Analysis of Water Supply and Consumption. In: Ramos, I., Quaresma, R., Resende da Silva, P., Oliveira, T. (eds.) Information Systems for Industry 4.0. Springer, Cham (2019). \url{https://doi.org/10.1007/978-3-030-14850-8_1}
-
-\bibitem{duque2014} Duque-M\'endez, N.D., Orozco-Alzate, M., V\'elez, J.J.: Hydro-meteorological data analysis using OLAP techniques. DYNA \textbf{81}(185), 168--175 (2014). ISSN 0012-7353
 
 \bibitem{abecker2014} Abecker, A., Brauer, T., Magoutas, B., Mentzas, G., Papageorgiou, N., Quenzer, M.: A Sensor and Semantic Data Warehouse for Integrated Water Resource Management. EnviroInfo 2014. BIS-Verlag, Oldenburg (2014)
 
@@ -674,25 +682,21 @@ The authors declare that they have no conflicts of interest relevant to the cont
 
 \bibitem{purves2018} Purves, R.S., Clough, P., Jones, C.B., Hall, M.H., Murdock, V.: Geographic Information Retrieval. Foundations and Trends in Information Retrieval \textbf{12}(2--3), 164--318 (2018). \url{https://doi.org/10.1561/1500000034}
 
-\bibitem{han2019} Han, S.Y., Rey, S., Knaap, E., Kang, W., Wolf, L.: Adaptive Choropleth Mapper. ISPRS International Journal of Geo-Information \textbf{8}(11), 509 (2019). \url{https://doi.org/10.3390/ijgi8110509}
-
 \bibitem{sandve2013} Sandve, G.K., Nekrutenko, A., Taylor, J., Hovig, E.: Ten Simple Rules for Reproducible Computational Research. PLoS Computational Biology \textbf{9}(10), e1003285 (2013). \url{https://doi.org/10.1371/journal.pcbi.1003285}
 
 \bibitem{hill2023} Hill, D., Dunham, C., Larsen, D.A., Collins, M.: Operationalizing an open-source dashboard for wastewater-based surveillance. MethodsX \textbf{11}, 102299 (2023). \url{https://doi.org/10.1016/j.mex.2023.102299}
 
 \bibitem{villa2026} \icokg{Villa Vargas, J.M., Hurtado Avil\'es, G., Climent Hern\'andez, J.A.: Cuando M\'exico tiembla: la historia contada por los datos. AZCATL Revista de Divulgaci\'on en Ciencias, Ingenier\'ia e Innovaci\'on \textbf{4}(6), 28--33 (2026). \url{https://doi.org/10.24275/AZC2026E1004}}
 
-\bibitem{sacmex} SACMEX: Consumo de agua. \icokg{Resource \emph{Consumo Agua (1er Semestre 2019)}, CSV. Portal de Datos Abiertos de la Ciudad de M\'exico, Agencia Digital de Innovaci\'on P\'ublica. Dataset last updated 7 July 2023; resource last updated 2 February 2023. \url{https://datos.cdmx.gob.mx/dataset/consumo-agua}. Accessed May 2026; archived at the Internet Archive Wayback Machine}
+\bibitem{sacmex} SACMEX: Consumo de agua. \icokg{Resource \emph{Consumo Agua (1er Semestre 2019)}, CSV. Portal de Datos Abiertos de la Ciudad de M\'exico, Agencia Digital de Innovaci\'on P\'ublica. Resource last updated 2 February 2023. \url{https://datos.cdmx.gob.mx/dataset/consumo-agua}. Accessed May 2026}
 
-\icokg{\bibitem{datacube} World Wide Web Consortium: The RDF Data Cube vocabulary. W3C Recommendation, 16 January 2014. \url{https://www.w3.org/TR/vocab-data-cube/}}
+\bibitem{datacube}\icokg{ World Wide Web Consortium: The RDF Data Cube vocabulary. W3C Recommendation, 16 January 2014. \url{https://www.w3.org/TR/vocab-data-cube/}}
 
-\icokg{\bibitem{r2rml} World Wide Web Consortium: R2RML --- RDB to RDF mapping language. W3C Recommendation, 27 September 2012. \url{https://www.w3.org/TR/r2rml/}}
+\bibitem{r2rml}\icokg{ World Wide Web Consortium: R2RML --- RDB to RDF mapping language. W3C Recommendation, 27 September 2012. \url{https://www.w3.org/TR/r2rml/}}
 
-\icokg{\bibitem{carhomburg2022} Car, N.J., Homburg, T.: GeoSPARQL 1.1: motivations, details and applications of the decadal update to the most important geospatial LOD standard. ISPRS International Journal of Geo-Information \textbf{11}(2), 117 (2022). \url{https://doi.org/10.3390/ijgi11020117}}
+\bibitem{carhomburg2022}\icokg{ Car, N.J., Homburg, T.: GeoSPARQL 1.1: motivations, details and applications of the decadal update to the most important geospatial LOD standard. ISPRS International Journal of Geo-Information \textbf{11}(2), 117 (2022). \url{https://doi.org/10.3390/ijgi11020117}}
 
-\icokg{\bibitem{jovanovik2021} Jovanovik, M., Homburg, T., Spasi\'c, M.: A GeoSPARQL compliance benchmark. ISPRS International Journal of Geo-Information \textbf{10}(7), 487 (2021). \url{https://doi.org/10.3390/ijgi10070487}}
-
-\icokg{\bibitem{roussey2023} Roussey, C., Gu\'eret, C., Laporte, M.-A.: Editorial: knowledge graph technologies --- the next frontier of the food, agriculture, and water domains. Frontiers in Artificial Intelligence \textbf{6}, 1319844 (2023). \url{https://doi.org/10.3389/frai.2023.1319844}}
+\bibitem{roussey2023}\icokg{ Roussey, C., Gu\'eret, C., Laporte, M.-A.: Editorial: knowledge graph technologies --- the next frontier of the food, agriculture, and water domains. Frontiers in Artificial Intelligence \textbf{6}, 1319844 (2023). \url{https://doi.org/10.3389/frai.2023.1319844}}
 
 \end{thebibliography}\endgroup
 

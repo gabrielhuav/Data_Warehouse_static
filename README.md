@@ -97,6 +97,7 @@ The browser demo and schema can be checked without Docker:
 evidencia_datacube.txt stores the complete run. The script loads both Turtle
 files, runs Data Cube IC-1, IC-2, IC-3 and IC-11 plus component/unit checks,
 prints sample violations if present, and exits non-zero on failure.
+The reproducible validator is `scripts/validar_datacube.py`.
 
 ## Reproducing the anomaly evaluation
 
@@ -115,6 +116,8 @@ uses seeds 42--61 by default, and gives the deployed ranking, Isolation Forest,
 and LOF exactly the same number of alerts. evidencia_anomalias.txt stores the
 full run; evaluacion-ml/curvas_precision_recall.csv stores every point of every
 precision--recall curve.
+`evaluacion-ml/evidencia_anomalias.txt` records the aggregate run and
+`evaluacion-ml/curvas_precision_recall.csv` records all precision--recall points.
 
 ## Scope of the data
 
@@ -156,5 +159,5 @@ and currently undergoing final review. Full publication details will be added
 once the proceedings are published.
 
 The version cited by the manuscript is frozen as release
-[`v1.4-icokg2026`](https://github.com/gabrielhuav/Data_Warehouse_static/releases/tag/v1.4-icokg2026).
+[`v1.5-icokg2026`](https://github.com/gabrielhuav/Data_Warehouse_static/releases/tag/v1.5-icokg2026).
 The repository head may evolve; the release will not.
