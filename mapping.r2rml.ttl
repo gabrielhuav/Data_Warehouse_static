@@ -223,7 +223,7 @@
 <#DevIndexMap> a rr:TriplesMap ;
   rr:logicalTable [ rr:tableName "dim_indice_des" ] ;
   rr:subjectMap [
-    rr:template "https://w3id.org/cdmx/agua/devindex/{id_indice_des}" ;
+    rr:template "https://w3id.org/cdmx/agua/devindex/{indice_des}" ;
     rr:class    skos:Concept
   ] ;
   rr:predicateObjectMap [

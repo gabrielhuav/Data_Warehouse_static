@@ -1,0 +1,75 @@
+﻿Deployed function: aggregate total per alcaldia--colonia; population mean and population standard deviation within alcaldia; A_g = abs(total - mu_alcaldia) / (sigma_alcaldia + 1e-9).
+Synthetic structure: 16 alcaldias, 1553 units, 3 bimesters, 4659 records per seed.
+Injected anomalies: 47 / 1553 (3.03%): 33 spikes, 14 drops.
+Seeds: 42--61 (20 runs).
+Equal operating point: exactly 47 alerts per method and seed.
+
+Per-seed metrics:
+ Seed                 Method  Alerts  Precision  Recall     F1  ROC-AUC  PR-AUC
+   42 A_g (deployed ranking)      47     0.5745  0.5745 0.5745   0.9724  0.6959
+   42       Isolation Forest      47     0.6809  0.6809 0.6809   0.9720  0.7351
+   42                    LOF      47     0.4255  0.4255 0.4255   0.8836  0.3826
+   43 A_g (deployed ranking)      47     0.5532  0.5532 0.5532   0.9614  0.6764
+   43       Isolation Forest      47     0.6809  0.6809 0.6809   0.9751  0.7439
+   43                    LOF      47     0.4681  0.4681 0.4681   0.8708  0.4249
+   44 A_g (deployed ranking)      47     0.5745  0.5745 0.5745   0.9720  0.6568
+   44       Isolation Forest      47     0.6170  0.6170 0.6170   0.9730  0.6988
+   44                    LOF      47     0.4681  0.4681 0.4681   0.8225  0.4130
+   45 A_g (deployed ranking)      47     0.5745  0.5745 0.5745   0.9686  0.6539
+   45       Isolation Forest      47     0.6383  0.6383 0.6383   0.9644  0.6818
+   45                    LOF      47     0.4043  0.4043 0.4043   0.8042  0.4095
+   46 A_g (deployed ranking)      47     0.5106  0.5106 0.5106   0.9635  0.5968
+   46       Isolation Forest      47     0.5745  0.5745 0.5745   0.9590  0.6835
+   46                    LOF      47     0.5106  0.5106 0.5106   0.7928  0.5325
+   47 A_g (deployed ranking)      47     0.5957  0.5957 0.5957   0.9836  0.7208
+   47       Isolation Forest      47     0.6383  0.6383 0.6383   0.9895  0.7786
+   47                    LOF      47     0.5745  0.5745 0.5745   0.8650  0.4651
+   48 A_g (deployed ranking)      47     0.6170  0.6170 0.6170   0.9702  0.7203
+   48       Isolation Forest      47     0.7021  0.7021 0.7021   0.9776  0.8064
+   48                    LOF      47     0.5745  0.5745 0.5745   0.8270  0.6058
+   49 A_g (deployed ranking)      47     0.5745  0.5745 0.5745   0.9642  0.6507
+   49       Isolation Forest      47     0.6383  0.6383 0.6383   0.9618  0.6816
+   49                    LOF      47     0.4681  0.4681 0.4681   0.7998  0.4859
+   50 A_g (deployed ranking)      47     0.5745  0.5745 0.5745   0.9795  0.7195
+   50       Isolation Forest      47     0.7234  0.7234 0.7234   0.9823  0.7942
+   50                    LOF      47     0.4894  0.4894 0.4894   0.8794  0.5154
+   51 A_g (deployed ranking)      47     0.6170  0.6170 0.6170   0.9713  0.7091
+   51       Isolation Forest      47     0.6809  0.6809 0.6809   0.9823  0.7873
+   51                    LOF      47     0.5957  0.5957 0.5957   0.8174  0.5406
+   52 A_g (deployed ranking)      47     0.6170  0.6170 0.6170   0.9746  0.7209
+   52       Isolation Forest      47     0.6809  0.6809 0.6809   0.9764  0.7497
+   52                    LOF      47     0.6170  0.6170 0.6170   0.8592  0.5053
+   53 A_g (deployed ranking)      47     0.5106  0.5106 0.5106   0.9439  0.6083
+   53       Isolation Forest      47     0.5745  0.5745 0.5745   0.9563  0.6526
+   53                    LOF      47     0.4681  0.4681 0.4681   0.8366  0.3884
+   54 A_g (deployed ranking)      47     0.5745  0.5745 0.5745   0.9707  0.6687
+   54       Isolation Forest      47     0.5957  0.5957 0.5957   0.9727  0.6939
+   54                    LOF      47     0.5319  0.5319 0.5319   0.8523  0.4566
+   55 A_g (deployed ranking)      47     0.5745  0.5745 0.5745   0.9726  0.6788
+   55       Isolation Forest      47     0.6170  0.6170 0.6170   0.9752  0.7213
+   55                    LOF      47     0.4255  0.4255 0.4255   0.8741  0.4069
+   56 A_g (deployed ranking)      47     0.5745  0.5745 0.5745   0.9712  0.6706
+   56       Isolation Forest      47     0.6383  0.6383 0.6383   0.9761  0.7188
+   56                    LOF      47     0.5957  0.5957 0.5957   0.9044  0.5739
+   57 A_g (deployed ranking)      47     0.5745  0.5745 0.5745   0.9696  0.6953
+   57       Isolation Forest      47     0.7234  0.7234 0.7234   0.9756  0.7811
+   57                    LOF      47     0.3617  0.3617 0.3617   0.8242  0.3740
+   58 A_g (deployed ranking)      47     0.6596  0.6596 0.6596   0.9673  0.7481
+   58       Isolation Forest      47     0.7021  0.7021 0.7021   0.9759  0.7862
+   58                    LOF      47     0.3617  0.3617 0.3617   0.8783  0.3767
+   59 A_g (deployed ranking)      47     0.6170  0.6170 0.6170   0.9665  0.7147
+   59       Isolation Forest      47     0.7234  0.7234 0.7234   0.9763  0.7964
+   59                    LOF      47     0.4894  0.4894 0.4894   0.9079  0.5906
+   60 A_g (deployed ranking)      47     0.5106  0.5106 0.5106   0.9300  0.5596
+   60       Isolation Forest      47     0.5532  0.5532 0.5532   0.9322  0.5888
+   60                    LOF      47     0.4894  0.4894 0.4894   0.8103  0.4423
+   61 A_g (deployed ranking)      47     0.6383  0.6383 0.6383   0.9452  0.6657
+   61       Isolation Forest      47     0.6170  0.6170 0.6170   0.9554  0.6843
+   61                    LOF      47     0.5319  0.5319 0.5319   0.8139  0.3930
+
+Mean +/- standard deviation across seeds:
+A_g (deployed ranking): Precision=0.5809 +/- 0.0403  Recall=0.5809 +/- 0.0403  F1=0.5809 +/- 0.0403  ROC-AUC=0.9659 +/- 0.0127  PR-AUC=0.6765 +/- 0.0473
+Isolation Forest: Precision=0.6500 +/- 0.0528  Recall=0.6500 +/- 0.0528  F1=0.6500 +/- 0.0528  ROC-AUC=0.9705 +/- 0.0127  PR-AUC=0.7282 +/- 0.0579
+LOF: Precision=0.4926 +/- 0.0751  Recall=0.4926 +/- 0.0751  F1=0.4926 +/- 0.0751  ROC-AUC=0.8462 +/- 0.0356  PR-AUC=0.4641 +/- 0.0753
+
+Complete precision--recall curves: C:\Users\gabri\Downloads\ICOKG 2026 REVIEWS\Sent\DWH AGUA\RepoGit\Data_Warehouse_static\evaluacion-ml\curvas_precision_recall.csv (88,338 points).

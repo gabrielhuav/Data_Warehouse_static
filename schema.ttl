@@ -9,7 +9,9 @@
 
 # Data sets and their Data Cube structures. The demo dataset reuses consumoDSD;
 # its distinct identity and provenance are declared in kg_demo.ttl.
-agua:consumoCDMX a qb:DataSet ; qb:structure agua:consumoDSD .
+agua:consumoCDMX a qb:DataSet ;
+  qb:structure agua:consumoDSD ;
+  agua:unit agua:cubicMetre .
 agua:climaCDMX a qb:DataSet ; qb:structure agua:climaDSD .
 
 agua:consumoDSD a qb:DataStructureDefinition ;
@@ -65,21 +67,22 @@ agua:nearbyWithin1500m a rdf:Property ;
   rdfs:label "nearby within 1500 m"@en ;
   rdfs:comment "Derived from proximity between centroids with a threshold of 1500 m; it is not a Simple Features topological relation."@en .
 
-# Explicit, queryable ordinal scale for the development index.
+# Explicit, queryable ordinal scale for the development index.  The textual
+# notation is part of each IRI so ranks do not depend on database SERIAL values.
 agua:indiceDesarrollo a skos:ConceptScheme ;
   rdfs:label "Índice de desarrollo"@es ;
-  skos:hasTopConcept <https://w3id.org/cdmx/agua/devindex/1>,
-                     <https://w3id.org/cdmx/agua/devindex/2>,
-                     <https://w3id.org/cdmx/agua/devindex/3>,
-                     <https://w3id.org/cdmx/agua/devindex/4> .
+  skos:hasTopConcept <https://w3id.org/cdmx/agua/devindex/POPULAR>,
+                     <https://w3id.org/cdmx/agua/devindex/BAJO>,
+                     <https://w3id.org/cdmx/agua/devindex/MEDIO>,
+                     <https://w3id.org/cdmx/agua/devindex/ALTO> .
 
 agua:ordinalRank a rdf:Property ; rdfs:range xsd:integer .
 
-<https://w3id.org/cdmx/agua/devindex/1> skos:topConceptOf agua:indiceDesarrollo ;
+<https://w3id.org/cdmx/agua/devindex/POPULAR> skos:topConceptOf agua:indiceDesarrollo ;
   skos:prefLabel "POPULAR"@es ; skos:notation "POPULAR" ; agua:ordinalRank 1 .
-<https://w3id.org/cdmx/agua/devindex/2> skos:topConceptOf agua:indiceDesarrollo ;
+<https://w3id.org/cdmx/agua/devindex/BAJO> skos:topConceptOf agua:indiceDesarrollo ;
   skos:prefLabel "BAJO"@es ; skos:notation "BAJO" ; agua:ordinalRank 2 .
-<https://w3id.org/cdmx/agua/devindex/4> skos:topConceptOf agua:indiceDesarrollo ;
+<https://w3id.org/cdmx/agua/devindex/MEDIO> skos:topConceptOf agua:indiceDesarrollo ;
   skos:prefLabel "MEDIO"@es ; skos:notation "MEDIO" ; agua:ordinalRank 3 .
-<https://w3id.org/cdmx/agua/devindex/3> skos:topConceptOf agua:indiceDesarrollo ;
+<https://w3id.org/cdmx/agua/devindex/ALTO> skos:topConceptOf agua:indiceDesarrollo ;
   skos:prefLabel "ALTO"@es ; skos:notation "ALTO" ; agua:ordinalRank 4 .

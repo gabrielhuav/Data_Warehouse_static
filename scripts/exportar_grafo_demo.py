@@ -97,7 +97,7 @@ def main() -> int:
                 "ORDER BY id_tiempo;")
     tiempos = cur.fetchall()
     cur.execute("SELECT id_indice_des, indice_des FROM dim_indice_des "
-                "ORDER BY id_indice_des;")
+                "ORDER BY indice_des;")
     indices = cur.fetchall()
 
     # ---------------- observaciones agregadas ------------------------
@@ -185,18 +185,20 @@ def main() -> int:
             n += 4
         f.write("\n# ---------- development index ----------\n")
         for iid, nivel in indices:
-            f.write(f'idx:{iid} a skos:Concept ;\n'
+            segmento = iri_segment(nivel)
+            f.write(f'idx:{segmento} a skos:Concept ;\n'
                     f'  skos:prefLabel "{esc(nivel)}"@es ;\n'
                     f'  skos:inScheme agua:indiceDesarrollo .\n')
             n += 3
 
         f.write("\n# ---------- observations (neighbourhood-period grain) ----------\n")
+        indice_por_id = {iid: iri_segment(nivel) for iid, nivel in indices}
         for k, (uid, tid, iid, tot, prom, dom, nodom, mix, cnt) in enumerate(obs, 1):
             f.write(f'aggobs:{k} a qb:Observation ;\n'
                     f'  qb:dataSet agua:consumoCDMXDemo ;\n'
                     f'  agua:location col:{uid} ;\n'
                     f'  agua:period per:{tid} ;\n'
-                    f'  agua:developmentIndex idx:{iid} ;\n'
+                    f'  agua:developmentIndex idx:{indice_por_id[iid]} ;\n'
                     f'  agua:totalConsumption {float(tot or 0):.2f} ;\n'
                     f'  agua:averageConsumption {float(prom or 0):.2f} ;\n'
                     f'  agua:domesticConsumption {float(dom or 0):.2f} ;\n'

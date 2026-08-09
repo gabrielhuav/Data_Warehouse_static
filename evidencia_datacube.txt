@@ -1,0 +1,13 @@
+﻿Loaded C:\Users\gabri\Downloads\ICOKG 2026 REVIEWS\Sent\DWH AGUA\RepoGit\Data_Warehouse_static\kg_demo.ttl: 140,499 triples
+Loaded C:\Users\gabri\Downloads\ICOKG 2026 REVIEWS\Sent\DWH AGUA\RepoGit\Data_Warehouse_static\schema.ttl: 117 triples
+Combined graph: 140,612 triples
+
+IC-1 unique DataSet: 0 violation(s)
+IC-2 unique DSD: 0 violation(s)
+IC-3 DSD includes measure: 0 violation(s)
+IC-11 all dimensions required: 0 violation(s)
+Component dimensions typed: 0 violation(s)
+Component measures typed: 0 violation(s)
+Consumption datasets declare cubic-metre unit: 0 violation(s)
+
+Result: PASS (0 failing check(s))

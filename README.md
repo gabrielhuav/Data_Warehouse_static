@@ -66,9 +66,11 @@ The container loads both CSV files, runs the ETL and exposes PostgreSQL on port
 **SKOS** for the ordinal development index and **OWL-Time** for periods.
 `schema.ttl` supplies the consumption and climate Data Cube structures, the
 unit attribute for cubic metres, and an explicit ordinal rank for the four
-development-index concepts.
+development-index concepts. The index concepts use their textual notations
+(POPULAR, BAJO, MEDIO and ALTO) in their IRIs, so ordinal meaning does not
+depend on warehouse SERIAL identifiers.
 The materialisation script reports the exact triple count for a configured
-warehouse instance:
+warehouse instance and loads schema.ttl into the RDF graph before querying it:
 
 ```bash
 python scripts/materializar_grafo.py \
@@ -87,6 +89,32 @@ within 1.5 km, not a GeoSPARQL Simple Features topological relation.
 All JavaScript libraries are vendored under `assets/vendor/` (N3.js 1.17.2,
 Comunica Browser v3, Plotly-basic 3.0.1 and Leaflet 1.9.4, including Leaflet
 marker images). No third-party library is loaded from a CDN.
+
+The browser demo and schema can be checked without Docker:
+
+    py -3.12 scripts/validar_datacube.py
+
+evidencia_datacube.txt stores the complete run. The script loads both Turtle
+files, runs Data Cube IC-1, IC-2, IC-3 and IC-11 plus component/unit checks,
+prints sample violations if present, and exits non-zero on failure.
+
+## Reproducing the anomaly evaluation
+
+assets/atipicos.js aggregates filtered records by alcaldía--colonia, calculates
+the population mean and standard deviation of those totals inside each
+alcaldía, and ranks A_g = abs(total - media_alcaldía) /
+(desviación_alcaldía + 1e-9). The evaluation implements that exact operation at
+the same territorial grain: it derives 1,553 real territorial identities from
+kg_demo.ttl, generates three 2019 bimesters for the 16 alcaldías, and injects
+labelled anomalies by colonia.
+
+    py -3.12 evaluacion-ml/eval_anomalias.py --seed-start 42 --seeds 20
+
+Each run injects 3.03% anomalies (33 spikes and 14 drops among 1,553 units),
+uses seeds 42--61 by default, and gives the deployed ranking, Isolation Forest,
+and LOF exactly the same number of alerts. evidencia_anomalias.txt stores the
+full run; evaluacion-ml/curvas_precision_recall.csv stores every point of every
+precision--recall curve.
 
 ## Scope of the data
 

@@ -93,7 +93,7 @@ def barra(titulo: str) -> None:
     print("=" * 78)
 
 
-def materializar(dsn: str, mapping: str, salida: str):
+def materializar(dsn: str, mapping: str, salida: str, schema: str):
     import morph_kgc
 
     cfg = f"""
@@ -118,6 +118,7 @@ db_url={dsn}
     os.unlink(fh.name)
     print(f"\n  Triples materialised : {len(g):,}")
     print(f"  Elapsed              : {dt:.1f} s")
+    incorporar_esquema(g, schema)
     if salida:
         print(f"  Serialising to {salida} ...", flush=True)
         t1 = time.perf_counter()
@@ -166,10 +167,21 @@ def consultar(g) -> int:
     return 0
 
 
+def incorporar_esquema(g, schema: str) -> None:
+    """Load Data Cube metadata into the materialised graph before querying it."""
+    if not os.path.exists(schema):
+        raise FileNotFoundError(f"No existe el esquema RDF: {schema}")
+    antes = len(g)
+    g.parse(schema, format="turtle")
+    print(f"  Schema loaded  : {schema}  (+{len(g) - antes:,} triples)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--dsn", required=True)
     ap.add_argument("--mapping", default="mapping.r2rml.ttl")
+    ap.add_argument("--schema", default="schema.ttl",
+                    help="Data Cube metadata loaded with the materialised graph")
     ap.add_argument("--salida", default="kg.nt")
     ap.add_argument("--solo-consultar", action="store_true",
                     help="skip materialisation and query an existing .nt file")
@@ -188,7 +200,9 @@ def main() -> int:
         print(f"  {len(g):,} triples loaded in {time.perf_counter()-t0:.1f} s")
     else:
         g = materializar(args.dsn, args.mapping,
-                         None if args.sin_guardar else args.salida)
+                         None if args.sin_guardar else args.salida, args.schema)
+    if args.solo_consultar:
+        incorporar_esquema(g, args.schema)
     return consultar(g)
 
 

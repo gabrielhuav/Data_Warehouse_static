@@ -12,7 +12,8 @@ WHERE colonia IS NOT NULL;
 INSERT INTO dim_indice_des (indice_des)
 SELECT DISTINCT indice_des
 FROM staging_consumo
-WHERE indice_des IS NOT NULL;
+WHERE indice_des IS NOT NULL
+ORDER BY indice_des;
 
 -- Poblar dim_tiempo (desde staging_clima - diarias)
 INSERT INTO dim_tiempo (fecha, anio, mes, dia, bimestre)

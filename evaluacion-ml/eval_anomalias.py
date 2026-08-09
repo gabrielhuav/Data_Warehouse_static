@@ -1,179 +1,254 @@
 #!/usr/bin/env python3
-"""
-eval_anomalias.py -- Controlled evaluation of the atypical-consumption module.
+"""Evaluate the deployed atypical-consumption ranking at its actual grain.
 
-Reference implementation of the protocol described in Section 5 of the ICOKG
-2026 paper. It builds a synthetic dataset with the structure of the warehouse,
-injects labelled anomalies, and compares three detectors under the operating
-points stated in the paper.
-
-Protocol (as specified in the paper):
-  * N ~= 11,460 records over 16 boroughs, 5 years x 6 bimesters
-  * 3% labelled anomalies: 70% high spikes, 30% drops
-  * Features: log-scaled consumption, ratio to the neighbourhood mean
-  * Operating points: z-score A_g > 3 ; IsolationForest s > 0.60 ; LOF s > 1.5
-  * Fixed seed for reproducibility
-
-IMPORTANT -- PROVENANCE
-  This script is a reconstruction written for the camera-ready artefact. It was
-  NOT the code used to produce the figures in the original submission. Run it
-  and report the numbers it actually emits; do not copy numbers from elsewhere.
-
-Usage:
-    pip install -r requirements.txt
-    python eval_anomalias.py                # default: seed 42, N = 11460
-    python eval_anomalias.py --seed 7 --n 11460 --latex
+assets/atipicos.js sums consumption by alcaldia--colonia, computes the
+population mean and population standard deviation of those totals per alcaldia,
+and ranks A_g = abs(total - mu_alcaldia) / (sigma_alcaldia + 1e-9).  This script
+implements that function exactly, on 16 alcaldias, 1,553 territorial units and
+three bimesters.  Labels are injected at colonia level, the unit the browser
+module scores.
 """
 
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from rdflib import Graph, Namespace
+from rdflib.namespace import RDFS
 from sklearn.ensemble import IsolationForest
 from sklearn.metrics import (
     average_precision_score,
+    precision_recall_curve,
     precision_recall_fscore_support,
     roc_auc_score,
 )
 from sklearn.neighbors import LocalOutlierFactor
 
-BOROUGHS = [
-    "Álvaro Obregón", "Azcapotzalco", "Benito Juárez", "Coyoacán",
-    "Cuajimalpa de Morelos", "Cuauhtémoc", "Gustavo A. Madero", "Iztacalco",
-    "Iztapalapa", "La Magdalena Contreras", "Miguel Hidalgo", "Milpa Alta",
-    "Tlalpan", "Venustiano Carranza", "Tláhuac", "Xochimilco",
-]
-YEARS = [2019, 2020, 2021, 2022, 2023]
-BIMESTERS = [1, 2, 3, 4, 5, 6]
 EPS = 1e-9
+AGUA = Namespace("https://w3id.org/cdmx/agua/")
 
 
-def build_dataset(n_target: int, rate: float, spike_share: float, rng):
-    """Synthetic panel with the grain of fact_water_consumption."""
-    periods = len(YEARS) * len(BIMESTERS)              # 30
-    n_colonias = max(1, round(n_target / periods))     # ~382
-    per_borough = int(np.ceil(n_colonias / len(BOROUGHS)))
-
+def load_units(path: Path) -> pd.DataFrame:
+    """Load the real 1,553 alcaldia--colonia identities from the demo graph."""
+    graph = Graph().parse(path, format="turtle")
+    borough_names = {
+        iri: str(label)
+        for iri, label in graph.subject_objects(RDFS.label)
+        if str(iri).startswith("https://w3id.org/cdmx/agua/alcaldia/")
+    }
     rows = []
-    for borough in BOROUGHS:
-        # each borough has its own consumption regime
-        mu_b = rng.normal(11.6, 0.35)
-        for c in range(per_borough):
-            mu_c = mu_b + rng.normal(0, 0.25)
-            colonia = f"{borough[:12]}-COL-{c:03d}"
-            for year in YEARS:
-                for bim in BIMESTERS:
-                    # mild seasonality: bimesters 2-3 run higher
-                    season = 0.08 * np.sin((bim - 1) / 6 * 2 * np.pi)
-                    val = np.exp(mu_c + season + rng.normal(0, 0.18))
-                    rows.append((year, bim, borough, colonia, val))
+    for location, borough in graph.subject_objects(AGUA.borough):
+        label = graph.value(location, RDFS.label)
+        if label is not None and borough in borough_names:
+            rows.append((borough_names[borough], str(label)))
+    units = pd.DataFrame(rows, columns=["alcaldia", "colonia"]).drop_duplicates()
+    units = units.sort_values(["alcaldia", "colonia"], kind="stable").reset_index(drop=True)
+    if len(units) != 1553 or units.alcaldia.nunique() != 16:
+        raise ValueError(
+            f"Expected 16 alcaldias and 1,553 units; got {units.alcaldia.nunique()} "
+            f"and {len(units)} from {path}."
+        )
+    return units
 
-    df = pd.DataFrame(
-        rows, columns=["anio", "bimestre", "alcaldia", "colonia", "consumo"]
+
+def synthetic_panel(
+    units: pd.DataFrame, rate: float, spike_share: float, rng: np.random.Generator
+) -> tuple[pd.DataFrame, pd.Series, dict[str, int]]:
+    """Create three bimesters and inject labelled anomalies by colonia."""
+    borough_mu = {
+        borough: rng.normal(10.7, 0.35) for borough in units.alcaldia.unique()
+    }
+    rows = []
+    for unit_id, unit in units.iterrows():
+        baseline = np.exp(borough_mu[unit.alcaldia] + rng.normal(0.0, 0.42))
+        for bimester, season in enumerate((0.94, 1.00, 1.06), start=1):
+            rows.append(
+                (
+                    unit_id,
+                    2019,
+                    bimester,
+                    unit.alcaldia,
+                    unit.colonia,
+                    baseline * season * np.exp(rng.normal(0.0, 0.10)),
+                )
+            )
+    panel = pd.DataFrame(
+        rows,
+        columns=["unit_id", "anio", "bimestre", "alcaldia", "colonia", "consumo"],
     )
-    df = df.sample(n=min(n_target, len(df)), random_state=int(rng.integers(1e6)))
-    df = df.sort_values(["alcaldia", "colonia", "anio", "bimestre"])
-    df = df.reset_index(drop=True)
-
-    # --- inject labelled anomalies -------------------------------------
-    n_anom = int(round(rate * len(df)))
-    idx = rng.choice(len(df), size=n_anom, replace=False)
-    n_spike = int(round(spike_share * n_anom))
-    spikes, drops = idx[:n_spike], idx[n_spike:]
-
-    df["is_anomaly"] = 0
-    df.loc[spikes, "consumo"] *= rng.uniform(3.0, 6.0, size=len(spikes))
-    df.loc[drops, "consumo"] *= rng.uniform(0.05, 0.25, size=len(drops))
-    df.loc[idx, "is_anomaly"] = 1
-    return df
-
-
-def add_features(df: pd.DataFrame) -> pd.DataFrame:
-    """log-scaled consumption and ratio to the neighbourhood mean."""
-    df = df.copy()
-    df["log_consumo"] = np.log1p(df["consumo"])
-    grp = df.groupby("colonia")["consumo"]
-    df["ratio_vecindario"] = df["consumo"] / (grp.transform("mean") + EPS)
-    # A_g: z-score of the record within its territorial group
-    mu = grp.transform("mean")
-    sd = grp.transform("std").fillna(0.0)
-    df["A_g"] = ((df["consumo"] - mu) / (sd + EPS)).abs()
-    return df
-
-
-def metrics(name, y_true, y_pred, score):
-    p, r, f1, _ = precision_recall_fscore_support(
-        y_true, y_pred, average="binary", zero_division=0
-    )
-    return {
-        "Method": name,
-        "Precision": p,
-        "Recall": r,
-        "F1": f1,
-        "ROC-AUC": roc_auc_score(y_true, score),
-        "PR-AUC": average_precision_score(y_true, score),
+    n_anomalies = int(round(rate * len(units)))
+    selected = rng.choice(units.index.to_numpy(), n_anomalies, replace=False)
+    n_spikes = int(round(spike_share * n_anomalies))
+    spikes, drops = selected[:n_spikes], selected[n_spikes:]
+    labels = pd.Series(False, index=units.index, name="is_anomaly")
+    labels.loc[selected] = True
+    factors = pd.Series(1.0, index=units.index)
+    factors.loc[spikes] = rng.uniform(3.0, 6.0, size=len(spikes))
+    factors.loc[drops] = rng.uniform(0.05, 0.25, size=len(drops))
+    panel["consumo"] *= panel.unit_id.map(factors)
+    return panel, labels, {
+        "records": len(panel),
+        "units": len(units),
+        "alcaldias": units.alcaldia.nunique(),
+        "periods": 3,
+        "anomalies": n_anomalies,
+        "spikes": n_spikes,
+        "drops": n_anomalies - n_spikes,
     }
 
 
+def deployed_scores(panel: pd.DataFrame) -> pd.DataFrame:
+    """Literal data transformation in assets/atipicos.js::calcular."""
+    totals = (
+        panel.groupby(["alcaldia", "colonia"], as_index=False, sort=False).consumo.sum()
+        .rename(columns={"consumo": "total"})
+    )
+    group = totals.groupby("alcaldia").total
+    totals["mu_alcaldia"] = group.transform("mean")
+    totals["sigma_alcaldia"] = group.transform(lambda values: values.std(ddof=0))
+    totals["A_g"] = (
+        (totals.total - totals.mu_alcaldia).abs() / (totals.sigma_alcaldia + EPS)
+    )
+    return totals
+
+
+def equal_alerts(scores: np.ndarray, alert_count: int) -> np.ndarray:
+    """Select exactly alert_count units, including deterministic tie handling."""
+    predicted = np.zeros(len(scores), dtype=int)
+    predicted[np.argsort(-scores, kind="mergesort")[:alert_count]] = 1
+    return predicted
+
+
+def evaluate_method(
+    seed: int, name: str, labels: np.ndarray, scores: np.ndarray, alert_count: int
+) -> tuple[dict[str, float | int | str], pd.DataFrame]:
+    prediction = equal_alerts(scores, alert_count)
+    precision, recall, f1, _ = precision_recall_fscore_support(
+        labels, prediction, average="binary", zero_division=0
+    )
+    p_curve, r_curve, thresholds = precision_recall_curve(labels, scores)
+    metrics = {
+        "Seed": seed,
+        "Method": name,
+        "Alerts": int(prediction.sum()),
+        "Precision": precision,
+        "Recall": recall,
+        "F1": f1,
+        "ROC-AUC": roc_auc_score(labels, scores),
+        "PR-AUC": average_precision_score(labels, scores),
+    }
+    curve = pd.DataFrame(
+        {
+            "seed": seed,
+            "method": name,
+            "point": np.arange(len(p_curve)),
+            "precision": p_curve,
+            "recall": r_curve,
+            "threshold": np.append(thresholds, np.nan),
+        }
+    )
+    return metrics, curve
+
+
+def evaluate_seed(
+    units: pd.DataFrame, seed: int, rate: float, spike_share: float
+) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, int]]:
+    panel, unit_labels, details = synthetic_panel(
+        units, rate, spike_share, np.random.default_rng(seed)
+    )
+    totals = deployed_scores(panel).merge(
+        units.reset_index(names="unit_id"),
+        on=["alcaldia", "colonia"],
+        validate="one_to_one",
+    ).sort_values("unit_id", kind="stable")
+    labels = unit_labels.loc[totals.unit_id].to_numpy(dtype=int)
+    alerts = int(labels.sum())
+    borough_standardised_total = (
+        (totals.total - totals.mu_alcaldia) / (totals.sigma_alcaldia + EPS)
+    ).to_numpy().reshape(-1, 1)
+
+    scores = {
+        "A_g (deployed ranking)": totals.A_g.to_numpy(),
+        "Isolation Forest": -IsolationForest(
+            n_estimators=300, contamination="auto", random_state=seed, n_jobs=-1
+        ).fit(borough_standardised_total).score_samples(borough_standardised_total),
+    }
+    lof = LocalOutlierFactor(n_neighbors=20, contamination="auto")
+    lof.fit_predict(borough_standardised_total)
+    scores["LOF"] = -lof.negative_outlier_factor_
+
+    rows, curves = [], []
+    for name, values in scores.items():
+        row, curve = evaluate_method(seed, name, labels, values, alerts)
+        rows.append(row)
+        curves.append(curve)
+    return pd.DataFrame(rows), pd.concat(curves, ignore_index=True), details
+
+
 def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--n", type=int, default=11460)
-    ap.add_argument("--seed", type=int, default=42)
-    ap.add_argument("--rate", type=float, default=0.03)
-    ap.add_argument("--spike-share", type=float, default=0.70)
-    ap.add_argument("--thr-zscore", type=float, default=3.0)
-    ap.add_argument("--thr-iforest", type=float, default=0.60)
-    ap.add_argument("--thr-lof", type=float, default=1.5)
-    ap.add_argument("--latex", action="store_true",
-                    help="also print the LaTeX table body")
-    args = ap.parse_args()
+    parser = argparse.ArgumentParser(description=__doc__)
+    root = Path(__file__).resolve().parents[1]
+    parser.add_argument("--kg-demo", type=Path, default=root / "kg_demo.ttl")
+    parser.add_argument("--seed-start", type=int, default=42)
+    parser.add_argument("--seeds", type=int, default=20)
+    parser.add_argument("--rate", type=float, default=0.03)
+    parser.add_argument("--spike-share", type=float, default=0.70)
+    parser.add_argument(
+        "--pr-output",
+        type=Path,
+        default=Path(__file__).with_name("curvas_precision_recall.csv"),
+    )
+    args = parser.parse_args()
+    if args.seeds < 20:
+        parser.error("--seeds must be at least 20")
+    if not 0 < args.rate < 1 or not 0 < args.spike_share < 1:
+        parser.error("--rate and --spike-share must be between 0 and 1")
 
-    rng = np.random.default_rng(args.seed)
-    df = add_features(build_dataset(args.n, args.rate, args.spike_share, rng))
-    y = df["is_anomaly"].to_numpy()
+    units = load_units(args.kg_demo)
+    metric_frames, curve_frames = [], []
+    details = {}
+    seeds = range(args.seed_start, args.seed_start + args.seeds)
+    for seed in seeds:
+        metrics, curves, details = evaluate_seed(units, seed, args.rate, args.spike_share)
+        metric_frames.append(metrics)
+        curve_frames.append(curves)
+    results = pd.concat(metric_frames, ignore_index=True)
+    all_curves = pd.concat(curve_frames, ignore_index=True)
+    args.pr_output.parent.mkdir(parents=True, exist_ok=True)
+    all_curves.to_csv(args.pr_output, index=False)
 
-    print(f"Records: {len(df):,}   Boroughs: {df.alcaldia.nunique()}   "
-          f"Neighbourhoods: {df.colonia.nunique():,}")
-    print(f"Injected anomalies: {y.sum():,} ({100*y.mean():.2f}%)   "
-          f"seed={args.seed}\n")
-
-    X = df[["log_consumo", "ratio_vecindario"]].to_numpy()
-    results = []
-
-    # 1) z-score A_g (this work)
-    s = df["A_g"].to_numpy()
-    results.append(metrics(f"z-score A_g (A_g>{args.thr_zscore:g})",
-                           y, (s > args.thr_zscore).astype(int), s))
-
-    # 2) Isolation Forest -- score min-max normalised to [0,1]
-    iso = IsolationForest(n_estimators=200, contamination=args.rate,
-                          random_state=args.seed)
-    iso.fit(X)
-    raw = -iso.score_samples(X)
-    s = (raw - raw.min()) / (raw.max() - raw.min() + EPS)
-    results.append(metrics(f"Isolation Forest (s>{args.thr_iforest:g})",
-                           y, (s > args.thr_iforest).astype(int), s))
-
-    # 3) Local Outlier Factor -- s is the outlier factor itself
-    lof = LocalOutlierFactor(n_neighbors=20, contamination=args.rate)
-    lof.fit_predict(X)
-    s = -lof.negative_outlier_factor_
-    results.append(metrics(f"LOF (s>{args.thr_lof:g})",
-                           y, (s > args.thr_lof).astype(int), s))
-
-    out = pd.DataFrame(results).set_index("Method")
-    print(out.to_string(float_format=lambda v: f"{v:.3f}"))
-
-    if args.latex:
-        print("\n% --- table body for the paper ---")
-        for m, row in out.iterrows():
-            print(f"{m} & " + " & ".join(f"{row[c]:.3f}" for c in out.columns)
-                  + r" \\")
-
-    print("\nNOTE: these are the numbers this script actually produces. If they")
-    print("differ from the table in the manuscript, the table must be updated.")
+    print("Deployed function: aggregate total per alcaldia--colonia; population "
+          "mean and population standard deviation within alcaldia; "
+          "A_g = abs(total - mu_alcaldia) / (sigma_alcaldia + 1e-9).")
+    print(
+        f"Synthetic structure: {details['alcaldias']} alcaldias, "
+        f"{details['units']} units, {details['periods']} bimesters, "
+        f"{details['records']} records per seed."
+    )
+    print(
+        f"Injected anomalies: {details['anomalies']} / {details['units']} "
+        f"({100 * details['anomalies'] / details['units']:.2f}%): "
+        f"{details['spikes']} spikes, {details['drops']} drops."
+    )
+    print(f"Seeds: {args.seed_start}--{args.seed_start + args.seeds - 1} ({args.seeds} runs).")
+    print(f"Equal operating point: exactly {details['anomalies']} alerts per method and seed.")
+    print("\nPer-seed metrics:")
+    print(results.to_string(index=False, float_format=lambda value: f"{value:.4f}"))
+    columns = ["Precision", "Recall", "F1", "ROC-AUC", "PR-AUC"]
+    summary = results.groupby("Method", sort=False)[columns].agg(["mean", "std"])
+    print("\nMean +/- standard deviation across seeds:")
+    for method, row in summary.iterrows():
+        print(method + ": " + "  ".join(
+            f"{column}={row[(column, 'mean')]:.4f} +/- {row[(column, 'std')]:.4f}"
+            for column in columns
+        ))
+    print(
+        f"\nComplete precision--recall curves: {args.pr_output} "
+        f"({len(all_curves):,} points)."
+    )
     return 0
 
 
