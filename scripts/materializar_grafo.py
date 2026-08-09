@@ -29,11 +29,10 @@ CONSULTAS = {
     "Q1 -- Neighbourhoods adjacent to a high-consumption one, with their own totals":
     """
     PREFIX agua: <https://w3id.org/cdmx/agua/>
-    PREFIX geo:  <http://www.opengis.net/ont/geosparql#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     SELECT ?vecino ?nombre (SUM(?c) AS ?consumo)
     WHERE {
-      ?origen geo:sfTouches ?vecino .
+      ?origen agua:nearbyWithin1500m ?vecino .
       ?vecino rdfs:label ?nombre .
       ?obs agua:location ?vecino ;
            agua:totalConsumption ?c .

@@ -8,8 +8,8 @@
 -- SOBRE EL NOMBRE DEL ARCHIVO: el entrypoint de PostgreSQL ejecuta
 --   for f in /docker-entrypoint-initdb.d/*
 -- y el glob usa la colación del locale, no el orden ASCII. La colación de
--- diccionario ignora el guion bajo, así que "2b_geo" se compara como "2bgeo"
--- contra "2dim" y quedaría ANTES de 2_dim.sql, con dim_ubicacion todavía
+-- diccionario ignora el guion bajo; un nombre con una letra adicional se
+-- compararía antes de 2_dim.sql, con dim_ubicacion todavía
 -- vacía. Con "2_geo" la comparación es "2geo" vs "2dim" (d < g) y el orden es
 -- correcto bajo ambas colaciones. No renombrar sin comprobar esto.
 --
@@ -69,8 +69,8 @@ WHERE  latitud IS NOT NULL
 -- ============================================
 -- Adyacencia territorial
 -- ============================================
--- El ejemplo SPARQL del artículo usa geo:sfTouches. El mapeo R2RML no puede
--- producirlo (materializa atributos y joins, no relaciones topológicas), así
+-- El ejemplo SPARQL del artículo usa agua:nearbyWithin1500m. El mapeo R2RML no puede
+-- calcularlo por sí solo (materializa atributos y joins, no relaciones derivadas), así
 -- que se deriva aquí: dos colonias son vecinas si sus centroides distan menos
 -- de 1.5 km. Es una aproximación por proximidad, no adyacencia de polígonos,
 -- y el artículo debe decirlo con esas palabras.

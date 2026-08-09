@@ -40,7 +40,7 @@
     <div class="kpi"><div class="kpi-et" data-i18n="gr.kpi.triples">Triples cargados</div><div class="kpi-val" id="kTriples">—</div><div class="kpi-nota" id="kCarga" data-i18n="gr.kpi.esperando">esperando…</div></div>
     <div class="kpi t2"><div class="kpi-et" data-i18n="gr.kpi.obs">Observaciones</div><div class="kpi-val" id="kObs">—</div><div class="kpi-nota">qb:Observation</div></div>
     <div class="kpi t3"><div class="kpi-et" data-i18n="gr.kpi.feat">Unidades territoriales</div><div class="kpi-val" id="kFeat">—</div><div class="kpi-nota" data-i18n="gr.kpi.featNota">geo:Feature con geometría</div></div>
-    <div class="kpi"><div class="kpi-et" data-i18n="gr.kpi.ady">Relaciones de vecindad</div><div class="kpi-val" id="kAdy">—</div><div class="kpi-nota">geo:sfTouches</div></div>
+    <div class="kpi"><div class="kpi-et" data-i18n="gr.kpi.ady">Relaciones de vecindad</div><div class="kpi-val" id="kAdy">—</div><div class="kpi-nota">agua:nearbyWithin1500m</div></div>
   </div>
 
   <div class="tarjeta" style="margin-bottom:1.25rem">
@@ -98,8 +98,8 @@
 <footer data-pie></footer>
 
 <script src="assets/nav.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/n3@1.17.2/browser/n3.min.js"></script>
-<script src="https://rdf.js.org/comunica-browser/versions/v3/engines/query-sparql/comunica-browser.js"></script>
+<script src="assets/vendor/n3-1.17.2.min.js"></script>
+<script src="assets/vendor/comunica-browser-v3.js"></script>
 <script>
 (function () {
   "use strict";
@@ -123,7 +123,7 @@
   const EJEMPLOS = [
     { k:'vecindad',
       q:`SELECT ?vecina (ROUND(SUM(?c)) AS ?consumo) WHERE {
-  col:500 geo:sfTouches ?v .
+  col:500 agua:nearbyWithin1500m ?v .
   ?v rdfs:label ?vecina .
   ?o agua:location ?v ; agua:totalConsumption ?c .
 } GROUP BY ?vecina ORDER BY DESC(?consumo)` },
@@ -131,7 +131,7 @@
     { k:'clima',
       q:`SELECT ?bimestre ?agua ?tempMedia WHERE {
   { SELECT ?bimestre (ROUND(SUM(?c)) AS ?agua) WHERE {
-      ?o qb:dataSet agua:consumoCDMX ; agua:period ?p ; agua:totalConsumption ?c .
+      ?o qb:dataSet agua:consumoCDMXDemo ; agua:period ?p ; agua:totalConsumption ?c .
       ?p agua:bimester ?bimestre .
     } GROUP BY ?bimestre }
   { SELECT ?bimestre (ROUND(AVG(?t)) AS ?tempMedia) WHERE {
@@ -145,7 +145,8 @@
   ?o agua:location ?l ;
      agua:nonDomesticConsumption ?nd ;
      agua:totalConsumption ?t .
-  ?l agua:borough ?alcaldia .
+  ?l agua:borough ?alcaldiaIri .
+  ?alcaldiaIri rdfs:label ?alcaldia .
 } GROUP BY ?alcaldia ORDER BY DESC(?pctNoDomestico)` },
 
     { k:'indice',
@@ -156,7 +157,7 @@
 
     { k:'grado',
       q:`SELECT ?colonia (COUNT(?v) AS ?vecinas) WHERE {
-  ?c geo:sfTouches ?v ; rdfs:label ?colonia .
+  ?c agua:nearbyWithin1500m ?v ; rdfs:label ?colonia .
 } GROUP BY ?colonia ORDER BY DESC(?vecinas) LIMIT 15` },
 
     { k:'clases',
@@ -270,7 +271,7 @@
     $('kObs').textContent  = fmt(cuenta('http://purl.org/linked-data/cube#Observation'));
     $('kFeat').textContent = fmt(cuenta('http://www.opengis.net/ont/geosparql#Geometry'));
     $('kAdy').textContent  = fmt(store.countQuads(
-      null, namedNode('http://www.opengis.net/ont/geosparql#sfTouches'), null, null));
+      null, namedNode('https://w3id.org/cdmx/agua/nearbyWithin1500m'), null, null));
   }
 
   // ---------------- ejecución ----------------

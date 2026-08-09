@@ -351,7 +351,7 @@ fact row becomes a \texttt{qb:Observation}, the measures become
 \texttt{qb:MeasureProperty}, the time and location dimensions become
 \texttt{qb:DimensionProperty}, the neighbourhood entity becomes a
 \texttt{geo:Feature} with its \texttt{geo:asWKT} geometry, territorial adjacency
-becomes \texttt{geo:sfTouches}, and the development index becomes a
+becomes \texttt{agua:nearbyWithin1500m}, and the development index becomes a
 \texttt{skos:Concept} in an ordinal scheme. The mapping is expressed in
 R2RML~\cite{r2rml} and
 distributed complete with the archived release, where it declares seven triples
@@ -369,7 +369,7 @@ dropped by the original loading schema. The substitution is defensible at the
 scale at which the interface operates ---the 22,930 distinct coordinates are
 never shared between two neighbourhoods, and the neighbourhood diameter has a
 median of 0.63~km--- although for the ten neighbourhoods above three kilometres
-the point is coarse. Consequently \texttt{geo:sfTouches} expresses proximity
+the point is coarse. Consequently \texttt{agua:nearbyWithin1500m} expresses proximity
 within 1.5~km rather than shared boundaries; replacing the centroids with
 official polygons would make it topological in the strict sense, which is a
 substitution in the source data and not a change to the mapping.
@@ -386,14 +386,14 @@ spatial self-join.
 
 \begin{lstlisting}[caption={Territorial traversal over the knowledge graph.},label={lst:sparql}]
 SELECT ?neighbour (SUM(?c) AS ?consumption) WHERE {
-  agua:colonia/500 geo:sfTouches ?n . ?n rdfs:label ?neighbour .
+  agua:colonia/500 agua:nearbyWithin1500m ?n . ?n rdfs:label ?neighbour .
   ?o agua:location ?n ; agua:totalConsumption ?c .
 } GROUP BY ?neighbour ORDER BY DESC(?consumption)
 \end{lstlisting}
 
 That the graph is queryable, and not merely declarable, is shown without any
-server: the static deployment ships a browser-sized subset ---140,481 triples
-using the same vocabulary--- with a SPARQL~1.1 engine running on the client, so a
+server: the static deployment ships a browser-sized subset ---140,499 triples
+with a SPARQL~1.1 engine running on the client, so a
 reader can edit a query and read the answer without installing a triple store.
 The two representations agree where they overlap: aggregating consumption by
 bimester through SPARQL, joining consumption and climate on their shared temporal
@@ -605,7 +605,7 @@ The second concerns the anomaly module, whose evaluation uses synthetic
 perturbations aligned with the detectors; its figures are an upper bound and say
 nothing about real leaks. The third is geometric: neighbourhoods are represented
 by centroids rather than polygons, so the adjacency projected as
-\texttt{geo:sfTouches} is proximity within 1.5~km and not shared boundaries. The
+\texttt{agua:nearbyWithin1500m} is proximity within 1.5~km and not shared boundaries. The
 fourth is descriptive: the association between development index and consumption
 is an observation over the warehouse, and attributing it to a socioeconomic
 mechanism would require an external source the warehouse does not

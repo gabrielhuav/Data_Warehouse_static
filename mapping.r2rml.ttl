@@ -7,12 +7,12 @@
 #
 # IMPORTANT -- this mapping targets the ACTUAL schema of the warehouse, as
 # defined in warehouse/ddl/0_schema.sql by Omar Pulido Morales, extended by
-# warehouse/etl/2b_geo.sql which restores the coordinates the original DDL
+# warehouse/etl/2_geo.sql which restores the coordinates the original DDL
 # discarded. Table and column identifiers below are the real ones; do not
 # rename them without updating the DDL.
 #
 # Requires no PostGIS: the geometry is exposed as WKT by the view
-# v_ubicacion_geom, created in 2b_geo.sql.
+# v_ubicacion_geom, created in 2_geo.sql.
 #
 # Run with any R2RML engine:
 #   java -jar rmlmapper.jar -m mapping.r2rml.ttl -o kg.nt
@@ -148,11 +148,19 @@
     rr:objectMap [ rr:template "https://w3id.org/cdmx/agua/alcaldia/{alcaldia}" ]
   ] ;
   rr:predicateObjectMap [
+    rr:predicate agua:latitude ;
+    rr:objectMap [ rr:column "latitud" ; rr:datatype xsd:decimal ]
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate agua:longitude ;
+    rr:objectMap [ rr:column "longitud" ; rr:datatype xsd:decimal ]
+  ] ;
+  rr:predicateObjectMap [
     rr:predicate geo:hasGeometry ;
     rr:objectMap [ rr:template "https://w3id.org/cdmx/agua/geom/{id_ubicacion}" ]
   ] .
 
-# Geometry from the view created by 2b_geo.sql (WKT built by concatenation,
+# Geometry from the view created by 2_geo.sql (WKT built by concatenation,
 # so no PostGIS is required).
 <#GeometryMap> a rr:TriplesMap ;
   rr:logicalTable [ rr:tableName "v_ubicacion_geom" ] ;
@@ -166,8 +174,8 @@
   ] .
 
 # ---------------------------------------------------------------------
-# 4. Territorial adjacency (dim_ubicacion_adyacencia -> geo:sfTouches)
-#    Derived in 2b_geo.sql by centroid proximity (<= 1.5 km), NOT by polygon
+# 4. Territorial proximity (dim_ubicacion_adyacencia -> agua:nearbyWithin1500m)
+#    Derived in 2_geo.sql by centroid proximity (<= 1.5 km), NOT by polygon
 #    topology: the warehouse stores points, not polygons. The paper must
 #    describe it as a proximity relation, which is what it is.
 # ---------------------------------------------------------------------
@@ -178,7 +186,7 @@
     rr:class    geo:Feature
   ] ;
   rr:predicateObjectMap [
-    rr:predicate geo:sfTouches ;
+    rr:predicate agua:nearbyWithin1500m ;
     rr:objectMap [ rr:template "https://w3id.org/cdmx/agua/colonia/{id_vecino}" ]
   ] ;
   rr:predicateObjectMap [

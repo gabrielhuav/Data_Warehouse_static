@@ -16,10 +16,9 @@ equivalent graph at a coarser grain:
   * the complete time and development-index dimensions, and the daily climate
     observations
 
-The vocabulary is identical to the full mapping, so a query written against the
-subset runs unchanged against the full graph. The subset is declared in the
-graph itself through agua:isSubsetOf and a dcterms:description, so a consumer
-cannot mistake it for the complete materialisation.
+The subset uses distinct observation and dataset IRIs and declares its
+derivation from the full materialisation, so a consumer cannot merge both
+graphs accidentally as if their observations had the same identity.
 
     python scripts/exportar_grafo_demo.py \
         --dsn "postgresql://postgres:postgres@localhost:5433/data_warehouse" \
@@ -34,16 +33,18 @@ import math
 import os
 import sys
 from datetime import datetime, timezone
+from urllib.parse import quote
 
 # En Turtle, "/" no es valido dentro de un nombre prefijado sin escapar, asi que
 # cada tipo de recurso lleva su propio prefijo. Las IRIs resultantes son
 # identicas a las que produce mapping.r2rml.ttl sobre el almacen completo.
 PREFIJOS = """@prefix agua:    <https://w3id.org/cdmx/agua/> .
 @prefix col:     <https://w3id.org/cdmx/agua/colonia/> .
+@prefix alc:     <https://w3id.org/cdmx/agua/alcaldia/> .
 @prefix geom:    <https://w3id.org/cdmx/agua/geom/> .
 @prefix per:     <https://w3id.org/cdmx/agua/period/> .
 @prefix idx:     <https://w3id.org/cdmx/agua/devindex/> .
-@prefix obs:     <https://w3id.org/cdmx/agua/obs/> .
+@prefix aggobs:  <https://w3id.org/cdmx/agua/aggobs/> .
 @prefix clm:     <https://w3id.org/cdmx/agua/clima/> .
 @prefix qb:      <http://purl.org/linked-data/cube#> .
 @prefix geo:     <http://www.opengis.net/ont/geosparql#> .
@@ -52,6 +53,7 @@ PREFIJOS = """@prefix agua:    <https://w3id.org/cdmx/agua/> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
 
 """
 
@@ -61,6 +63,11 @@ RADIO_KM = 1.5
 
 def esc(s: str) -> str:
     return (s or "").replace("\\", "\\\\").replace('"', '\\"')
+
+
+def iri_segment(s: str) -> str:
+    """Return a percent-encoded IRI path segment for a borough name."""
+    return quote(s or "", safe="")
 
 
 def km(a, b) -> float:
@@ -131,20 +138,28 @@ def main() -> int:
     n = 0
     with open(args.salida, "w", encoding="utf-8") as f:
         f.write(PREFIJOS)
-        f.write(f"""agua:consumoCDMX a qb:DataSet ;
-  rdfs:label "Water consumption, Mexico City"@en ;
-  dcterms:description "Browser-sized subset of the knowledge graph materialised from the data warehouse. Observations are aggregated to the neighbourhood-period grain and adjacency is limited to the {args.k} nearest neighbours within {args.radio} km. The vocabulary is identical to the full mapping."@en ;
+        f.write(f"""agua:consumoCDMXDemo a qb:DataSet ;
+  rdfs:label "Water consumption, Mexico City (browser subset)"@en ;
+  dcterms:description "Browser-sized subset of the knowledge graph materialised from the data warehouse. Observations are aggregated to the neighbourhood-period grain and proximity is limited to the {args.k} nearest neighbours within {args.radio} km."@en ;
   dcterms:created "{datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}"^^xsd:dateTime ;
-  agua:isSubsetOf agua:consumoCDMXCompleto .
+  prov:wasDerivedFrom agua:consumoCDMX ;
+  qb:structure agua:consumoDSD ;
+  agua:unit agua:cubicMetre .
 
 """)
-        n += 5
+        n += 7
+
+        f.write("# ---------- boroughs ----------\n")
+        for alc in sorted({u[1] for u in ubic}):
+            f.write(f'alc:{iri_segment(alc)} rdfs:label "{esc(alc)}"@es .\n')
+            n += 1
+        f.write("\n")
 
         f.write("# ---------- territory ----------\n")
         for uid, alc, col, lat, lon in ubic:
             f.write(f'col:{uid} a geo:Feature ;\n'
                     f'  rdfs:label "{esc(col)}"@es ;\n'
-                    f'  agua:borough "{esc(alc)}"@es ;\n')
+                    f'  agua:borough alc:{iri_segment(alc)} ;\n')
             n += 3
             if lat is not None and lon is not None:
                 f.write(f'  agua:latitude {lat} ; agua:longitude {lon} ;\n'
@@ -157,7 +172,7 @@ def main() -> int:
 
         f.write("# ---------- adjacency (derived by centroid proximity) ----------\n")
         for a, b, dist in adyacencia:
-            f.write(f'col:{a} geo:sfTouches col:{b} .\n')
+            f.write(f'col:{a} agua:nearbyWithin1500m col:{b} .\n')
             n += 1
         f.write("\n")
 
@@ -177,8 +192,8 @@ def main() -> int:
 
         f.write("\n# ---------- observations (neighbourhood-period grain) ----------\n")
         for k, (uid, tid, iid, tot, prom, dom, nodom, mix, cnt) in enumerate(obs, 1):
-            f.write(f'obs:{k} a qb:Observation ;\n'
-                    f'  qb:dataSet agua:consumoCDMX ;\n'
+            f.write(f'aggobs:{k} a qb:Observation ;\n'
+                    f'  qb:dataSet agua:consumoCDMXDemo ;\n'
                     f'  agua:location col:{uid} ;\n'
                     f'  agua:period per:{tid} ;\n'
                     f'  agua:developmentIndex idx:{iid} ;\n'

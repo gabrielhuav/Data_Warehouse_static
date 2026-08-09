@@ -41,7 +41,7 @@
     'meta.index': 'Almacén de datos y grafo de conocimiento del consumo de agua en la Ciudad de México, construido con datos abiertos de SACMEX. Consulta por alcaldía y colonia, mapa coroplético y SPARQL en el navegador.',
     'meta.mapa': 'Almacén de datos y grafo de conocimiento del consumo de agua en la Ciudad de México, construido con datos abiertos de SACMEX. Consulta por alcaldía y colonia, mapa coroplético y SPARQL en el navegador.',
     'meta.grafo': 'Explorador SPARQL sobre el grafo RDF materializado desde el almacén de datos de consumo de agua de la Ciudad de México.',
-    'meta.vecindad': 'Recorrido de grafo sobre la relación geo:sfTouches: elige una colonia y consulta sus vecinas con SPARQL.',
+    'meta.vecindad': 'Recorrido de grafo sobre la relación agua:nearbyWithin1500m: elige una colonia y consulta sus vecinas con SPARQL.',
 
     /* ---------------- barra y pie ---------------- */
     'barra.marca': 'Consumo de Agua CDMX',
@@ -204,7 +204,7 @@
     'gr.est.errorCarga': 'Error al cargar el grafo',
     'gr.est.sinLibs':    'No se pudieron cargar las bibliotecas RDF (revisa tu conexión).',
 
-    'gr.av.sinLibs':   'Este explorador necesita N3.js y Comunica desde CDN. Si estás sin conexión, el resto del sitio funciona igual.',
+    'gr.av.sinLibs':   'Este explorador necesita las copias locales de N3.js y Comunica incluidas en el repositorio.',
     'gr.av.noCarga':   'No se pudo cargar el grafo.',
     'gr.av.file':      '<b>Est&aacute;s abriendo la p&aacute;gina como archivo local</b> (<code>file://</code>). Los navegadores bloquean <code>fetch</code> en ese modo por seguridad, aunque el archivo exista. Sirve la carpeta por HTTP:<br><code>python -m http.server 8000</code><br>y abre <code>http://localhost:8000/{pagina}</code>',
     'gr.av.publicado': 'Revisa que <code>kg_demo.ttl</code> est&eacute; publicado en el repositorio. Lo genera <code>publicar_demo_grafo.ps1</code>.',
@@ -214,7 +214,7 @@
     'gr.primeras':     'Mostrando las primeras 500 de {total} filas.',
 
     'gr.ej.vecindad.t': 'Vecindad territorial',
-    'gr.ej.vecindad.d': 'Recorre geo:sfTouches para hallar las colonias contiguas a una dada y suma su consumo. Esto es traversal de grafo: la consulta tabular equivalente necesitaría un self-join espacial.',
+    'gr.ej.vecindad.d': 'Recorre agua:nearbyWithin1500m para hallar las colonias dentro de 1.5 km de una dada y suma su consumo. Es proximidad entre centroides, no una relación topológica.',
     'gr.ej.clima.t':    'Agua y clima, unidos por el tiempo',
     'gr.ej.clima.d':    'Dos tablas de hechos distintas comparten la dimensión temporal. En el grafo, unirlas es seguir agua:period desde ambas.',
     'gr.ej.noDom.t':    'Alcaldías por proporción no doméstica',
@@ -230,13 +230,13 @@
     'vec.kpi.col':      'Unidades territoriales',
     'vec.kpi.colNota':  'colonias con centroide',
     'vec.kpi.ady':      'Relaciones de vecindad',
-    'vec.kpi.adyNota':  'geo:sfTouches, ≤ 1.5 km',
+    'vec.kpi.adyNota':  'agua:nearbyWithin1500m, ≤ 1.5 km',
     'vec.kpi.sel':      'Seleccionada',
     'vec.kpi.ninguna':  'ninguna',
     'vec.kpi.elige':    'elige una en el mapa',
     'vec.kpi.vec':      'Vecinas encontradas',
 
-    'vec.intro': 'Cada punto es una colonia, representada por el centroide de sus lecturas. Al elegir una, se lanza una consulta <b>SPARQL</b> que recorre <code>geo:sfTouches</code> sobre el grafo RDF y suma el consumo de cada vecina. La consulta que se ejecuta aparece abajo, tal cual. Todo ocurre en tu navegador.',
+    'vec.intro': 'Cada punto es una colonia, representada por el centroide de sus lecturas. Al elegir una, se lanza una consulta <b>SPARQL</b> que recorre <code>agua:nearbyWithin1500m</code> sobre el grafo RDF y suma el consumo de cada vecina. Es proximidad entre centroides con umbral de 1.5 km, no topología de fronteras. La consulta que se ejecuta aparece abajo, tal cual. Todo ocurre en tu navegador.',
 
     'vec.mapa':        'Mapa territorial',
     'vec.buscar':      'Buscar colonia',
@@ -268,7 +268,7 @@
     'vec.est.listas':     '{n} colonias listas',
     'vec.est.error':      'error',
     'vec.est.sinLibs':    'sin bibliotecas RDF',
-    'vec.av.sinLibs':     'Este explorador necesita N3.js y Comunica desde CDN.',
+    'vec.av.sinLibs':     'Este explorador necesita las copias locales de N3.js y Comunica incluidas en el repositorio.',
 
     /* ---------------- consumos atípicos (atipicos.js) ---------------- */
     'at.titulo':    'Zonas con consumo atípico',
@@ -314,7 +314,7 @@
     'meta.index': 'Data warehouse and knowledge graph of water consumption in Mexico City, built from SACMEX open data. Query by borough and neighbourhood, choropleth map and SPARQL in the browser.',
     'meta.mapa': 'Data warehouse and knowledge graph of water consumption in Mexico City, built from SACMEX open data. Query by borough and neighbourhood, choropleth map and SPARQL in the browser.',
     'meta.grafo': 'SPARQL explorer over the RDF graph materialised from the Mexico City water-consumption data warehouse.',
-    'meta.vecindad': 'Graph traversal over the geo:sfTouches relation: pick a neighbourhood and query its neighbours with SPARQL.',
+    'meta.vecindad': 'Graph traversal over the agua:nearbyWithin1500m relation: pick a neighbourhood and query its neighbours with SPARQL.',
 
     /* ---------------- bar and footer ---------------- */
     'barra.marca': 'Mexico City Water Consumption',
@@ -477,7 +477,7 @@
     'gr.est.errorCarga': 'The graph could not be loaded',
     'gr.est.sinLibs':    'The RDF libraries could not be loaded (check your connection).',
 
-    'gr.av.sinLibs':   'This explorer needs N3.js and Comunica from a CDN. If you are offline, the rest of the site still works.',
+    'gr.av.sinLibs':   'This explorer needs the local copies of N3.js and Comunica included in the repository.',
     'gr.av.noCarga':   'The graph could not be loaded.',
     'gr.av.file':      '<b>You are opening the page as a local file</b> (<code>file://</code>). Browsers block <code>fetch</code> in that mode for security, even when the file exists. Serve the folder over HTTP:<br><code>python -m http.server 8000</code><br>and open <code>http://localhost:8000/{pagina}</code>',
     'gr.av.publicado': 'Check that <code>kg_demo.ttl</code> is published in the repository. <code>publicar_demo_grafo.ps1</code> generates it.',
@@ -487,7 +487,7 @@
     'gr.primeras':     'Showing the first 500 of {total} rows.',
 
     'gr.ej.vecindad.t': 'Territorial adjacency',
-    'gr.ej.vecindad.d': 'Traverses geo:sfTouches to find the neighbourhoods adjacent to a given one and sums their consumption. This is graph traversal: the equivalent tabular query would need a spatial self-join.',
+    'gr.ej.vecindad.d': 'Traverses agua:nearbyWithin1500m to find neighbourhoods within 1.5 km of a given one and sums their consumption. This is centroid proximity, not a topological relation.',
     'gr.ej.clima.t':    'Water and climate, joined through time',
     'gr.ej.clima.d':    'Two different fact tables share the time dimension. In the graph, joining them is a matter of following agua:period from both.',
     'gr.ej.noDom.t':    'Boroughs by non-domestic share',
@@ -503,13 +503,13 @@
     'vec.kpi.col':      'Territorial units',
     'vec.kpi.colNota':  'neighbourhoods with a centroid',
     'vec.kpi.ady':      'Adjacency relations',
-    'vec.kpi.adyNota':  'geo:sfTouches, ≤ 1.5 km',
+    'vec.kpi.adyNota':  'agua:nearbyWithin1500m, ≤ 1.5 km',
     'vec.kpi.sel':      'Selected',
     'vec.kpi.ninguna':  'none',
     'vec.kpi.elige':    'pick one on the map',
     'vec.kpi.vec':      'Neighbours found',
 
-    'vec.intro': 'Each dot is a neighbourhood, represented by the centroid of its readings. Choosing one issues a <b>SPARQL</b> query that traverses <code>geo:sfTouches</code> over the RDF graph and sums the consumption of every neighbour. The query being executed appears below, verbatim. Everything happens in your browser.',
+    'vec.intro': 'Each dot is a neighbourhood, represented by the centroid of its readings. Choosing one issues a <b>SPARQL</b> query that traverses <code>agua:nearbyWithin1500m</code> over the RDF graph and sums the consumption of every neighbour. It is centroid proximity with a 1.5 km threshold, not a topological relation. The query being executed appears below, verbatim. Everything happens in your browser.',
 
     'vec.mapa':        'Territorial map',
     'vec.buscar':      'Search neighbourhood',
@@ -541,7 +541,7 @@
     'vec.est.listas':     '{n} neighbourhoods ready',
     'vec.est.error':      'error',
     'vec.est.sinLibs':    'no RDF libraries',
-    'vec.av.sinLibs':     'This explorer needs N3.js and Comunica from a CDN.',
+    'vec.av.sinLibs':     'This explorer needs the local copies of N3.js and Comunica included in the repository.',
 
     /* ---------------- outlying consumption (atipicos.js) ---------------- */
     'at.titulo':    'Zones with outlying consumption',

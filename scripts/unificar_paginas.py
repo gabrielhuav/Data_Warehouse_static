@@ -42,13 +42,9 @@ CABEZA = {
 # de documento y este va detrás del de Plotly, así que diferirlo los ordena.
 DIFERIDOS = {'assets/tema-graficas.js'}
 
-# Cada página precalienta sólo el origen que de verdad usa: el panel trae
-# Plotly de cdn.plot.ly y el mapa trae Leaflet de unpkg. Precalentar el otro
-# gasta un DNS + TLS para nada.
-PRECONNECT = {
-    'index.html': ['https://cdn.plot.ly'],
-    'mapa.html':  ['https://unpkg.com'],
-}
+# Las bibliotecas se distribuyen bajo assets/vendor/; no hay orígenes CDN que
+# precalentar.
+PRECONNECT = {}
 
 
 def limpiar(h: str) -> str:
@@ -79,13 +75,13 @@ def parchar(ruta: str, pagina: str) -> str:
     # Plotly y Leaflet en el <head> bloquean el primer pintado: 2.8 s en
     # escritorio y 9.2 s en movil segun el informe. Con defer el navegador
     # pinta primero y ejecuta despues, sin cambiar el orden entre ellos.
-    h = re.sub(r'(<script src="https://(?:cdn\.plot\.ly|unpkg\.com)/[^"]+")(?![^>]*defer)',
+    h = re.sub(r'(<script src="assets/vendor/[^"]+")(?![^>]*defer)',
                r'\1 defer', h)
     # Leaflet CSS: se precarga sin bloquear
-    h = h.replace('<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">',
-                  '<link rel="preload" as="style" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" '
+    h = h.replace('<link rel="stylesheet" href="assets/vendor/leaflet-1.9.4.css">',
+                  '<link rel="preload" as="style" href="assets/vendor/leaflet-1.9.4.css" '
                   'onload="this.rel=\'stylesheet\'">\n    '
-                  '<noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></noscript>')
+                  '<noscript><link rel="stylesheet" href="assets/vendor/leaflet-1.9.4.css"></noscript>')
     # --- peso: bundle parcial de Plotly -----------------------------
     # El panel sólo dibuja barras y dispersión. El bundle completo pesa
     # 1379 KB comprimidos y arrastra mapas 3D, sankey, contornos y demás:
@@ -94,7 +90,7 @@ def parchar(ruta: str, pagina: str) -> str:
     # scatter, con escalas y barras de color incluidas, que es todo lo que
     # usan las tres gráficas. La expresión no vuelve a casar una vez
     # sustituida, así que reaplicar el script no encadena prefijos.
-    h = re.sub(r'(cdn\.plot\.ly/)plotly-(\d[\d.]*\.min\.js)', r'\1plotly-basic-\2', h)
+    h = re.sub(r'(assets/vendor/)plotly-(\d[\d.]*\.min\.js)', r'\1plotly-basic-\2', h)
 
     # los datos se piden en cuanto se puede, no al final del parseo
     if 'rel="preload" as="fetch"' not in h:

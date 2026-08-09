@@ -167,7 +167,7 @@ def validar(d: dict) -> list[str]:
         sin_geo = sum(1 for r in d["consumo_colonia"] if r.get("latitud") is None)
         if sin_geo:
             p.append(f"{sin_geo} filas sin coordenada "
-                     "(¿corrio warehouse/etl/2b_geo.sql?)")
+                     "(¿corrio warehouse/etl/2_geo.sql?)")
     return p
 
 

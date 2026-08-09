@@ -21,6 +21,7 @@ a static interface that queries both without a backend.
 | --- | --- |
 | `warehouse/` | The data warehouse: star schema, ETL, source data and container |
 | `mapping.r2rml.ttl` | R2RML mapping from the relational schema to RDF |
+| `schema.ttl` | Data Cube structures, property ranges, ordinal SKOS scale and proximity vocabulary |
 | `index.html`, `mapa.html` | Dashboard and choropleth map |
 | `grafo.html` | SPARQL 1.1 explorer, running client-side |
 | `vecindad.html` | Territorial adjacency as interactive graph traversal |
@@ -61,8 +62,11 @@ The container loads both CSV files, runs the ETL and exposes PostgreSQL on port
 ## The knowledge graph
 
 `mapping.r2rml.ttl` declares seven triples maps over the real schema, reusing
-**RDF Data Cube** for observations, **GeoSPARQL** for territory and adjacency,
+**RDF Data Cube** for observations, **GeoSPARQL** for territory,
 **SKOS** for the ordinal development index and **OWL-Time** for periods.
+`schema.ttl` supplies the consumption and climate Data Cube structures, the
+unit attribute for cubic metres, and an explicit ordinal rank for the four
+development-index concepts.
 Materialising it yields about 761,000 triples:
 
 ```bash
@@ -71,11 +75,17 @@ python scripts/materializar_grafo.py \
 ```
 
 `grafo.html` and `vecindad.html` query `kg_demo.ttl`, a browser-sized subset of
-about 138,000 triples: every location with its centroid geometry, adjacency
+**140,499 triples**: every location with its centroid geometry, proximity
 limited to the six nearest neighbours within 1.5 km, and observations aggregated
-to the neighbourhood-period grain. The vocabulary is identical to the full
-mapping, so a query written against the subset runs unchanged against the whole
-graph. The subset declares itself as such through `agua:isSubsetOf`.
+to the neighbourhood-period grain. Its aggregated observations use the distinct
+`agua:aggobs/` namespace and `agua:consumoCDMXDemo`, linked to the full dataset
+with `prov:wasDerivedFrom`; they therefore cannot collide with raw observations.
+The proximity predicate is `agua:nearbyWithin1500m`: it is centroid proximity
+within 1.5 km, not a GeoSPARQL Simple Features topological relation.
+
+All JavaScript libraries are vendored under `assets/vendor/` (N3.js 1.17.2,
+Comunica Browser v3, Plotly-basic 3.0.1 and Leaflet 1.9.4, including Leaflet
+marker images). No third-party library is loaded from a CDN.
 
 ## Scope of the data
 
@@ -107,7 +117,7 @@ that authorship of the original static demonstration stays visible.
 - **Base map**: © [OpenStreetMap](https://www.openstreetmap.org/copyright)
   contributors, ODbL.
 
-Code in this repository is released under the MIT licence. The redistributed data
+Code in this repository is released under the MIT licence; see `LICENSE`. The redistributed data
 files keep the licences of their publishers.
 
 ## Status
@@ -117,5 +127,5 @@ and currently undergoing final review. Full publication details will be added
 once the proceedings are published.
 
 The version cited by the manuscript is frozen as release
-[`v1.3-icokg2026`](https://github.com/gabrielhuav/Data_Warehouse_static/releases/tag/v1.3-icokg2026).
+[`v1.4-icokg2026`](https://github.com/gabrielhuav/Data_Warehouse_static/releases/tag/v1.4-icokg2026).
 The repository head may evolve; the release will not.
