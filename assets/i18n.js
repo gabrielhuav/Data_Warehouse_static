@@ -181,7 +181,7 @@
     'gr.kpi.featNota':    'geo:Feature con geometría',
     'gr.kpi.ady':         'Relaciones de vecindad',
 
-    'gr.intro': 'Este grafo se materializa desde el almacén relacional con un mapeo <b>R2RML</b> declarativo, alineado a <b>RDF Data Cube</b> (el cubo de observaciones), <b>GeoSPARQL</b> (territorio y vecindad), <b>SKOS</b> (índice de desarrollo) y <b>OWL-Time</b> (periodos). Las consultas se ejecutan íntegramente en tu navegador: no hay servidor detrás.',
+    'gr.intro': 'Este grafo se materializa desde el almacén relacional con un mapeo <b>R2RML</b> declarativo, alineado a <b>RDF Data Cube</b> (el cubo de observaciones), <b>GeoSPARQL</b> (territorio), una relación propia de proximidad entre centroides, <b>SKOS</b> (índice de desarrollo) y <b>OWL-Time</b> (periodos). Las consultas se ejecutan íntegramente en tu navegador: no hay servidor detrás.',
 
     'gr.ejemplos':   'Consultas de ejemplo',
     'gr.motor':      'motor en el navegador',
@@ -454,7 +454,7 @@
     'gr.kpi.featNota':    'geo:Feature with geometry',
     'gr.kpi.ady':         'Adjacency relations',
 
-    'gr.intro': 'This graph is materialised from the relational warehouse through a declarative <b>R2RML</b> mapping, aligned to <b>RDF Data Cube</b> (the observation cube), <b>GeoSPARQL</b> (territory and adjacency), <b>SKOS</b> (development index) and <b>OWL-Time</b> (periods). Queries run entirely in your browser: there is no server behind this page.',
+    'gr.intro': 'This graph is materialised from the relational warehouse through a declarative <b>R2RML</b> mapping, aligned to <b>RDF Data Cube</b> (the observation cube), <b>GeoSPARQL</b> (territory), a custom centroid-proximity relation, <b>SKOS</b> (development index) and <b>OWL-Time</b> (periods). Queries run entirely in your browser: there is no server behind this page.',
 
     'gr.ejemplos':   'Example queries',
     'gr.motor':      'engine in the browser',
