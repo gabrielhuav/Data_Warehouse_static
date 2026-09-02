@@ -67,10 +67,10 @@
 
 \author{%
 Eduardo Uriel Vel\'azquez Arrieta\orcidID{\href{https://orcid.org/0009-0001-8745-2717}{0009-0001-8745-2717}} \and
-% ORCID enlazados a orcid.org. llncs mete \orcidID en modo matematico, asi que una X suelta saldria en
+% ORCID enlazados a orcid.org. Desde llncs 2.24 \orcidID se compone en modo texto, asi que la X va
 % cursiva matematica y al copiarla del PDF da U+1D44B en vez de X: el ORCID
 % quedaria roto. \mathrm{X} la deja recta y copiable.
-Omar Fernando Pulido Morales\orcidID{\href{https://orcid.org/0009-0001-5698-987X}{0009-0001-5698-987\mathrm{X}}} \and
+Omar Fernando Pulido Morales\orcidID{\href{https://orcid.org/0009-0001-5698-987X}{0009-0001-5698-987X}} \and
 Emilio Garc\'ia L\'opez\orcidID{\href{https://orcid.org/0009-0005-2550-0671}{0009-0005-2550-0671}} \and
 Clara Aide Hern\'andez Mart\'inez\orcidID{\href{https://orcid.org/0009-0008-0647-8458}{0009-0008-0647-8458}} \and
 Gabriel Hurtado Avil\'es\thanks{Corresponding author: \href{mailto:gabrielhuav@gmail.com}{gabrielhuav@gmail.com}}\orcidID{\href{https://orcid.org/0009-0002-5686-1822}{0009-0002-5686-1822}}%
@@ -87,10 +87,10 @@ Gabriel Hurtado Avil\'es\thanks{Corresponding author: \href{mailto:gabrielhuav@g
 \maketitle
 
 \begin{abstract}
-This work presents a data warehouse for the territorial information retrieval of water consumption in Mexico City (CDMX), built from heterogeneous open sources. The contribution lies in \icokg{three} methodological elements: an ETL process that consolidates official SACMEX data into a unified dimensional model, \icokg{a declarative R2RML mapping that republishes the resulting star schema as an RDF knowledge graph whose Data Cube structure is validated against the vocabulary's integrity constraints, so that territorial retrieval can also be expressed as graph traversal,} and a deployment methodology that guarantees an accessible demonstration through a \icokg{static version published on GitHub Pages} and backed by an updated public repository. The prototype exposes the model through a retrieval interface with an interactive choropleth map, filters by year, bimester, borough (\emph{alcald\'ia}) and neighborhood (\emph{colonia}), and an exploratory module for atypical consumption, turning dispersed open data into queryable information for urban diagnosis, research and citizen monitoring.
+This work presents a data warehouse for the territorial information retrieval of water consumption in Mexico City (CDMX), built from heterogeneous open sources. The contribution lies in \icokg{three} methodological elements: an ETL process that consolidates official SACMEX data into a unified dimensional model of 70,886 records, \icokg{a declarative R2RML mapping that republishes the resulting star schema as an RDF knowledge graph whose Data Cube structure is validated against the vocabulary's integrity constraints, so that territorial retrieval can also be expressed as graph traversal,} and a deployment methodology that guarantees an accessible demonstration through a \icokg{static version published on GitHub Pages} and backed by an updated public repository. The prototype exposes the model through a retrieval interface with an interactive choropleth map, filters by year, bimester, borough (\emph{alcald\'ia}) and neighborhood (\emph{colonia}), and an exploratory module for atypical consumption, turning dispersed open data into queryable information for urban diagnosis, research and citizen monitoring.
 \end{abstract}
 
-\keywords{Data warehouse \and Information retrieval \and Open data \and ETL \and \icokg{Knowledge graph \and RDF Data Cube \and} Water consumption \and Mexico City}
+\keywords{Data warehouse, Information retrieval, Open data, ETL, \icokg{Knowledge graph, RDF Data Cube,} Water consumption, Mexico City}
 
 \section{Introduction}
 
@@ -666,37 +666,35 @@ The authors declare that they have no conflicts of interest relevant to the cont
 
 \begingroup\footnotesize\setlength{\parskip}{0pt}
 \begin{thebibliography}{99}
-\setlength{\itemsep}{0pt}
-
-\bibitem{kimball} Kimball, R., Ross, M.: The Data Warehouse Toolkit: The Definitive Guide to Dimensional Modeling. 3rd edn. Wiley, Indianapolis (2013). ISBN 9781118530801
-
-\bibitem{vassiliadis2009} Vassiliadis, P.: A Survey of Extract--Transform--Load Technology. International Journal of Data Warehousing and Mining \textbf{5}(3), 1--27 (2009). \url{https://doi.org/10.4018/jdwm.2009070101}
-
-\bibitem{soares2019} Soares, J., Leite, P., Teixeira, P., Lopes, N., Silva, J.P.: Data Warehouse for the Monitoring and Analysis of Water Supply and Consumption. In: Ramos, I., Quaresma, R., Resende da Silva, P., Oliveira, T. (eds.) Information Systems for Industry 4.0. Springer, Cham (2019). \url{https://doi.org/10.1007/978-3-030-14850-8_1}
-
 \bibitem{abecker2014} Abecker, A., Brauer, T., Magoutas, B., Mentzas, G., Papageorgiou, N., Quenzer, M.: A Sensor and Semantic Data Warehouse for Integrated Water Resource Management. EnviroInfo 2014. BIS-Verlag, Oldenburg (2014)
-
-\bibitem{vetro2016} Vetr\`o, A., Canova, L., Torchiano, M., Orozco Minotas, C., Iemma, R., Morando, F.: Open data quality measurement framework. Government Information Quarterly \textbf{33}(2), 325--337 (2016). \url{https://doi.org/10.1016/j.giq.2016.02.001}
 
 \bibitem{berro2015} Berro, A., Megdiche, I., Teste, O.: A Content-Driven ETL Processes for Open Data. In: Bassiliades, N., et al. (eds.) New Trends in Database and Information Systems II. Springer, Cham (2015). \url{https://doi.org/10.1007/978-3-319-10518-5_3}
 
-\bibitem{purves2018} Purves, R.S., Clough, P., Jones, C.B., Hall, M.H., Murdock, V.: Geographic Information Retrieval. Foundations and Trends in Information Retrieval \textbf{12}(2--3), 164--318 (2018). \url{https://doi.org/10.1561/1500000034}
-
-\bibitem{sandve2013} Sandve, G.K., Nekrutenko, A., Taylor, J., Hovig, E.: Ten Simple Rules for Reproducible Computational Research. PLoS Computational Biology \textbf{9}(10), e1003285 (2013). \url{https://doi.org/10.1371/journal.pcbi.1003285}
+\bibitem{carhomburg2022}\icokg{ Car, N.J., Homburg, T.: GeoSPARQL 1.1: motivations, details and applications of the decadal update to the most important geospatial LOD standard. ISPRS International Journal of Geo-Information \textbf{11}(2), 117 (2022). \url{https://doi.org/10.3390/ijgi11020117}}
 
 \bibitem{hill2023} Hill, D., Dunham, C., Larsen, D.A., Collins, M.: Operationalizing an open-source dashboard for wastewater-based surveillance. MethodsX \textbf{11}, 102299 (2023). \url{https://doi.org/10.1016/j.mex.2023.102299}
 
-\bibitem{villa2026} \icokg{Villa Vargas, J.M., Hurtado Avil\'es, G., Climent Hern\'andez, J.A.: Cuando M\'exico tiembla: la historia contada por los datos. AZCATL Revista de Divulgaci\'on en Ciencias, Ingenier\'ia e Innovaci\'on \textbf{4}(6), 28--33 (2026). \url{https://doi.org/10.24275/AZC2026E1004}}
+\bibitem{kimball} Kimball, R., Ross, M.: The Data Warehouse Toolkit: The Definitive Guide to Dimensional Modeling. 3rd edn. Wiley, Indianapolis (2013). ISBN 9781118530801
+
+\bibitem{purves2018} Purves, R.S., Clough, P., Jones, C.B., Hall, M.H., Murdock, V.: Geographic Information Retrieval. Foundations and Trends in Information Retrieval \textbf{12}(2--3), 164--318 (2018). \url{https://doi.org/10.1561/1500000034}
+
+\bibitem{roussey2023}\icokg{ Roussey, C., Gu\'eret, C., Laporte, M.-A.: Editorial: knowledge graph technologies --- the next frontier of the food, agriculture, and water domains. Frontiers in Artificial Intelligence \textbf{6}, 1319844 (2023). \url{https://doi.org/10.3389/frai.2023.1319844}}
 
 \bibitem{sacmex} SACMEX: Consumo de agua. \icokg{Resource \emph{Consumo Agua (1er Semestre 2019)}, CSV. Portal de Datos Abiertos de la Ciudad de M\'exico, Agencia Digital de Innovaci\'on P\'ublica. Resource last updated 2 February 2023. \url{https://datos.cdmx.gob.mx/dataset/consumo-agua}. Accessed May 2026}
 
-\bibitem{datacube}\icokg{ World Wide Web Consortium: The RDF Data Cube vocabulary. W3C Recommendation, 16 January 2014. \url{https://www.w3.org/TR/vocab-data-cube/}}
+\bibitem{sandve2013} Sandve, G.K., Nekrutenko, A., Taylor, J., Hovig, E.: Ten Simple Rules for Reproducible Computational Research. PLoS Computational Biology \textbf{9}(10), e1003285 (2013). \url{https://doi.org/10.1371/journal.pcbi.1003285}
+
+\bibitem{soares2019} Soares, J., Leite, P., Teixeira, P., Lopes, N., Silva, J.P.: Data Warehouse for the Monitoring and Analysis of Water Supply and Consumption. In: Ramos, I., Quaresma, R., Resende da Silva, P., Oliveira, T. (eds.) Information Systems for Industry 4.0. Springer, Cham (2019). \url{https://doi.org/10.1007/978-3-030-14850-8_1}
+
+\bibitem{vassiliadis2009} Vassiliadis, P.: A Survey of Extract--Transform--Load Technology. International Journal of Data Warehousing and Mining \textbf{5}(3), 1--27 (2009). \url{https://doi.org/10.4018/jdwm.2009070101}
+
+\bibitem{vetro2016} Vetr\`o, A., Canova, L., Torchiano, M., Orozco Minotas, C., Iemma, R., Morando, F.: Open data quality measurement framework. Government Information Quarterly \textbf{33}(2), 325--337 (2016). \url{https://doi.org/10.1016/j.giq.2016.02.001}
+
+\bibitem{villa2026} \icokg{Villa Vargas, J.M., Hurtado Avil\'es, G., Climent Hern\'andez, J.A.: Cuando M\'exico tiembla: la historia contada por los datos. AZCATL Revista de Divulgaci\'on en Ciencias, Ingenier\'ia e Innovaci\'on \textbf{4}(6), 28--33 (2026). \url{https://doi.org/10.24275/AZC2026E1004}}
 
 \bibitem{r2rml}\icokg{ World Wide Web Consortium: R2RML --- RDB to RDF mapping language. W3C Recommendation, 27 September 2012. \url{https://www.w3.org/TR/r2rml/}}
 
-\bibitem{carhomburg2022}\icokg{ Car, N.J., Homburg, T.: GeoSPARQL 1.1: motivations, details and applications of the decadal update to the most important geospatial LOD standard. ISPRS International Journal of Geo-Information \textbf{11}(2), 117 (2022). \url{https://doi.org/10.3390/ijgi11020117}}
-
-\bibitem{roussey2023}\icokg{ Roussey, C., Gu\'eret, C., Laporte, M.-A.: Editorial: knowledge graph technologies --- the next frontier of the food, agriculture, and water domains. Frontiers in Artificial Intelligence \textbf{6}, 1319844 (2023). \url{https://doi.org/10.3389/frai.2023.1319844}}
+\bibitem{datacube}\icokg{ World Wide Web Consortium: The RDF Data Cube vocabulary. W3C Recommendation, 16 January 2014. \url{https://www.w3.org/TR/vocab-data-cube/}}
 
 \end{thebibliography}\endgroup
 
