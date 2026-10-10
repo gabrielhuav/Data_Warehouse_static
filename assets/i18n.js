@@ -301,7 +301,29 @@
 
     /* ---------------- puente al mapa (enlace-vecindad.js) ---------------- */
     'ev.alcaldia': 'Ver colonias y su vecindad &rarr;',
-    'ev.colonia':  'Ver sus colonias vecinas &rarr;'
+    'ev.colonia':  'Ver sus colonias vecinas &rarr;',
+
+    /* ---------------- mapa base (mapa-teselas.js) ---------------- */
+    'teselas.pregunta':  '¿No carga el mapa?',
+    'teselas.probar':    'Probar otro proveedor',
+    'teselas.elegir':    'Elegir el proveedor del mapa base',
+    'teselas.titulo':    'Mapa base',
+    'teselas.explica':   'Cada proveedor se comprueba antes de usarlo; si deja de responder, el mapa pasa solo al siguiente. La copia local se sirve desde este mismo sitio y no depende de ningún servidor externo.',
+    'teselas.local':     'Copia local',
+    'teselas.aviso':     '{antes} no respondía; ahora el mapa usa {ahora}.',
+    'teselas.usando':    'Ahora el mapa usa {nombre}.',
+    'teselas.estado.uso':         'en uso',
+    'teselas.estado.ok':          'disponible',
+    'teselas.estado.falla':       'no responde',
+    'teselas.estado.comprobando': 'comprobando…',
+    'teselas.nota.osm':      'el del artículo',
+    'teselas.nota.gris':     'gris claro u oscuro',
+    'teselas.nota.calles':   'callejero',
+    'teselas.nota.hot':      'estilo humanitario',
+    'teselas.nota.topo':     'topográfico',
+    'teselas.nota.satelite': 'imagen de satélite',
+    'teselas.nota.carto':    'sólo si no muestra marca de agua',
+    'teselas.nota.local':    'OpenStreetMap, servido desde este sitio'
   },
 
   en: {
@@ -574,7 +596,29 @@
 
     /* ---------------- bridge from the map (enlace-vecindad.js) ------- */
     'ev.alcaldia': 'See its neighbourhoods and adjacency &rarr;',
-    'ev.colonia':  'See its neighbouring units &rarr;'
+    'ev.colonia':  'See its neighbouring units &rarr;',
+
+    /* ---------------- basemap (mapa-teselas.js) ---------------- */
+    'teselas.pregunta':  'Map not loading?',
+    'teselas.probar':    'Try another provider',
+    'teselas.elegir':    'Choose the basemap provider',
+    'teselas.titulo':    'Basemap',
+    'teselas.explica':   'Each provider is checked before it is used; if it stops answering, the map moves to the next one on its own. The local copy is served from this same site and depends on no external server.',
+    'teselas.local':     'Local copy',
+    'teselas.aviso':     '{antes} was not answering; the map now uses {ahora}.',
+    'teselas.usando':    'The map now uses {nombre}.',
+    'teselas.estado.uso':         'in use',
+    'teselas.estado.ok':          'available',
+    'teselas.estado.falla':       'not answering',
+    'teselas.estado.comprobando': 'checking…',
+    'teselas.nota.osm':      'the one in the paper',
+    'teselas.nota.gris':     'light or dark grey',
+    'teselas.nota.calles':   'street map',
+    'teselas.nota.hot':      'humanitarian style',
+    'teselas.nota.topo':     'topographic',
+    'teselas.nota.satelite': 'satellite imagery',
+    'teselas.nota.carto':    'only if it shows no watermark',
+    'teselas.nota.local':    'OpenStreetMap, served from this site'
   }
 
   };

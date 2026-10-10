@@ -321,3 +321,84 @@ tbody td{overflow-wrap:anywhere}
 a:not(.btn):not(.nav a):not(.tema-btn):not(.ir-vecindad){text-decoration-skip-ink:auto}
 .sub,.kpi-nota,.atip-nota{color:var(--texto-2)}
 main:focus{outline:none}
+
+/* ---------- mapa base (assets/mapa-teselas.js) ----------
+   Control «¿No carga el mapa? Probar otro proveedor», abajo a la derecha,
+   sobre la atribución, en los dos mapas. Los proveedores que no tienen
+   versión oscura se invierten con un filtro cuando el sitio está en modo
+   oscuro; la copia local se dibuja ya con los colores de cada modo. */
+.leaflet-layer.teselas-invertidas{
+  filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.88) saturate(.55);
+}
+.mapa-teselas{
+  display:flex; flex-direction:column; align-items:flex-end; gap:6px;
+  max-width:340px;              /* mapa-teselas.js lo ajusta al ancho del mapa */
+  font-family:var(--sans); color:var(--texto);
+}
+.mapa-teselas button{
+  appearance:none; margin:0; border:0; background:none;
+  color:inherit; font:inherit; cursor:pointer;
+}
+.mapa-teselas__barra{
+  display:flex; align-items:stretch; overflow:hidden; max-width:100%;
+  background:var(--superficie); border:1px solid var(--borde);
+  border-radius:var(--r-s); box-shadow:var(--sombra-2);
+}
+.mapa-teselas__probar,.mapa-teselas__abrir{
+  display:flex; align-items:center; gap:6px; padding:6px 10px;
+  font-size:.74rem; line-height:1.2; white-space:nowrap; transition:background .14s;
+}
+/* Si no cabe todo, cede el nombre del proveedor (la lista lo da entero),
+   nunca la acción. */
+.mapa-teselas__probar{color:var(--texto-2); flex:none}
+.mapa-teselas__probar strong{color:var(--texto); font-weight:650}
+.mapa-teselas__abrir{border-left:1px solid var(--borde) !important; color:var(--texto-2); min-width:0}
+.mapa-teselas__actual{min-width:0; overflow:hidden; text-overflow:ellipsis}
+.mapa-teselas__probar:hover,.mapa-teselas__abrir:hover,
+.mapa-teselas__abrir[aria-expanded="true"]{background:var(--marca-100)}
+.mapa-teselas button:focus-visible{outline:2px solid var(--marca-600); outline-offset:-2px}
+.mapa-teselas svg{width:14px; height:14px; flex:none}
+.mapa-teselas__probar svg{color:var(--marca-500)}
+.mapa-teselas__abrir[aria-expanded="false"] svg{transform:rotate(180deg)}
+
+.mapa-teselas__panel,.mapa-teselas__aviso{
+  background:var(--superficie); border:1px solid var(--borde);
+  border-radius:var(--r-m); box-shadow:var(--sombra-3);
+}
+.mapa-teselas__panel{width:100%; padding:10px 8px 8px; overflow-y:auto; overscroll-behavior:contain}
+.mapa-teselas__panel[hidden],.mapa-teselas__aviso[hidden]{display:none}
+.mapa-teselas__titulo{
+  margin:0 6px 6px; font-size:.68rem; font-weight:650; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--texto-2);
+}
+.mapa-teselas__lista{list-style:none; margin:0; padding:0}
+.mapa-teselas__opcion{
+  width:100%; display:grid !important; grid-template-columns:10px 1fr auto;
+  grid-template-areas:"punto nombre estado" "punto tipo estado";
+  column-gap:8px; align-items:center; padding:5px 8px !important;
+  border-radius:var(--r-s); text-align:left;
+}
+.mapa-teselas__opcion:hover{background:var(--superficie-2)}
+.mapa-teselas__opcion[aria-pressed="true"]{background:var(--marca-100)}
+.mapa-teselas__punto{
+  grid-area:punto; width:8px; height:8px; border-radius:50%;
+  background:var(--texto-3); opacity:.45;
+}
+.mapa-teselas__opcion[data-estado="uso"] .mapa-teselas__punto,
+.mapa-teselas__opcion[data-estado="ok"] .mapa-teselas__punto{background:var(--ok); opacity:1}
+.mapa-teselas__opcion[data-estado="falla"] .mapa-teselas__punto{background:var(--error); opacity:1}
+.mapa-teselas__opcion[data-estado="comprobando"] .mapa-teselas__punto{background:var(--alerta); opacity:1}
+.mapa-teselas__nombre{grid-area:nombre; font-size:.78rem; font-weight:600}
+.mapa-teselas__tipo{grid-area:tipo; font-size:.68rem; color:var(--texto-2)}
+.mapa-teselas__estado{grid-area:estado; font-size:.68rem; color:var(--texto-2)}
+.mapa-teselas__opcion[data-estado="falla"] .mapa-teselas__estado{color:var(--error)}
+.mapa-teselas__nota{
+  margin:8px 6px 0; font-size:.68rem; line-height:1.45; color:var(--texto-2); white-space:normal;
+}
+.mapa-teselas__aviso{padding:7px 11px; font-size:.74rem; line-height:1.35}
+
+/* Estrecho: sólo la acción y el proveedor, sin la pregunta. */
+@media (max-width:600px){
+  .mapa-teselas__pregunta{display:none}
+  .mapa-teselas__probar,.mapa-teselas__abrir{padding:6px 8px}
+}

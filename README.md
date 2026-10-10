@@ -25,6 +25,7 @@ a static interface that queries both without a backend.
 | `index.html`, `mapa.html` | Dashboard and choropleth map |
 | `grafo.html` | SPARQL 1.1 explorer, running client-side |
 | `vecindad.html` | Territorial adjacency as interactive graph traversal |
+| `assets/mapa-teselas.js`, `assets/mapa-base/` | Base-map provider chain shared by both maps, and its offline OpenStreetMap copy |
 | `scripts/` | Reproduction, export and benchmark scripts |
 | `paper/` | Manuscript sources |
 | `evaluacion-ml/` | Anomaly-detection evaluation protocol |
@@ -119,6 +120,56 @@ precision--recall curve.
 `evaluacion-ml/evidencia_anomalias.txt` records the aggregate run and
 `evaluacion-ml/curvas_precision_recall.csv` records all precision--recall points.
 
+## Base map
+
+Both maps, `mapa.html` and `vecindad.html`, take their base map from
+`assets/mapa-teselas.js`, one module shared by the two pages. Until October
+2026 they asked OpenStreetMap for tiles and nobody else. A sister artefact with
+the same design lost its map during a talk when its only provider, CARTO, began
+answering keyless requests with an "API KEY REQUIRED" image served as `200 OK`:
+Leaflet does not treat that as an error, so nothing switched provider. The
+module replaces the single dependency with a chain of free providers that need
+no key:
+
+1. OpenStreetMap, the provider used in the paper;
+2. Esri Canvas (light or dark grey), Esri World Street Map, OpenStreetMap HOT,
+   OpenTopoMap and Esri World Imagery;
+3. CARTO, last, and only if it passes the watermark check;
+4. a **local copy** served from this same site, so if the page loaded, the
+   copy loads too: an OpenStreetMap extract of Mexico City
+   (`assets/mapa-base/cdmx.json`, about 1 MB: motorways to tertiary roads,
+   rivers and canals, bodies of water, large parks, the airport, the limits
+   between alcaldías and place names), drawn in the browser;
+5. and if even that file cannot be fetched, the outline of the city and its
+   alcaldías, embedded in the module itself.
+
+Each provider is checked before it is used: two adjacent tiles from the centre
+of the city must arrive, be images and differ, because a watermark is the same
+image at every coordinate. The provider in use is watched; if its tiles fail
+or stall, the map moves to the next one on its own and says so, and when the
+network comes back it returns to a remote provider. If the map has had nothing
+to show for 1.5 s, the local copy is drawn underneath in the meantime, so it
+never waits blank. In dark mode, providers without a dark version are inverted
+with CSS.
+
+A control at the bottom right of each map, *Map not loading? Try another
+provider*, lists every provider with its live status; the choice made there is
+remembered, like the theme and the language. `?teselas=<id>` pins one provider
+for a single visit: `osm`, `esri-gris`, `esri-calles`, `osm-hot`, `topo`,
+`esri-satelite`, `carto` or `local`. For example,
+`mapa.html?teselas=local` uses no external server at all. Published links
+without the parameter behave as before, starting from OpenStreetMap.
+
+The local copy is rebuilt with
+
+```bash
+python scripts/generar_mapa_base.py
+```
+
+which downloads the extract from Overpass, derives the city outline and the
+alcaldía limits from `alcaldias.geojson`, and rewrites the embedded fallback in
+`assets/mapa-teselas.js`.
+
 ## Scope of the data
 
 The source publishes the **first three bimesters of 2019** and no more; this
@@ -147,7 +198,9 @@ that authorship of the original static demonstration stays visible.
   Mexico City Open Data Portal. Accessed May 2026.
 - **Climate**: [Open-Meteo](https://open-meteo.com/), CC BY 4.0.
 - **Base map**: © [OpenStreetMap](https://www.openstreetmap.org/copyright)
-  contributors, ODbL.
+  contributors, ODbL, served by the provider credited on the map (see
+  [Base map](#base-map)); the local copy is an OpenStreetMap extract under the
+  same licence.
 
 Code in this repository is released under the MIT licence; see `LICENSE`. The redistributed data
 files keep the licences of their publishers.
