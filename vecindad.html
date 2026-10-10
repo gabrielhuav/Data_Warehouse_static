@@ -113,6 +113,7 @@
 
 <script src="assets/nav.js"></script>
 <script src="assets/vendor/leaflet-1.9.4.js"></script>
+<script src="assets/mapa-teselas.js"></script>
 <script src="assets/vendor/n3-1.17.2.min.js"></script>
 <script src="assets/vendor/comunica-browser-v3.js"></script>
 <script>
@@ -149,10 +150,16 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
   // ---------------- mapa ----------------
   mapa = L.map('mapa', { preferCanvas: true, zoomControl: true }).setView([19.38, -99.13], 11);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 18,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(mapa);
+  // Mapa base: assets/mapa-teselas.js, o la capa de siempre si faltara.
+  try {
+    MapaTeselas.montar(mapa, { maxZoom: 18 });
+  } catch (e) {
+    console.error(e);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(mapa);
+  }
   capaLineas = L.layerGroup().addTo(mapa);
 
   // Los marcadores toman su color del tema activo, leyendo las variables CSS.
