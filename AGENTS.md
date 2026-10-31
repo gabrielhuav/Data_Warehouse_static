@@ -41,7 +41,7 @@ participación de los trabajos 37 y 38 ya se confirmó por correo el 13 de octub
 ### Requisitos de IJCOPI
 
 - Inglés, ortografía británica; en Microsoft Word y **con la plantilla obligatoria**
-  `paper/2027-IJCOPI_template_simple_British_English.docx`, o se rechaza en automático.
+  `paper/ijcopi/2027-IJCOPI_template_simple_British_English.docx`, o se rechaza en automático.
 - Extender **al menos 40 %** la versión de ICOKG y **marcar los cambios en amarillo**.
 - **Máximo 15 páginas** en ese formato (la guía general dice 20; manda el correo).
 - Resumen de 70 a 150 palabras; 4 a 6 palabras clave; citas y referencias en APA 7.
@@ -61,6 +61,8 @@ participación de los trabajos 37 y 38 ya se confirmó por correo el 13 de octub
 
 | Ruta | Qué es |
 | --- | --- |
+| `paper/` (raíz) | **Artículo de ICOKG, congelado**: `dw_agua_icokg2026.tex`, sus PDF, `llncs.cls`, `Mapa1.png`, `Mapa2.png` |
+| `paper/ijcopi/` | **Artículo de IJCOPI, autocontenido**: fuente, plantilla, figuras (copias de los mapas y `figura_anomalias.png`) y scripts |
 | `paper/ijcopi/dw_agua_ijcopi.tex` | **Fuente de la versión extendida**. `\nuevo{...}` y el entorno `nuevobloque` marcan lo que va en amarillo |
 | `paper/ijcopi/latex_a_ijcopi.py` | Conversor a la plantilla Word; aquí viven las citas y referencias APA (`CITAS`, `REFERENCIAS`; `!` = referencia nueva) |
 | `paper/ijcopi/word_a_pdf.ps1` | Exporta a PDF con Word y cuenta páginas y palabras |
@@ -76,7 +78,7 @@ participación de los trabajos 37 y 38 ya se confirmó por correo el 13 de octub
 Para regenerar la v1 (desde `paper/ijcopi/`):
 
 ```bash
-py -3 latex_a_ijcopi.py dw_agua_ijcopi.tex ../2027-IJCOPI_template_simple_British_English.docx .. dw_agua_IJCOPI_v1_extendida.docx
+py -3 latex_a_ijcopi.py dw_agua_ijcopi.tex 2027-IJCOPI_template_simple_British_English.docx . dw_agua_IJCOPI_v1_extendida.docx
 py -3 verificar_amarillo.py dw_agua_IJCOPI_v0_base.docx dw_agua_IJCOPI_v1_extendida.docx
 ```
 
@@ -109,6 +111,10 @@ línea; revísalas si ese número cambia.
 - **El `indice_des` es fiscal** (Código Fiscal CDMX, art. 172), no el IDS de Evalúa.
 - **Las colonias de SACMEX coinciden con el catálogo IECM 2019**: el cruce exacto da
   `cve_col` y polígono a las 70,886 filas de hechos.
+- **Copias verificadas de "Reportes de agua"** en `Actronix09/fuentes-alternas`
+  (`agua-reportes-sacmex/datos/`): `historico_2018_2021.csv` (MD5 `dc406dc6...`) e
+  `incidentes_2022_2024.csv` (MD5 `a103d81c...`) son idénticas a los MD5 y tamaños que
+  publica el CKAN del portal. Sirven mientras el portal bloquee esta PC.
 
 ## Avisos técnicos
 
@@ -126,6 +132,9 @@ línea; revísalas si ese número cambia.
 - **Trabajo 37:** tiene su base en Word en `PublicMunicipalWorks_DWH/paper/ijcopi/`;
   falta extenderlo.
 - **Sin revisar por humanos:** el texto nuevo de la v1 y el informe.
+- **Sin commit (31 oct):** la reorganización de `paper/` y este AGENTS.md. Gabriel decide
+  cuándo se hace commit. No hay push mientras el verificador marque el 403 del portal;
+  falta que Gabriel abra el enlace en su navegador para confirmar que sigue vivo.
 
 ### Pendientes conocidos
 
@@ -139,10 +148,44 @@ línea; revísalas si ese número cambia.
 
 ## Siguiente paso
 
-Gabriel tiene una idea de qué hacer con el artículo; pregúntale cuál es antes de
-proponer otro plan.
+**La idea de Gabriel para la extensión (31 oct):** ampliar el almacén con muchos más
+datos: nuevas tablas de hechos y dimensiones, un cubo de datos, y lo que haga falta
+para que el DWH crezca. El primer paso es una investigación a fondo (deep research)
+de fuentes abiertas confiables, de preferencia con DOI o ISBN, con enlace de descarga.
+
+Condiciones que salen de la revisión del profesor al ejercicio de un alumno
+(repo `prdx919/Agua_en_la_cdmx`), y que esta extensión debe cumplir:
+
+- Cada cifra debe aparecer de verdad en la fuente citada. Nada inventado ni mal
+  atribuido. Las listas de deep research (incluida la de Gemini que Gabriel compartió)
+  son candidatas, no hechos: cada DOI, enlace y cifra se verifica antes de usarse.
+- Los datos nuevos entran por un ETL real desde el archivo descargado: nada de valores
+  escritos a mano en SQL o JS, ni CSV que no se cargan.
+- Toda fuente citada se usa en algún dato; si no se usa, no se cita.
+- Hay que tocar los datos originales (integrarlos), no solo agregar capas sueltas.
+
+Referencia de cómo se hizo bien: `Actronix09/fuentes-alternas`, carpeta
+`agua-reportes-sacmex/` (ETL con procedencia y SHA-256, 555,752 reportes integrados).
+
+Para la investigación:
+
+- Parte de `reports/Datos abiertos de agua CDMX.md` y de `research_notes/`, que ya
+  están verificados. No los repitas.
+- Gabriel pasará en la sesión la lista de Gemini y el correo del profesor; no están en
+  el repositorio.
+- datos.cdmx.gob.mx bloquea esta PC: lo que venga de ahí lo descarga Gabriel en su
+  navegador, o se usa una copia verificada por MD5 contra el CKAN.
+- Límite de 15 páginas: la v1 ya ocupa 14, así que lo nuevo obliga a recortar.
 
 ## Bitácora
 
-- 2026-10-31, Claude (Claude Code): creó esta memoria y subió la v1, los análisis,
-  el informe y las plantillas a `main`.
+- 2026-10-31, Claude (Claude Code): creó esta memoria y preparó la v1, los análisis,
+  el informe y las plantillas, pero no hizo commit ni push. Gabriel los subió a
+  `main` en `703d4d0` ("Update context 1/4").
+- 2026-10-31, Antigravity (Claude Opus): el único fallo del verificador es
+  `datos.cdmx.gob.mx/dataset/consumo-agua` (403). El cortafuegos de la ADIP bloquea
+  todo el portal a esta PC (portada, `robots.txt` y API). No es una página retirada.
+  Separó las carpetas: ICOKG queda en la raíz de `paper/`; la plantilla y
+  `figura_anomalias.png` pasaron a `paper/ijcopi/`, con copias de `Mapa1.png` y
+  `Mapa2.png`. La v1 regenerada tiene el mismo texto (MD5 `f680bc67...`, 46 palabras
+  sin amarillo). Registró la idea de Gabriel en "Siguiente paso".
