@@ -160,6 +160,10 @@ línea; revísalas si ese número cambia.
 - El texto extraído del PDF de Huerta-Vergara no respeta el orden de las tablas.
   `cargar_vulnerabilidad.py` lo resuelve y valida contra el Apéndice B.
 
+- Esta PC tiene `core.autocrlf=true`, que altera los saltos de línea al guardar y al clonar.
+  `warehouse_ampliado/.gitattributes` protege `snapshots/`; sin él, el MD5 del manifiesto falla
+  en un clon. Para comprobarlo usa `git show HEAD:<ruta>` o un clon nuevo: el árbol de trabajo
+  puede coincidir aunque Git haya guardado otros bytes.
 ## Estado actual
 
 - **Hecho:** v0 base y v1 extendida (8,311 palabras contra 5,615, +48 %; 14 páginas;
@@ -240,6 +244,7 @@ datos, así que ya se puede retomar si lo decide.
   `warehouse_ampliado/` sobre PostgreSQL, sin tocar `warehouse/`. La verificación cruzada entre
   fuentes corrigió el informe anterior (no hay fugas en 2019, cifras de Huerta-Vergara que no
   están en el PDF, formato y mínimo de InSAR, 63 municipios en la ZM) y detectó que el volumen
-  del CNGMD no sirve sin filtro. El verificador de Springer terminó en `fallos: 2` (el 403
-  conocido y una caída de `azcatl.azc.uam.mx`), así que dejó el trabajo en un commit local y
-  el push queda sujeto a la decisión de Gabriel.
+  del CNGMD no sirve sin filtro. Un clon de prueba mostró que Git alteraba 19 snapshots; lo
+  corrigió con `.gitattributes` y lo confirmó en dos clones nuevos. El verificador de Springer
+  terminó en `fallos: 2` (el 403 conocido y una caída de `azcatl.azc.uam.mx`), así que dejó el
+  trabajo en commits locales y el push queda sujeto a la decisión de Gabriel.

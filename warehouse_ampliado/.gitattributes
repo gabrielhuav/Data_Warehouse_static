@@ -1,2 +1,2 @@
-# Se verifican por MD5: git no debe tocar sus saltos de linea
+# Se verifican por MD5: Git no debe tocar sus saltos de línea
 snapshots/** -text
