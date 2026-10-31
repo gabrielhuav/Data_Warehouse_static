@@ -8,7 +8,7 @@ fallos: 0
 descargar exit: 0, minutos: 11.5
 
 ## Construccion y verificacion
-clon en: 88dbbff Warn about long Windows paths when reproducing the ETL
+clon en: 22dc1e8 Warn about long Windows paths when reproducing the ETL
 almacen original listo: True (70886 filas)
 ejecutar exit: 0, minutos: 2
 verificaciones fallidas: 0

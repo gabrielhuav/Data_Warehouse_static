@@ -1063,15 +1063,15 @@ def declaracion(etiqueta, runs):
 
 URL_RELEASE = "https://github.com/gabrielhuav/Data_Warehouse_static/releases/tag/v1.5-icokg2026"
 assert URL_RELEASE in tex
-# Enlaces nuevos de la version extendida. La rama solo existe en GitHub despues del push.
-URL_RAMA = "https://github.com/gabrielhuav/Data_Warehouse_static/tree/ijcopi-zmvm"
+# La version extendida se publica en su propio repositorio; los enlaces de ICOKG no cambian.
+URL_REPO = "https://github.com/gabrielhuav/Data_Warehouse_ZMVM"
 declaracion("Data Availability Statement:", [
     {"text": "The source files, the warehouse, the R2RML mapping, the scripts and the static demonstration are "
              "distributed in the archived release "},
     {"text": URL_RELEASE, "link": URL_RELEASE}, {"text": "."},
     {"text": " The extended warehouse, its verified manifest of sources, the SQL queries and the metropolitan map "
-             "are in the branch ", "hl": True},
-    {"text": URL_RAMA, "link": URL_RAMA, "hl": True}, {"text": ".", "hl": True}])
+             "are in the repository ", "hl": True},
+    {"text": URL_REPO, "link": URL_REPO, "hl": True}, {"text": ".", "hl": True}])
 declaracion("Declaration on the Use of Generative AI:", parrafo_latex(decl_ia))
 declaracion("Conflicts of Interest:", parrafo_latex(interes))
 
