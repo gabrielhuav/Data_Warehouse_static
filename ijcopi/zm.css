@@ -34,9 +34,9 @@
 #detalle:empty{display:none}
 .zm-det-t{font-weight:650; color:var(--marca-700); font-size:1rem; margin:0}
 .zm-det-s{color:var(--texto-3); margin:0 0 .5rem}
-.zm-det{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:.15rem .7rem; margin:0}
+.zm-det{display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:.3rem .7rem; margin:0}
 .zm-det dt{color:var(--texto-2)}
-.zm-det dd{margin:0; font-weight:600; font-variant-numeric:tabular-nums; text-align:right}
+.zm-det dd{margin:0; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; overflow-wrap:anywhere}
 .zm-sql{margin:.7rem 0 0; font-size:.74rem; color:var(--texto-3)}
 .zm-origen{padding:1rem 1.2rem; margin-top:1rem; font-size:.88rem}
 .zm-origen h2{margin:0 0 .4rem; font-size:1.02rem}

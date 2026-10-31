@@ -98,7 +98,7 @@ py -3 verificar_amarillo.py dw_agua_IJCOPI_v0_base.docx dw_agua_IJCOPI_v2_zmvm.d
 
 Si alguien edita el `.docx` a mano, esa edición se pierde al regenerar. Mientras el
 texto siga cambiando, edita el `.tex`; pasa al Word solo en el ajuste final. Las
-diferencias "sin amarillo" que quedan (50 palabras) son renumeración y cortes de
+diferencias "sin amarillo" que quedan (54 palabras) son renumeración y cortes de
 línea; revísalas si ese número cambia. Una imagen no admite resaltado: las figuras nuevas
 llevan un marco amarillo, que pone `recuadro()` en el conversor.
 
@@ -211,7 +211,7 @@ warehouse_ampliado/.venv/Scripts/python -I warehouse_ampliado/verificacion/verif
   carga los bloques A, B y C1. La sección 0 del informe lista los errores que se corrigieron de
   su primera versión.
 - **Hecho (31 oct, rama `ijcopi-zmvm`):** ETL completo desde un clon, 13 consultas SQL, mapa nuevo
-  y v2 del artículo: 9,153 palabras (+63 % sobre la base de 5,615), 15 páginas, resumen de 149
+  y v2 del artículo: 9,148 palabras (+63 % sobre la base de 5,615), 15 páginas, resumen de 149
   palabras, título nuevo, sección 5.7 y Fig. 3 con capturas del mapa. El título es una propuesta
   que Gabriel debe aprobar.
 - **Trabajo 37:** tiene su base en Word en `PublicMunicipalWorks_DWH/paper/ijcopi/`;
