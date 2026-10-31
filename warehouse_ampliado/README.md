@@ -11,7 +11,9 @@ El informe de fuentes, con DOI, URL, hashes y descartes, está en
 
 ## Reproducir
 
-Hace falta Docker, Python 3.10 y unos 2 GB de disco. Desde la raíz del repositorio:
+Hace falta Docker, Python 3.10 y unos 2 GB de disco. En Windows, clona en una ruta corta: con una
+ruta muy larga, las DLL de `shapely` no cargan ("el nombre del archivo es demasiado largo"). Desde
+la raíz del repositorio:
 
 ```bash
 docker compose -f warehouse/compose.yml up -d --build
@@ -48,6 +50,9 @@ Con `--pasos clima subsidencia` repite solo esos pasos. `verificar_ampliado.py` 
 cifras y las escribe en [`verificacion/evidencia_ampliado.txt`](verificacion/evidencia_ampliado.txt).
 
 `etl/partir.py D15 --mb 20` rehace las partes a partir del original verificado.
+
+Las consultas al almacén, los comandos para verlas en la base de datos y cómo se publican en el mapa
+están en [`consultas/README.md`](consultas/README.md).
 
 ## Qué garantiza el ETL
 
