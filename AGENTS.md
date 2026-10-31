@@ -283,6 +283,9 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
 7. [ ] Cuando el texto quede aprobado: release `v2.0-ijcopi`, poner ese enlace en el artículo y
    regenerar la v2. Cada push al repositorio de trabajo necesita antes la autorización de
    Gabriel por el 403 de la ADIP (regla 2).
+8. [ ] La rama local va adelante de `origin/ijcopi-zmvm` con la v2 final, a la espera de esa
+   autorización. `Data_Warehouse_ZMVM` ya tiene el sitio corregido: el push a ese repositorio no
+   toca enlaces de Springer y se hizo porque Gabriel pidió corregir la página.
 
 **El cubo de datos sigue pospuesto.** Gabriel debe revisar la sección 0 del informe: varias
 cifras de su primera versión eran falsas, sobre todo lo de fugas en 2019. Cuando decida
