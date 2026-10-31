@@ -84,7 +84,9 @@ refuse scripts are already stored here, the largest one in parts. Commands to ru
 
 `warehouse/` is the work of **Omar Fernando Pulido Morales**, imported unmodified from
 [`omarpulidom/data_warehouse_cdmx`](https://github.com/omarpulidom/data_warehouse_cdmx) (MIT). The
-static demonstration descends from the fork parent of `gabrielhuav/Data_Warehouse_static`.
+static demonstration descends from
+[`Uriel1024/Data_Warehouse_static`](https://github.com/Uriel1024/Data_Warehouse_static), the fork parent
+of `gabrielhuav/Data_Warehouse_static`.
 
 Code is released under the MIT licence; see `LICENSE`. Data files keep the licences of their publishers,
 listed source by source in `warehouse_ampliado/fuentes.json`. The base map is © OpenStreetMap
