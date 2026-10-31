@@ -1,0 +1,38 @@
+Rows used: 70,886; boroughs: 16; residents of private dwellings (2020): 9,159,392
+City: 47.3 l/inhabitant/day domestic, 53.9 with mixed use.
+
+               NOM_MUN  OCUPVIVPAR  consumo_total_dom  l_hab_dia_dom  l_hab_dia_dom_mixto  consumo_total
+         Benito Juárez      432259        9,894,930.9          126.5                140.1   13,780,118.6
+        Miguel Hidalgo      412529        8,640,463.0          115.7                131.3   14,490,397.2
+            Cuauhtémoc      540976       10,207,690.6          104.2                126.9   18,401,765.8
+          Azcapotzalco      431347        6,153,754.6           78.8                 90.6    8,969,567.3
+             Iztacalco      403805        4,663,497.7           63.8                 73.2    6,260,630.7
+   Venustiano Carranza      443120        5,007,007.9           62.4                 73.3    7,169,204.8
+ Cuajimalpa de Morelos      217606        2,064,264.1           52.4                 56.1    2,945,010.6
+        Álvaro Obregón      757117        6,590,161.4           48.1                 51.9    9,608,545.2
+              Coyoacán      612130        5,128,303.2           46.3                 49.4    7,687,908.3
+     Gustavo A. Madero     1162914        9,196,449.2           43.7                 51.0   13,480,100.6
+               Tlalpan      695308        2,843,122.0           22.6                 24.0    4,969,014.7
+La Magdalena Contreras      246785          844,966.5           18.9                 20.4    1,271,477.6
+            Xochimilco      438038        1,304,112.5           16.4                 19.5    2,034,878.3
+            Iztapalapa     1820809        5,263,027.2           16.0                 18.5    8,313,478.0
+               Tláhuac      391967          583,022.2            8.2                  9.4      829,636.0
+            Milpa Alta      152682           69,125.0            2.5                  3.6      145,411.9
+
+Rank by total consumption -> rank by domestic consumption per inhabitant:
+  Cuauhtémoc                1 ->  3
+  Miguel Hidalgo            2 ->  2
+  Benito Juárez             3 ->  1
+  Gustavo A. Madero         4 -> 10
+  Álvaro Obregón            5 ->  8
+  Azcapotzalco              6 ->  4
+  Iztapalapa                7 -> 14
+  Coyoacán                  8 ->  9
+  Venustiano Carranza       9 ->  6
+  Iztacalco                10 ->  5
+  Tlalpan                  11 -> 11
+  Cuajimalpa de Morelos    12 ->  7
+  Xochimilco               13 -> 13
+  La Magdalena Contreras   14 -> 12
+  Tláhuac                  15 -> 15
+  Milpa Alta               16 -> 16

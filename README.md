@@ -120,6 +120,26 @@ precision--recall curve.
 `evaluacion-ml/evidencia_anomalias.txt` records the aggregate run and
 `evaluacion-ml/curvas_precision_recall.csv` records all precision--recall points.
 
+## Analyses added for the journal version (IJCOPI)
+
+The extended article in `paper/ijcopi/` adds three analyses, each reproducible
+from files in this repository:
+
+    py -3.12 evaluacion-ml/sensibilidad_anomalias.py --seeds 20
+    py -3.12 evaluacion-ml/ranking_real.py
+    py -3.12 scripts/per_capita_alcaldia.py \
+        --consumo warehouse/data/consumo_agua_historico_2019.csv \
+        --iter    warehouse/data/iter_09_cpv2020_alcaldias.csv
+
+The first repeats the anomaly protocol over twelve injection settings (prevalence,
+share of spikes, magnitude) and adds log-A_g, the deployed statistic on log
+consumption; with the published setting it reproduces the run above exactly
+(`evidencia_sensibilidad.txt`, `sensibilidad_anomalias.csv`,
+`figura_anomalias.py`). The second applies `assets/atipicos.js` and log-A_g to
+the real export (`evidencia_ranking_real.txt`). The third divides domestic
+billed volume by the 2020 Census residents of each borough
+(`scripts/evidencia_per_capita.txt`).
+
 ## Base map
 
 Both maps, `mapa.html` and `vecindad.html`, take their base map from
@@ -197,6 +217,10 @@ that authorship of the original static demonstration stays visible.
 - **Consumption**: [SACMEX](https://datos.cdmx.gob.mx/dataset/consumo-agua),
   Mexico City Open Data Portal. Accessed May 2026.
 - **Climate**: [Open-Meteo](https://open-meteo.com/), CC BY 4.0.
+- **Population**: INEGI, [Censo de Población y Vivienda 2020](https://www.inegi.org.mx/programas/ccpv/2020/),
+  *Principales resultados por localidad (ITER)*, Ciudad de México. The city and
+  borough rows (`LOC = 0000`) are redistributed unmodified in
+  `warehouse/data/iter_09_cpv2020_alcaldias.csv` under INEGI's terms of free use.
 - **Base map**: © [OpenStreetMap](https://www.openstreetmap.org/copyright)
   contributors, ODbL, served by the provider credited on the map (see
   [Base map](#base-map)); the local copy is an OpenStreetMap extract under the

@@ -1,0 +1,12 @@
+Input: consumo.json, 10,641 colonia-period rows -> 1,553 alcaldia--colonia totals in 16 boroughs; 29 with zero total.
+
+Within-borough skewness of colonia totals (median over boroughs): raw 1.98, log -0.76; raw skew > 1 in 15 of 16 boroughs, log |skew| > 1 in 5.
+Largest A_g reachable below the mean (1/CV): median 0.85, range 0.27-1.64 across boroughs.
+A_g (deployed)  top  15:   0 below their borough mean (0 %); 15th score 3.85
+A_g (deployed)  top  47:   0 below their borough mean (0 %)
+log-A_g         top  15:  15 below their borough mean (100 %); 15th score 2.89
+log-A_g         top  47:  45 below their borough mean (96 %)
+Overlap of the two top-15 lists: 0 of 15.
+Overlap of the two top-47 lists: 2 of 47.
+
+Colonias below their borough mean: 1,022 of 1,553; highest A_g among them 1.46.
