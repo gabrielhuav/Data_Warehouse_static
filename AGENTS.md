@@ -149,23 +149,36 @@ línea; revísalas si ese número cambia.
 
 ## Siguiente paso
 
-**Esperando confirmación de Gabriel sobre la propuesta en `reports/Deep_Research_Ampliacion_DWH_IJCOPI.md` antes de escribir código:**
+**Decisión de Gabriel (31 oct):** aprueba las fuentes verificadas en
+`reports/Deep_Research_Ampliacion_DWH_IJCOPI.md`, pero **pospone por ahora la
+implementación del cubo de datos** porque quiere sumar antes **más datos del Estado de
+México (ZMVM) u otras regiones** (siente que con solo CDMX aún son pocos).
 
-1. Una vez aprobada la propuesta de esquema ampliado (constelación de hechos + cubo OLAP y
-   RDF `qb:DataSet`), implementar el ETL reproducible con verificación SHA-256/MD5 para:
-   - **Bloque A (con DOI y descarga directa activa):** `MexHiResClimDB` 2019 (~600 m,
-     DOI `10.6084/m9.figshare.c.7689428.v2`), subsidencia InSAR Sentinel-1 de Khorrami et al.
-     (2023, DOI `10.7294/21935947`) e indicadores históricos por alcaldía de Huerta-Vergara
-     et al. (2022, DOI `10.18268/BSGM2022v74n1a071021`).
-   - **Bloque B (INEGI descarga directa activa `HTTP 206`):** Censo 2020 por manzana urbana
-     e ITER CDMX, Marco Geoestadístico 2020, Censos Económicos 2019 y DENUE CDMX.
-   - **Bloque C (CDMX):** 555,752 reportes de agua SACMEX 2018–2024 (ya disponibles
-     localmente con MD5 verificado en `Actronix09/fuentes-alternas/agua-reportes-sacmex/datos/`)
-     y tarifas del Art. 172 del Código Fiscal CDMX (más colonias IECM, IDS 2020 y tandeo IPDP
-     si Gabriel los descarga desde su navegador).
-2. Integrar los resultados verificados del almacén ampliado y del cubo en
-   `paper/ijcopi/dw_agua_ijcopi.tex` y `paper/ijcopi/latex_a_ijcopi.py`, cuidando no rebasar
-   el tope de 15 páginas.
+Tarea para el siguiente agente:
+
+1. **Ampliar las fuentes al Estado de México (entidad `15`, ZMVM) u otras regiones**
+   cumpliendo las mismas reglas estrictas (DOI/ISBN o URL oficial verificada, descarga
+   directa activa, ETL real con SHA-256/MD5, cero datos inventados y cero fuentes citadas
+   que no se usen):
+   - Ya están verificados en `reports/Deep_Research_Ampliacion_DWH_IJCOPI.md` los enlaces
+     directos (`HTTP 206`) del Estado de México (`15`) en INEGI (`B6` Censo 2020 por manzana
+     urbana, `B7` ITER 2020, `B8` Marco Geoestadístico 2020, `B9` Censos Económicos 2019 y
+     DENUE `15_1` y `15_2`), y tanto `MexHiResClimDB` (`A1`, DOI
+     `10.6084/m9.figshare.c.7689428.v2`) como la subsidencia InSAR de Khorrami et al. (`A2`,
+     DOI `10.7294/21935947`) cubren ya los municipios conurbados del Estado de México.
+   - Falta buscar y verificar datasets hídricos específicos del Estado de México / ZMVM u
+     otras zonas (ej. CONAGUA / SINAV / REPDA / acuíferos de la Cuenca de México, CAEM,
+     Censo Nacional de Gobiernos Municipales y Demarcaciones Territoriales CNGMD de INEGI
+     Módulo de Agua Potable y Saneamiento, o datasets científicos con DOI de consumo/abasto
+     metropolitano).
+2. **Implementar el ETL reproducible y las nuevas tablas de hechos y dimensiones** (sin el
+   cubo por ahora, o dejando el cubo para cuando estén integrados los datos de Edomex/otras
+   regiones), enlazando con las tablas originales y cuidando las copias locales en:
+   - `C:\Users\gabri\.gemini\antigravity\brain\a0eaa4c2-e3fd-47e9-8a54-ad6c7d571bf4\scratch\fuentes-alternas`
+     (`Actronix09/fuentes-alternas`, donde ya están `historico_2018_2021.csv` e
+     `incidentes_2022_2024.csv`).
+   - `C:\Users\gabri\.gemini\antigravity\brain\b81eafe4-d335-49c5-8f41-9416182798c4\scratch\Huerta2022.pdf`
+     (PDF completo de Huerta-Vergara et al., 2022).
 
 ## Bitácora
 
@@ -185,5 +198,7 @@ línea; revísalas si ese número cambia.
   INEGI). Detectó y descartó trampas (ZIP de Zenodo `10.5281/zenodo.13830947` de 21 KB
   solo con código R, Livneh cortado en 2013, GRACE a 300 km, DOI `10.3390/w14101584`
   mal atribuido, enlaces `404`/`500` de REDMET/SMN/CONAPO y libros con ISBN sin datos
-  tabulares). Documentó las fuentes verificadas y la propuesta de esquema ampliado con
-  cubo de datos en `reports/Deep_Research_Ampliacion_DWH_IJCOPI.md`.
+  tabulares). Documentó las fuentes verificadas (incluyendo enlaces INEGI `HTTP 206` para
+  CDMX `09` y Estado de México `15`) en `reports/Deep_Research_Ampliacion_DWH_IJCOPI.md`
+  (`26792bf`). Gabriel indicó posponer el cubo hasta sumar más datos del Estado de México u
+  otras regiones.
