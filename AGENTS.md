@@ -6,7 +6,9 @@ Al terminar una sesión, actualiza "Estado actual" y "Siguiente paso", y agrega 
 "Bitácora" una línea con la fecha, el agente y lo que cambió. Solo escribe aquí lo
 que el repositorio no dice por sí mismo.
 
-Conversa con Gabriel en español. Rama de trabajo: `main`.
+Conversa con Gabriel en español. **Rama de trabajo: `ijcopi-zmvm`.** `main` queda congelada
+para ICOKG (regla 6). Actualiza este archivo conforme avances, no solo al final: si se acaba
+el límite, otra sesión debe poder seguir desde aquí.
 Repositorio: <https://github.com/gabrielhuav/Data_Warehouse_static>
 
 ## Reglas que no se negocian
@@ -26,6 +28,10 @@ Repositorio: <https://github.com/gabrielhuav/Data_Warehouse_static>
 4. **No envíes correos ni solicitudes sin que Gabriel vea el texto y confirme.**
 5. **Solo reporta cifras que hayas recalculado.** Cada número del artículo debe poder
    reproducirse con un script del repositorio. Si algo no se pudo verificar, dilo.
+6. **Todo lo de IJCOPI va en la rama `ijcopi-zmvm` y con enlaces nuevos.** Es la regla que
+   Gabriel marcó como más importante. Los enlaces de ICOKG quedan intactos: no fusiones a
+   `main`, no cambies la configuración de Pages y no reutilices esos URL en el artículo de la
+   revista. Lo nuevo va en rutas nuevas de esta rama y en un release nuevo.
 
 ## El trabajo
 
@@ -72,6 +78,7 @@ participación de los trabajos 37 y 38 ya se confirmó por correo el 13 de octub
 | `paper/ijcopi/solicitudes_de_datos.md` | Plantillas para pedir más datos |
 | `reports/Datos abiertos de agua CDMX.md` | Informe de fuentes de datos, con plan ordenado por valor y esfuerzo |
 | `reports/Deep_Research_Ampliacion_DWH_IJCOPI.md` | Fuentes verificadas de la ampliación, correcciones a su primera versión, descartes y modelo implementado |
+| `reports/Contexto_completo_sesion.md` | Decisiones de Gabriel, contenido de la v1, afirmaciones por revisar y estado de correos y push |
 | `research_notes/` | Notas detalladas de esa investigación |
 | `warehouse/` | Almacén original, componente importado. No se edita, y un push ahí regenera `consumo.json` |
 | `warehouse_ampliado/` | **Almacén ampliado**: `fuentes.json` (manifiesto con hashes), `ddl/`, `etl/`, `snapshots/` y `verificacion/`. Su `README.md` explica cómo reproducirlo |
@@ -206,16 +213,22 @@ línea; revísalas si ese número cambia.
 
 ## Siguiente paso
 
-La ampliación regional ya está cargada. **Gabriel pospuso el cubo de datos** hasta tener esos
-datos, así que ya se puede retomar si lo decide.
+**Pedido de Gabriel del 31 oct, en curso en la rama `ijcopi-zmvm`:**
 
-1. Que Gabriel revise la sección 0 del informe: varias cifras de su primera versión eran
-   falsas. Cualquier texto derivado de ella debe corregirse, sobre todo lo de fugas en 2019.
-2. Si aprueba, **implementar el cubo** con los cambios de la sección 4.4 del informe: fugas
-   solo en 2021-2024, volumen municipal filtrado por `calidad_volumen`, y colonias y
-   municipios como granos distintos.
-3. Incorporar al manuscrito de IJCOPI lo que el límite de 15 páginas permita. El envío es el
-   9 de noviembre. Cada referencia nueva debe salir de `control_ingesta_fuentes`.
+1. [ ] ETL completo y reproducible: subir `colonias_imc2020_shp.zip` dividido en partes y
+   probarlo desde un clon limpio.
+2. [ ] Consultas SQL reales al almacén, con los comandos para verlas en la base de datos.
+3. [ ] Mapa nuevo en una ruta nueva, alimentado por esas mismas consultas, con una comprobación
+   de que lo que muestra es igual a lo que devuelve la base de datos.
+4. [ ] Artículo actualizado con capturas del mapa nuevo, todo lo agregado en amarillo y un título
+   que deje ver la extensión. Máximo 15 páginas. Cada referencia nueva debe salir de
+   `control_ingesta_fuentes`.
+5. [ ] Enlaces nuevos para el artículo. Pages solo publica `main`, así que esta rama no tiene
+   URL pública propia: Gabriel debe elegir cómo desplegarla.
+
+**El cubo de datos sigue pospuesto.** Gabriel debe revisar la sección 0 del informe: varias
+cifras de su primera versión eran falsas, sobre todo lo de fugas en 2019. Cuando decida
+retomar el cubo, sigue la sección 4.4 del informe.
 
 ## Bitácora
 
