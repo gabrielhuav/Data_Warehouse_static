@@ -71,7 +71,10 @@ participación de los trabajos 37 y 38 ya se confirmó por correo el 13 de octub
 | `paper/ijcopi/dw_agua_IJCOPI_v1_extendida.docx` | Versión extendida generada (y su PDF) |
 | `paper/ijcopi/solicitudes_de_datos.md` | Plantillas para pedir más datos |
 | `reports/Datos abiertos de agua CDMX.md` | Informe de fuentes de datos, con plan ordenado por valor y esfuerzo |
+| `reports/Deep_Research_Ampliacion_DWH_IJCOPI.md` | Fuentes verificadas de la ampliación, correcciones a su primera versión, descartes y modelo implementado |
 | `research_notes/` | Notas detalladas de esa investigación |
+| `warehouse/` | Almacén original, componente importado. No se edita, y un push ahí regenera `consumo.json` |
+| `warehouse_ampliado/` | **Almacén ampliado**: `fuentes.json` (manifiesto con hashes), `ddl/`, `etl/`, `snapshots/` y `verificacion/`. Su `README.md` explica cómo reproducirlo |
 | `paper/presentacion/` | Presentaciones de ICOKG (ES y EN) |
 | `evaluacion-ml/`, `scripts/` | Análisis reproducibles y sus evidencias |
 
@@ -115,6 +118,28 @@ línea; revísalas si ese número cambia.
   (`agua-reportes-sacmex/datos/`): `historico_2018_2021.csv` (MD5 `dc406dc6...`) e
   `incidentes_2022_2024.csv` (MD5 `a103d81c...`) son idénticas a los MD5 y tamaños que
   publica el CKAN del portal. Sirven mientras el portal bloquee esta PC.
+- **Los reportes de SACMEX no registran fugas antes de 2021.** De 2018 a 2020 solo hay
+  "Falta de agua". En ene-jun 2019 son 39,685 reportes, todos de falta de agua, y terminan
+  el 1 de febrero de 2024. No cruces fugas con el consumo de 2019: un cero ahí es falta de
+  registro. Filtra por `clasificacion = 'Agua Potable'`: "Fuga" también existe en agua tratada.
+- **La ZM de Ciudad de México oficial de 2020 (CONAPO, `09.1.01`) tiene 63 municipios**: 16
+  alcaldías, 45 del Estado de México y 2 de Hidalgo. Los "59 conurbados" son de antes.
+- **En el CNGMD las alcaldías responden "no disponible"** porque no operan el agua. No se
+  rellena. En el Estado de México, tomas e ingresos son buenos, pero **el volumen no sirve
+  sin filtro**: de 47 municipios de la ZM fuera de la CDMX, 16 son plausibles, 7 atípicos y
+  24 no lo reportan. Hay errores de captura (Chicoloapan, 147 veces lo de la SHCP). Usa
+  `calidad_volumen` de `v_zm_indicadores_agua`.
+- **Cómo se llega a las fuentes federales desde esta PC.** `repodatos.atdt.gob.mx` y
+  `sih.conagua.gob.mx` responden 403 a los scripts, pero entregan el archivo a un navegador,
+  sin CAPTCHA. Las páginas de INEGI piden CAPTCHA a los scripts y abren normal en el navegador
+  integrado; sus ZIP se bajan directo. `www.datos.gob.mx` y `www.gob.mx` aceptan scripts. El
+  metadato y el MD5 salen de `package_show`. Internet Archive no tiene los recursos
+  bloqueados de `datos.cdmx.gob.mx`.
+- **Serie diaria de presas:** `https://sih.conagua.gob.mx/basedatos/Presas/<clave>.csv` da
+  nivel, volumen, obra de toma, vertedor, derrame y evaporación. Funcionó con las 15 presas
+  cargadas; `presas_sih.csv` lista 210. Hidro-MX no trae las de Cutzamala en 2018-2024.
+- **No hay archivo descargable de:** REPDA (formulario de consulta por título), SINA (redirige a
+  la portada de CONAGUA), CAEM y PIGOO (el DNS de `pigoo.gob.mx` no resuelve).
 
 ## Avisos técnicos
 
@@ -124,6 +149,16 @@ línea; revísalas si ese número cambia.
 - Mapas Leaflet: si el panel del navegador está oculto, `innerWidth` es 0 y el zoom
   salta a 19; no es un error. Emula 1280x800 antes de juzgar el encuadre.
 - PowerShell 5.1 requiere `-UseBasicParsing` en `Invoke-WebRequest`.
+- En el navegador integrado, "navigation failed" en una URL de archivo suele ser una **descarga**,
+  no un bloqueo: Chromium escribe un `.tmp` en Descargas y abre un diálogo "Guardar como" en
+  la pantalla de Gabriel. Revisa eso antes de concluir que el sitio rechaza la petición, y
+  no dejes diálogos abiertos.
+- `ndownloader.figshare.com` responde 202 a peticiones por rango; la descarga completa funciona.
+- CNGMD: los faltantes son `-1`, `-2`, `-3` en 2018 y `NA`, `ND`, `NSS` en 2020. El código de
+  fuente 8 cambió de "Otra" a "Mina": cruza catálogos por descripción, no por número.
+- Censos Económicos 2019: lee con `index_col=False`; los valores traen tabuladores y espacios.
+- El texto extraído del PDF de Huerta-Vergara no respeta el orden de las tablas.
+  `cargar_vulnerabilidad.py` lo resuelve y valida contra el Apéndice B.
 
 ## Estado actual
 
@@ -133,12 +168,30 @@ línea; revísalas si ese número cambia.
   Gemini y `prdx919/Agua_en_la_cdmx`) en `reports/Deep_Research_Ampliacion_DWH_IJCOPI.md`,
   con DOIs, URLs de descarga directa, tamaños, sumas MD5/SHA-256, fuentes descartadas y
   propuesta de esquema de constelación y cubo de datos (`GROUP BY CUBE` + W3C `qb:DataSet`).
+- **Hecho (31 oct):** almacén ampliado en `warehouse_ampliado/`, sin cubo: 2,756,838 filas en
+  41 tablas, 62 archivos verificados y `verificar_ampliado.py` sin fallos. Agrega el Bloque D
+  (CNGMD, SHCP, piezometría, acuíferos, sequía, presas, Hidro-MX, calidad del agua y CONAPO) y
+  carga los bloques A, B y C1. La sección 0 del informe lista los errores que se corrigieron de
+  su primera versión.
 - **Trabajo 37:** tiene su base en Word en `PublicMunicipalWorks_DWH/paper/ijcopi/`;
   falta extenderlo.
-- **Sin revisar por humanos:** el texto nuevo de la v1 y los informes de datos.
+- **Sin revisar por humanos:** el texto nuevo de la v1, los informes de datos y el almacén
+  ampliado. El manuscrito de IJCOPI aún no incorpora nada de la ampliación.
 
 ### Pendientes conocidos
 
+- **Regla 2 desde esta PC:** el verificador termina en `fallos: 1` porque
+  `datos.cdmx.gob.mx/dataset/consumo-agua` da 403, también en un navegador y desde un servicio
+  externo: es una página "Acceso Restringido" de la ADIP. No se pudo confirmar que el enlace
+  siga vivo. Gabriel debe decidir antes de cada push: comprobarlo desde otra red o autorizar
+  el push con esa excepción. El 31 oct, además, `azcatl.azc.uam.mx`, destino del DOI
+  `10.24275/AZC2026E1004`, dejó de responder tras haber dado 200 horas antes; el DOI resuelve.
+- `C2`, `C3` y `C4` (colonias, IDS y tandeo) siguen bloqueados y sin cargador. Si Gabriel los
+  baja desde otra red, sus MD5 oficiales están en el informe. Con `C2`, los cruces por
+  proximidad a colonia se pueden sustituir por polígonos.
+- `C5` (tarifas del art. 172) no tiene archivo verificado y no alimenta ninguna tabla.
+- Reproducir el ETL en otra máquina requiere bajar `colonias_imc2020_shp.zip` (47 MB) con un
+  navegador. No se subió para no cargar el repositorio.
 - El correo a `datosabiertos@cdmx.gob.mx` sigue como borrador en el Gmail de Gabriel,
   sin enviar (revisado el 2026-10-31). No se sabe si presentó la solicitud en la PNT.
 - Confirmar serie, volumen y páginas de la referencia de ICOKG, ahora "in press".
@@ -149,36 +202,16 @@ línea; revísalas si ese número cambia.
 
 ## Siguiente paso
 
-**Decisión de Gabriel (31 oct):** aprueba las fuentes verificadas en
-`reports/Deep_Research_Ampliacion_DWH_IJCOPI.md`, pero **pospone por ahora la
-implementación del cubo de datos** porque quiere sumar antes **más datos del Estado de
-México (ZMVM) u otras regiones** (siente que con solo CDMX aún son pocos).
+La ampliación regional ya está cargada. **Gabriel pospuso el cubo de datos** hasta tener esos
+datos, así que ya se puede retomar si lo decide.
 
-Tarea para el siguiente agente:
-
-1. **Ampliar las fuentes al Estado de México (entidad `15`, ZMVM) u otras regiones**
-   cumpliendo las mismas reglas estrictas (DOI/ISBN o URL oficial verificada, descarga
-   directa activa, ETL real con SHA-256/MD5, cero datos inventados y cero fuentes citadas
-   que no se usen):
-   - Ya están verificados en `reports/Deep_Research_Ampliacion_DWH_IJCOPI.md` los enlaces
-     directos (`HTTP 206`) del Estado de México (`15`) en INEGI (`B6` Censo 2020 por manzana
-     urbana, `B7` ITER 2020, `B8` Marco Geoestadístico 2020, `B9` Censos Económicos 2019 y
-     DENUE `15_1` y `15_2`), y tanto `MexHiResClimDB` (`A1`, DOI
-     `10.6084/m9.figshare.c.7689428.v2`) como la subsidencia InSAR de Khorrami et al. (`A2`,
-     DOI `10.7294/21935947`) cubren ya los municipios conurbados del Estado de México.
-   - Falta buscar y verificar datasets hídricos específicos del Estado de México / ZMVM u
-     otras zonas (ej. CONAGUA / SINAV / REPDA / acuíferos de la Cuenca de México, CAEM,
-     Censo Nacional de Gobiernos Municipales y Demarcaciones Territoriales CNGMD de INEGI
-     Módulo de Agua Potable y Saneamiento, o datasets científicos con DOI de consumo/abasto
-     metropolitano).
-2. **Implementar el ETL reproducible y las nuevas tablas de hechos y dimensiones** (sin el
-   cubo por ahora, o dejando el cubo para cuando estén integrados los datos de Edomex/otras
-   regiones), enlazando con las tablas originales y cuidando las copias locales en:
-   - `C:\Users\gabri\.gemini\antigravity\brain\a0eaa4c2-e3fd-47e9-8a54-ad6c7d571bf4\scratch\fuentes-alternas`
-     (`Actronix09/fuentes-alternas`, donde ya están `historico_2018_2021.csv` e
-     `incidentes_2022_2024.csv`).
-   - `C:\Users\gabri\.gemini\antigravity\brain\b81eafe4-d335-49c5-8f41-9416182798c4\scratch\Huerta2022.pdf`
-     (PDF completo de Huerta-Vergara et al., 2022).
+1. Que Gabriel revise la sección 0 del informe: varias cifras de su primera versión eran
+   falsas. Cualquier texto derivado de ella debe corregirse, sobre todo lo de fugas en 2019.
+2. Si aprueba, **implementar el cubo** con los cambios de la sección 4.4 del informe: fugas
+   solo en 2021-2024, volumen municipal filtrado por `calidad_volumen`, y colonias y
+   municipios como granos distintos.
+3. Incorporar al manuscrito de IJCOPI lo que el límite de 15 páginas permita. El envío es el
+   9 de noviembre. Cada referencia nueva debe salir de `control_ingesta_fuentes`.
 
 ## Bitácora
 
@@ -202,3 +235,11 @@ Tarea para el siguiente agente:
   CDMX `09` y Estado de México `15`) en `reports/Deep_Research_Ampliacion_DWH_IJCOPI.md`
   (`26792bf`). Gabriel indicó posponer el cubo hasta sumar más datos del Estado de México u
   otras regiones.
+- 2026-10-31, Claude (Claude Code, Opus 5.5): encontró en el CKAN de `www.datos.gob.mx`, en
+  INEGI, en el SIH y en Zenodo las fuentes regionales del Bloque D e implementó
+  `warehouse_ampliado/` sobre PostgreSQL, sin tocar `warehouse/`. La verificación cruzada entre
+  fuentes corrigió el informe anterior (no hay fugas en 2019, cifras de Huerta-Vergara que no
+  están en el PDF, formato y mínimo de InSAR, 63 municipios en la ZM) y detectó que el volumen
+  del CNGMD no sirve sin filtro. El verificador de Springer terminó en `fallos: 2` (el 403
+  conocido y una caída de `azcatl.azc.uam.mx`), así que dejó el trabajo en un commit local y
+  el push queda sujeto a la decisión de Gabriel.

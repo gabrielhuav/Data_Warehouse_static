@@ -1,0 +1,182 @@
+Evidencia del almacen ampliado, generada 2026-10-31 19:00 UTC
+
+## 1. El almacen original sigue intacto
+[OK ] fact_consumo_agua: 70,886 filas
+[OK ] fact_clima: 181 filas
+[OK ] dim_ubicacion: 1,553 colonias
+[OK ] dim_indice_des: 4 niveles
+[OK ] consumo total igual al CSV: 120,357,145.33 m3
+     dim_tiempo original: (datetime.date(2019, 1, 1), datetime.date(2019, 6, 30), 181)
+
+## 2. Procedencia: cada archivo coincide con el manifiesto
+[OK ] archivos verificados: 62 fuentes, 0 con diferencias
+[OK ] toda fuente del manifiesto alimenta una tabla
+[OK ] ningun MD5 oficial en desacuerdo
+
+## 3. Integridad de las llaves nuevas
+[OK ] las 1,553 colonias tienen clave INEGI
+[OK ] 16 alcaldias enlazadas
+[OK ] dim_tiempo sin duplicados
+[OK ] dim_tiempo consistente
+
+## 4. Identidades de cada fuente
+[OK ] VCAS + VEALA + VAPTYR + VAPRH = VEAS en los 653 acuiferos: 0 excepciones
+[OK ] R - DNC - VEAS = DMA en los 653 acuiferos: 0 excepciones
+[OK ] poblacion de la CDMX en el ITER: 16 alcaldias, 9,209,944 habitantes
+[OK ] ZM de Ciudad de Mexico segun CONAPO 2020: 63 municipios: 16 CDMX, 45 Edomex, 2 Hidalgo
+[OK ] Huerta-Vergara: 16 alcaldias por 3 anios
+[OK ] Iztapalapa 2015 igual al Apendice E y la Tabla 2: Z 0.92, beta 0.995, Very High, 215.05 LPCD
+[OK ] folios unicos en reportes
+[OK ] clima en rango fisico: tavg 8.774 a 21.323 C, precipitacion 0.0 a 287.0 mm
+[OK ] tmin <= tavg <= tmax: 0 excepciones
+
+## 5. Cruces entre fuentes independientes
+[OK ] las claves de la SHCP son las de INEGI: 2,457 de 2,462 nombres identicos; ejemplos distintos [('07125', 'Honduras de Morelos', 'HONDURAS DE LA SIERRA'), ('20043', 'Heroica Ciudad de Juchitán de Zaragoza', 'JUCHITAN DE ZARAGOZA'), ('20318', 'San Pedro Mixtepec (Dto. Juquila)', 'SAN PEDRO MIXTEPEC')]
+[OK ] ingresos del CNGMD y recaudacion de la SHCP coinciden en orden, Edomex 2018: 89 municipios, Spearman 0.934, Pearson 0.322, razon mediana 0.89
+     atipicos fuera de 0.1 a 10 veces: Temamatla x0.03, Tepetlixpa x0.02, Tequixquiac x0.08, Jilotepec x0.03, Acolman x57.78, Chicoloapan x146.76
+[OK ] MexHiResClimDB sigue a Open-Meteo en Venustiano Carranza, ene-jun 2019: r = 0.971, diferencia media -0.01 C
+[OK ] poblacion 2015 del articulo y poblacion censal por colonia, por alcaldia: r = 0.999
+[OK ] poblacion de la ZM: CONAPO 2019 y Censo 2020 difieren poco: CONAPO 21,665,949, Censo 21,436,911
+     piezometria nacional: 104,890 lecturas; min 0.0 m, mediana 24.3 m, max 372.0 m; 27 en cero o negativas (se conservan)
+     nivel estatico en los mismos pozos, 2010 y 2019:
+       acuifero 0901:  38 pozos; profundidad media 59.7 m en 2010, 65.7 m en 2019; cambio +6.0 m
+       acuifero 1506:  15 pozos; profundidad media 56.6 m en 2010, 72.0 m en 2019; cambio +15.4 m
+       acuifero 1507:  48 pozos; profundidad media 67.8 m en 2010, 75.6 m en 2019; cambio +7.8 m
+       acuifero 1508:  65 pozos; profundidad media 80.5 m en 2010, 99.2 m en 2019; cambio +18.7 m
+     poblacion asignada a colonias: 98.0 % del total del ITER en la CDMX
+     colonias: 1,553; con colonia CONAPO 1,532 (1,524 por poligono, 8 por nombre); con poblacion 1,550; con DENUE 1,550
+[OK ] casi todas las colonias se enlazan por poligono
+[OK ] los acuiferos cubren cada municipio: 225 municipios, suma de porcentajes de 99.99 a 100.01
+     puente municipio-acuifero: 522 relaciones, 170 con pozos, 831 pozos
+[OK ] los pozos caen en un acuifero que toca su municipio: 831 de 831
+[OK ] ultima fila de Valle de Bravo igual al CSV: 384.938 hm3, 1829.55 m
+[OK ] en las presas de Cutzamala el nivel y el volumen van juntos: VVCMX r = 0.996, DBOMC r = 0.997, VBRMX r = 0.999
+     presas con r < 0.8: [('PNDMX', 0.212), ('GDLMX', 0.245), ('PMDMX', 0.521), ('TXMHD', 0.668)]
+       error de captura de un dia en la fuente: GDLMX 2024-07-24, nivel 1123.32, volumen 27.985
+       error de captura de un dia en la fuente: PNDMX 2018-08-26, nivel 0.0, volumen 11.02
+       posible cambio de curva nivel-volumen: PMDMX en 2014: nivel mediano 2336.88 m, volumen mediano 16.5 hm3
+       posible cambio de curva nivel-volumen: PMDMX en 2019: nivel mediano 2335.92 m, volumen mediano 9.1 hm3
+       posible cambio de curva nivel-volumen: TXMHD en 2014: nivel mediano 2207.73 m, volumen mediano 41.7 hm3
+       posible cambio de curva nivel-volumen: TXMHD en 2019: nivel mediano 2210.59 m, volumen mediano 27.4 hm3
+     calidad del agua: 71,657 valores; 16,851 fuera del limite de deteccion; 71,657 con numero; 71,657 con clasificacion
+
+## 6. Cifras del informe, recalculadas
+     dim_acuifero                                 653
+     dim_anio                                      51
+     dim_categoria_sequia                           6
+     dim_colonia_conapo                        74,226
+     dim_estacion_hidrometrica                  1,393
+     dim_indice_des                                 4
+     dim_medio_recepcion                           19
+     dim_municipio                              2,510
+     dim_parametro_calidad                         30
+     dim_pozo                                  19,600
+     dim_sitio_calidad                          7,908
+     dim_tiempo                                27,666
+     dim_tipo_fuente_captacion                      9
+     dim_tipo_reporte                              23
+     dim_tipo_toma                                  5
+     dim_ubicacion                              1,553
+     dim_ubicacion_adyacencia                  27,030
+     fact_abasto_localidad                      8,523
+     fact_agua_municipio                        4,932
+     fact_calidad_agua                         71,657
+     fact_caudal_diario                        83,324
+     fact_clima                                   181
+     fact_clima_colonia                        18,636
+     fact_clima_municipio                       2,700
+     fact_consumo_agua                         70,886
+     fact_disponibilidad_acuifero                 653
+     fact_facturacion_agua                     30,200
+     fact_fuente_captacion                     44,998
+     fact_nivel_piezometrico                  104,890
+     fact_planta_agua                           7,728
+     fact_poblacion_municipio                 126,225
+     fact_presa_diaria                        326,065
+     fact_prestador_agua                        7,975
+     fact_recaudacion_agua                     36,945
+     fact_reporte_agua                        555,752
+     fact_sequia_municipio                  1,082,886
+     fact_subsidencia_colonia                   1,400
+     fact_subsidencia_municipio                   128
+     fact_vivienda_agua_ageb                    6,898
+     fact_vulnerabilidad_alcaldia                  48
+     puente_municipio_acuifero                    522
+     total de filas                         2,756,838
+
+     Reportes por anio; falta, fuga y calidad son de agua potable (la fuente no registra fugas antes de 2021):
+       2018: total   67,799  falta de agua   67,799  fuga       0  mala calidad      0  drenaje      0
+       2019: total   69,378  falta de agua   69,378  fuga       0  mala calidad      0  drenaje      0
+       2020: total   33,559  falta de agua   33,559  fuga       0  mala calidad      0  drenaje      0
+       2021: total   83,989  falta de agua   50,128  fuga  33,018  mala calidad    843  drenaje      0
+       2022: total  152,328  falta de agua   83,876  fuga  51,435  mala calidad  1,834  drenaje 14,093
+       2023: total  130,839  falta de agua   70,367  fuga  44,695  mala calidad  1,016  drenaje 13,803
+       2024: total   17,860  falta de agua   12,585  fuga   4,429  mala calidad     92  drenaje    693
+     periodo de los reportes: (datetime.date(2018, 1, 1), datetime.date(2024, 2, 1))
+     reportes ene-jun 2019: 39,685; falta de agua 39,685; fugas 0
+[OK ] ene-jun 2019 son 39,685 reportes de falta de agua y ninguna fuga
+     reportes: 555,752; ubicados en colonia 551,008 (99.1 %); colonias con reportes 1,551
+
+     ZM de Ciudad de Mexico, referencia 2018 (CNGMD), por entidad:
+       Ciudad de México     municipios  16; con dato   0; medidor funcionando          0; sin medidor          0
+       Hidalgo              municipios   2; con dato   2; medidor funcionando     60,067; sin medidor     33,923
+       México               municipios  45; con dato  45; medidor funcionando    745,504; sin medidor  1,769,035
+
+     Acuiferos de la ZMVM:
+       0901 ZONA METROPOLITANA DE LA CD. DE MEXICO     R    512.8 VEAS    993.23 DMA   -480.43 VEAS/R 1.94 pozos 124 lecturas 2019  48
+       1310 VALLE DEL MEZQUITAL                        R    515.0 VEAS    191.54 DMA      0.00 VEAS/R 0.37 pozos  91 lecturas 2019  20
+       1316 TEPEJI DEL RIO                             R     46.3 VEAS     15.35 DMA     -4.25 VEAS/R 0.33 pozos  30 lecturas 2019  14
+       1501 VALLE DE TOLUCA                            R    336.8 VEAS    411.92 DMA   -128.72 VEAS/R 1.22 pozos  67 lecturas 2019   0
+       1506 CHALCO-AMECAMECA                           R     74.0 VEAS    109.99 DMA    -35.99 VEAS/R 1.49 pozos  28 lecturas 2019  19
+       1507 TEXCOCO                                    R    145.1 VEAS    284.51 DMA   -149.81 VEAS/R 1.96 pozos  79 lecturas 2019  51
+       1508 CUAUTITLAN-PACHUCA                         R    356.7 VEAS    586.64 DMA   -229.94 VEAS/R 1.64 pozos 149 lecturas 2019  82
+       1701 CUERNAVACA                                 R    344.2 VEAS    199.86 DMA      0.00 VEAS/R 0.58 pozos  70 lecturas 2019  27
+       1702 CUAUTLA-YAUTEPEC                           R    348.6 VEAS     93.31 DMA     -0.71 VEAS/R 0.27 pozos  66 lecturas 2019  33
+       2902 SOLTEPEC                                   R     57.0 VEAS     17.27 DMA      0.00 VEAS/R 0.30 pozos  37 lecturas 2019  11
+
+     Volumen domestico por municipio de la ZM, por calidad (v_zm_indicadores_agua):
+       CNGMD 2018           atipico    municipios   7; poblacion 2019     848,435; conjunto 195.7 l/hab/dia; min 0.0; max 957.1
+       CNGMD 2018           plausible  municipios  16; poblacion 2019   6,607,222; conjunto 94.9 l/hab/dia; min 12.9; max 215.9
+       CNGMD 2018           sin dato   municipios  24; poblacion 2019   4,867,221; conjunto None l/hab/dia; min None; max None
+       SACMEX 2019 S1 x 2   atipico    municipios   2; poblacion 2019     548,418; conjunto 6.5 l/hab/dia; min 2.5; max 8.1
+       SACMEX 2019 S1 x 2   plausible  municipios  14; poblacion 2019   8,794,653; conjunto 48.5 l/hab/dia; min 15.4; max 123.2
+
+     Hundimiento medio por municipio, los cinco mayores de la ZM:
+       México             Nezahualcóyotl               pixeles   691; media -23.4889 cm/anio; minimo -29.5976
+       Ciudad de México   Venustiano Carranza          pixeles   380; media -16.4882 cm/anio; minimo -26.7103
+       Ciudad de México   Iztacalco                    pixeles   257; media -13.077 cm/anio; minimo -23.2458
+       México             Valle de Chalco Solidaridad  pixeles   403; media -11.9813 cm/anio; minimo -20.3116
+       Ciudad de México   Tláhuac                      pixeles   798; media -6.5581 cm/anio; minimo -17.3735
+
+     Abasto declarado por prestadores en 2020 (CNGMD):
+       entidad 09: prestadores 31, con dato 29, dias/semana 6.62, horas/dia 21.5, con menos de 7 dias 3
+       entidad 15: prestadores 267, con dato 89, dias/semana 6.43, horas/dia 17.0, con menos de 7 dias 18
+
+     Presas de la cuenca del Rio Cutzamala, volumen en hm3 (fact_presa_diaria):
+       El Bosque, Mich.       dias con volumen 12,325; desde 1993-01-01; media 2019 145.0; min y max desde 2018: 53.1 y 202.4
+       Valle de Bravo, Méx.   dias con volumen 12,280; desde 1993-01-01; media 2019 341.0; min y max desde 2018: 104.2 y 394.6
+       Villa Victoria, Méx.   dias con volumen 11,990; desde 1994-01-01; media 2019 148.6; min y max desde 2018: 35.5 y 181.3
+       suma de las tres en 2018: media 609.3 hm3, minimo 456.4 hm3, 365 dias con las tres
+       suma de las tres en 2019: media 634.6 hm3, minimo 531.9 hm3, 365 dias con las tres
+       suma de las tres en 2020: media 542.2 hm3, minimo 451.5 hm3, 366 dias con las tres
+       suma de las tres en 2021: media 419.3 hm3, minimo 292.5 hm3, 365 dias con las tres
+       suma de las tres en 2022: media 425.8 hm3, minimo 321.3 hm3, 365 dias con las tres
+       suma de las tres en 2023: media 326.2 hm3, minimo 247.9 hm3, 365 dias con las tres
+       suma de las tres en 2024: media 341.3 hm3, minimo 203.5 hm3, 366 dias con las tres
+       suma de las tres en 2025: media 539.4 hm3, minimo 376.9 hm3, 365 dias con las tres
+       suma de las tres en 2026: media 620.8 hm3, minimo 525.6 hm3, 303 dias con las tres
+
+     Calidad del agua subterranea en acuiferos de la ZMVM, sitios por semaforo:
+       0901 ZONA METROPOLITANA DE LA CD. DE MEXICO     sitios   3; verde   1; amarillo   2; rojo   0
+       1506 CHALCO-AMECAMECA                           sitios   6; verde   3; amarillo   0; rojo   2
+       1507 TEXCOCO                                    sitios   2; verde   1; amarillo   1; rojo   0
+       1508 CUAUTITLAN-PACHUCA                         sitios  16; verde   7; amarillo   3; rojo   4
+       sitios subterranea: 2,875 en el pais; 27 en la ZM; 47 en el Edomex; 2 en la CDMX
+       sitios superficial: 5,033 en el pais; 106 en la ZM; 220 en el Edomex; 25 en la CDMX
+
+     Series diarias de 2019 por cuenca (fact_caudal_diario):
+       Valle de México                estaciones  23; dias  7,803; con gasto  7,284; gasto medio 6.21 m3/s
+       Alto Lerma                     estaciones  10; dias  3,380; con gasto  3,012; gasto medio 6.32 m3/s
+       Medio Balsas                   estaciones   2; dias    667; con gasto    667; gasto medio 0.77 m3/s
+
+verificaciones fallidas: 0
