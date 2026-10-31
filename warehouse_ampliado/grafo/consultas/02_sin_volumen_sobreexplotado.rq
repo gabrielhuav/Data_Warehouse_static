@@ -1,0 +1,14 @@
+# es: Sin volumen, sobre un acuífero sobreexplotado | El grafo da contexto donde la facturación no reporta nada
+# en: No volume, over an overdrawn aquifer | The graph gives context where billing reports nothing
+PREFIX agua: <https://w3id.org/cdmx/agua/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?municipio ?acuifero ?extraccionEntreRecarga WHERE {
+  ?m a agua:Municipality ;
+     rdfs:label ?municipio ;
+     agua:volumeQuality "sin dato" ;
+     agua:overliesAquifer ?a .
+  ?a rdfs:label ?acuifero ;
+     agua:extractionRechargeRatio ?extraccionEntreRecarga .
+  FILTER(?extraccionEntreRecarga > 1.5)
+} ORDER BY DESC(?extraccionEntreRecarga) ?municipio

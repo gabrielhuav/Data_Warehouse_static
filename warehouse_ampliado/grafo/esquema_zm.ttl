@@ -1,0 +1,65 @@
+@prefix agua:    <https://w3id.org/cdmx/agua/> .
+@prefix geo:     <http://www.opengis.net/ont/geosparql#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+
+# Vocabulario del grafo metropolitano. Extiende schema.ttl con el mismo espacio de nombres.
+agua:grafoMetropolitano a prov:Entity ;
+  rdfs:label "Water in the Mexico City Metropolitan Area: knowledge graph"@en ;
+  dcterms:description "Materialised from the extended warehouse by mapeo_zm.r2rml.ttl. It covers the 63 municipalities of the official 2020 metropolitan delimitation and joins the conference graph through the identifiers of its boroughs and neighbourhoods."@en ;
+  prov:wasDerivedFrom agua:consumoCDMX .
+
+agua:Municipality a rdfs:Class ; rdfs:subClassOf geo:Feature ;
+  rdfs:label "Municipality or borough of the metropolitan area"@en .
+agua:Neighbourhood a rdfs:Class ; rdfs:subClassOf geo:Feature ;
+  rdfs:label "Neighbourhood of the CONAPO 2020 urban marginalisation index"@en .
+agua:Aquifer a rdfs:Class ; rdfs:subClassOf geo:Feature ; rdfs:label "Official aquifer"@en .
+agua:Well a rdfs:Class ; rdfs:subClassOf geo:Feature ;
+  rdfs:label "Well of the piezometric network with readings in 2010 and 2019"@en .
+agua:Dam a rdfs:Class ; rdfs:subClassOf geo:Feature ; rdfs:label "Dam with a daily series"@en .
+agua:QualitySite a rdfs:Class ; rdfs:subClassOf geo:Feature ;
+  rdfs:label "Site of the national water quality network"@en .
+
+agua:sharesBoundaryWith a rdf:Property, rdf:SymmetricProperty ;
+  rdfs:domain agua:Municipality ; rdfs:range agua:Municipality ;
+  rdfs:label "shares a boundary with"@en ;
+  rdfs:comment "Two municipalities whose official polygons intersect and share at least 50 m of boundary, measured with a 2 m tolerance. It is not geo:sfTouches: the official polygons overlap by up to 0.49 square metres, so the strict relation fails for pairs that do adjoin."@en .
+
+agua:touchesAcrossCityLimit a rdf:Property, rdf:SymmetricProperty ;
+  rdfs:subPropertyOf geo:sfTouches ;
+  rdfs:domain agua:Neighbourhood ; rdfs:range agua:Neighbourhood ;
+  rdfs:comment "geo:sfTouches between a neighbourhood of Mexico City and one of another state."@en .
+
+agua:overliesAquifer a rdf:Property ; rdfs:domain agua:Municipality ; rdfs:range agua:Aquifer ;
+  rdfs:comment "The aquifer polygon covers at least 1 % of the municipality."@en .
+agua:inAquifer a rdf:Property ; rdfs:domain agua:Well ; rdfs:range agua:Aquifer .
+agua:locatedIn a rdf:Property ; rdfs:range agua:Municipality ;
+  rdfs:comment "Municipality of a point feature: a well, a dam or a quality site."@en .
+agua:inMunicipality a rdf:Property ; rdfs:domain agua:Neighbourhood ; rdfs:range agua:Municipality .
+agua:withinNeighbourhood a rdf:Property ; rdfs:range agua:Neighbourhood ;
+  rdfs:comment "Links a neighbourhood of the conference graph, which is a utility label, to the CONAPO polygon that holds most of its points."@en .
+
+agua:billedLitresPerDay a rdf:Property ; rdfs:range xsd:decimal ;
+  rdfs:comment "Billed domestic volume per inhabitant per day. It is billing, not use, and its source differs across the Mexico City boundary. Absent where the source reports no volume."@en .
+agua:volumeQuality a rdf:Property ;
+  rdfs:comment "Plausible, atypical (outside 10 to 400 litres) or no data."@en .
+agua:verticalLandMotion a rdf:Property ; rdfs:range xsd:decimal ;
+  rdfs:comment "Centimetres per year, InSAR 2014-2020. Negative values mean subsidence."@en .
+agua:levelFall a rdf:Property ; rdfs:range xsd:decimal ;
+  rdfs:comment "Metres between 2010 and 2019. Positive values mean the water table fell."@en .
+agua:meanLevelFall a rdf:Property ; rdfs:range xsd:decimal ;
+  rdfs:comment "Mean level fall of the wells read in both years, in metres."@en .
+agua:extractionRechargeRatio a rdf:Property ; rdfs:range xsd:decimal ;
+  rdfs:comment "Official annual extraction divided by recharge."@en .
+agua:deficit a rdf:Property ; rdfs:range xsd:decimal ;
+  rdfs:comment "Official negative availability, in cubic hectometres per year."@en .
+agua:occupantsWithoutWaterPct a rdf:Property ; rdfs:range xsd:decimal ;
+  rdfs:comment "Percentage of occupants of dwellings without piped water, CONAPO 2020."@en .
+agua:shortageReportsPerThousand a rdf:Property ; rdfs:range xsd:decimal ;
+  rdfs:comment "Water shortage reports per thousand inhabitants, January to June 2019. Mexico City only."@en .
+agua:leakReportsPerThousand a rdf:Property ; rdfs:range xsd:decimal ;
+  rdfs:comment "Leak reports per thousand inhabitants, 2021 to 2024. Mexico City only; the source records none earlier."@en .

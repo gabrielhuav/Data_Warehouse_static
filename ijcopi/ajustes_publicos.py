@@ -57,8 +57,8 @@ i18n = poner(i18n, "nav.index", "Panel CDMX", "CDMX dashboard")
 i18n = poner(i18n, "nav.mapa", "Mapa CDMX", "CDMX map")
 i18n = poner(i18n, "nav.grafo", "Grafo CDMX", "CDMX graph")
 i18n = poner(i18n, "nav.vecindad", "Vecindad CDMX", "CDMX adjacency")
-nuevas = iter(("'nav.zm': 'Mapa metropolitano', 'nav.consultas': 'Consultas',",
-               "'nav.zm': 'Metropolitan map', 'nav.consultas': 'Queries',"))
+nuevas = iter(("'nav.zm': 'Mapa metropolitano', 'nav.grafozm': 'Grafo metropolitano', 'nav.consultas': 'Consultas',",
+               "'nav.zm': 'Metropolitan map', 'nav.grafozm': 'Metropolitan graph', 'nav.consultas': 'Queries',"))
 i18n, n = re.subn(r"(?m)^(\s*)('nav\.index':)", lambda m: f"{m.group(1)}{next(nuevas)}\n{m.group(1)}{m.group(2)}", i18n)
 if n != 2:
     raise SystemExit("nav.index no aparece dos veces")
@@ -66,7 +66,8 @@ escribir("assets/i18n.js", i18n)
 
 nav = leer("assets/nav.js")
 nav = cambiar(nav, "['index.html',    'nav.index'],",
-              "['ijcopi/mapa-zm.html', 'nav.zm'],\n    ['ijcopi/consultas.html', 'nav.consultas'],\n"
+              "['ijcopi/mapa-zm.html', 'nav.zm'],\n    ['ijcopi/grafo-zm.html', 'nav.grafozm'],\n"
+              "    ['ijcopi/consultas.html', 'nav.consultas'],\n"
               "    ['panel.html',    'nav.index'],")
 nav = cambiar(nav, "h.toLowerCase() === actual", "h.split('/').pop().toLowerCase() === actual")
 nav = cambiar(nav, "https://github.com/gabrielhuav/Data_Warehouse_static", REPO)

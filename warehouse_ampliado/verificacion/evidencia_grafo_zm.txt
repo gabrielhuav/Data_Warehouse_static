@@ -1,0 +1,28 @@
+Evidencia del grafo metropolitano, generada 2026-10-31 22:02 UTC
+
+[OK ] tripletas publicadas: 82,393
+[OK ] sha256 de las tripletas 9a267d255cfb5c8f
+[OK ] materializar de nuevo desde el almacen da el mismo grafo
+[OK ] agua:Municipality: 63 instancias, igual que la base
+[OK ] agua:Aquifer: 10 instancias, igual que la base
+[OK ] agua:Neighbourhood: 5,830 instancias, igual que la base
+[OK ] sharesBoundaryWith: 326 tripletas, igual que puente_municipio_vecino
+[OK ] sharesBoundaryWith es simetrica
+[OK ] geosparql#sfTouches: 31,020 tripletas, igual que puente_colonia_vecina
+[OK ] geosparql#sfTouches es simetrica
+[OK ] literales nulos convertidos en dato: 0
+[OK ] enlaces a recursos nulos: 0
+[OK ] municipios con volumen: 39 de 63; el resto no tiene la propiedad
+[OK ] 01_frontera_cdmx: 18 filas
+[OK ] 02_sin_volumen_sobreexplotado: 27 filas
+[OK ] 03_colonias_frontera: 11 filas
+[OK ] 04_hundimiento_frontera: 5 filas
+[OK ] 05_acuiferos_municipios: 10 filas
+[OK ] 06_pozos_hundimiento: 3 filas
+[OK ] 07_enlace_icokg: 16 filas
+[OK ] 08_composicion: 11 filas
+[OK ] la frontera de la CDMX coincide en SPARQL y SQL: 18 pares
+[OK ] touchesAcrossCityLimit es igual al recorrido completo de sfTouches: 169 pares
+[OK ] colonias del grafo original enlazadas: 1,532
+
+verificaciones fallidas: 0

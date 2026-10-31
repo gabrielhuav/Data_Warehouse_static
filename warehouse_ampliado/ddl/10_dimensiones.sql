@@ -228,6 +228,22 @@ CREATE TABLE geo_territorio (
     PRIMARY KEY (capa, clave)
 );
 
+-- Vecindad real entre poligonos oficiales. Cada par aparece en los dos sentidos.
+-- Municipios: comparten al menos 50 m de frontera. INEGI trae solapes de centimetros, asi que la
+-- prueba estricta de "touches" falla en pares que si colindan.
+CREATE TABLE puente_municipio_vecino (
+    cve_mun     CHAR(5) NOT NULL REFERENCES dim_municipio (cve_mun),
+    cve_vecino  CHAR(5) NOT NULL REFERENCES dim_municipio (cve_mun),
+    frontera_km NUMERIC NOT NULL,
+    PRIMARY KEY (cve_mun, cve_vecino)
+);
+-- Colonias: relacion "touches" estricta sobre los poligonos de CONAPO
+CREATE TABLE puente_colonia_vecina (
+    cve_col    BIGINT NOT NULL REFERENCES dim_colonia_conapo (cve_col),
+    cve_vecina BIGINT NOT NULL REFERENCES dim_colonia_conapo (cve_col),
+    PRIMARY KEY (cve_col, cve_vecina)
+);
+
 -- Reportes ciudadanos de SACMEX
 CREATE TABLE dim_tipo_reporte (
     id_tipo_reporte SERIAL PRIMARY KEY,

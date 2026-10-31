@@ -1,10 +1,10 @@
 {
- "generado_en": "2026-10-31 19:48 UTC",
+ "generado_en": "2026-10-31 22:04 UTC",
  "consultas": [
   {
    "consulta": "01_fuentes_cargadas.sql",
    "datos": "01_fuentes_cargadas.json",
-   "filas": 93,
+   "filas": 97,
    "columnas": [
     "id_fuente",
     "publicador",
@@ -18,18 +18,18 @@
     "doi"
    ],
    "sha256_consulta": "62c44a8aabeaa4bb184163b1bc25c3a6f84f04b3d1a196d268c133631b8d3eb2",
-   "sha256_datos": "0846a632e532515b904d0aacea4f1ec15bc28e1be4c4d2f69d45e0fb958df153"
+   "sha256_datos": "dd1f613521434722c1c931b912633d908b5e09383c529803639f237b089853c1"
   },
   {
    "consulta": "02_tablas_del_almacen.sql",
    "datos": "02_tablas_del_almacen.json",
-   "filas": 43,
+   "filas": 45,
    "columnas": [
     "tabla",
     "filas"
    ],
    "sha256_consulta": "f327e5c6c8c1c38475770c83af0ac81465af4ab2959fe14f5924702e40da5caf",
-   "sha256_datos": "e294c6d0a715b79e580fdef43223bd85bbdee6b7939f63fbbddd0e2ca06a5da9"
+   "sha256_datos": "aa57bf33c7e57b4423de8f5ce0ef8627ba66d75e2930f0e6c233de7c26e4def0"
   },
   {
    "consulta": "03_municipios_zm.sql",
@@ -218,6 +218,33 @@
    ],
    "sha256_consulta": "2fa2c2f1ff109811060e10a46f420443322c05f524395b1153688ca776663883",
    "sha256_datos": "2c831dfab5482b0cf2c9cf3eb5a7a6e5ba7c05e9daa68fe5c9e779cd3ad94055"
+  },
+  {
+   "consulta": "14_vecinos_municipio.sql",
+   "datos": "14_vecinos_municipio.json",
+   "filas": 326,
+   "columnas": [
+    "cve_mun",
+    "nom_mun",
+    "nom_ent",
+    "cve_vecino",
+    "vecino",
+    "entidad_vecino",
+    "frontera_km"
+   ],
+   "sha256_consulta": "0e53631bab02b52eb847042e760bc158e2b5b5ece11197012aeb848fe9944868",
+   "sha256_datos": "8bcb2f5c94cfcfbd4ca839f571e7a65c1c2979b2759351ddf52dde3bb5a1ccac"
+  },
+  {
+   "consulta": "15_frontera_cdmx.sql",
+   "datos": "15_frontera_cdmx.json",
+   "filas": 8,
+   "columnas": [
+    "medida",
+    "valor"
+   ],
+   "sha256_consulta": "f33aed5e69d9f2323e3d095e679f757b6c4e7e2465c239100ba2358d28eeb411",
+   "sha256_datos": "763b01c64836ea9737f4afce192d90fb04b70f59319e27116dbf00cc97a1d007"
   }
  ]
 }

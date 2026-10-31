@@ -1,0 +1,12 @@
+# es: Cuántos municipios dependen de cada acuífero | Municipios sobre cada acuífero, con su balance y el descenso del nivel
+# en: How many municipalities sit on each aquifer | Municipalities over each aquifer, with its balance and level fall
+PREFIX agua: <https://w3id.org/cdmx/agua/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?acuifero ?extraccionEntreRecarga ?descensoMedio (COUNT(?m) AS ?municipios) WHERE {
+  ?m agua:overliesAquifer ?a .
+  ?a rdfs:label ?acuifero ;
+     agua:extractionRechargeRatio ?extraccionEntreRecarga .
+  OPTIONAL { ?a agua:meanLevelFall ?descensoMedio }
+} GROUP BY ?acuifero ?extraccionEntreRecarga ?descensoMedio
+ORDER BY DESC(?extraccionEntreRecarga)

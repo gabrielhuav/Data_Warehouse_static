@@ -15,7 +15,7 @@
     es: {
       titulo: 'Agua en la Zona Metropolitana de Ciudad de México',
       lema: 'Ampliación del almacén de datos: cada capa es el resultado de una consulta SQL al almacén real, no una copia aparte.',
-      'nav.mapa': 'Mapa', 'nav.consultas': 'Consultas al almacén',
+      'nav.mapa': 'Mapa', 'nav.grafo': 'Grafo', 'nav.consultas': 'Consultas al almacén',
       'c.indicador': 'Indicador', 'c.fecha': 'Fecha del corte', 'c.capas': 'Capas',
       'capa.acuiferos': 'Acuíferos', 'capa.pozos': 'Pozos: cambio de nivel 2010-2019',
       'capa.presas': 'Presas', 'capa.calidad': 'Calidad del agua',
@@ -49,7 +49,7 @@
     en: {
       titulo: 'Water in the Mexico City Metropolitan Area',
       lema: 'Extension of the data warehouse: every layer is the result of a SQL query to the real warehouse, not a separate copy.',
-      'nav.mapa': 'Map', 'nav.consultas': 'Warehouse queries',
+      'nav.mapa': 'Map', 'nav.grafo': 'Graph', 'nav.consultas': 'Warehouse queries',
       'c.indicador': 'Indicator', 'c.fecha': 'Date of the reading', 'c.capas': 'Layers',
       'capa.acuiferos': 'Aquifers', 'capa.pozos': 'Wells: level change 2010-2019',
       'capa.presas': 'Dams', 'capa.calidad': 'Water quality',

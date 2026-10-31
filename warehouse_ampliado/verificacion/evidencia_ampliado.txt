@@ -1,4 +1,4 @@
-Evidencia del almacen ampliado, generada 2026-10-31 19:56 UTC
+Evidencia del almacen ampliado, generada 2026-10-31 22:04 UTC
 
 ## 1. El almacen original sigue intacto
 [OK ] fact_consumo_agua: 70,886 filas
@@ -101,8 +101,10 @@ Evidencia del almacen ampliado, generada 2026-10-31 19:56 UTC
      fact_subsidencia_municipio                   128
      fact_vivienda_agua_ageb                    6,898
      fact_vulnerabilidad_alcaldia                  48
+     puente_colonia_vecina                     31,020
      puente_municipio_acuifero                    522
-     total de filas                         2,756,838
+     puente_municipio_vecino                      326
+     total de filas                         2,788,184
 
      Reportes por anio; falta, fuga y calidad son de agua potable (la fuente no registra fugas antes de 2021):
        2018: total   67,799  falta de agua   67,799  fuga       0  mala calidad      0  drenaje      0

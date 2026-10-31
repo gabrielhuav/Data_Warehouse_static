@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../">
+    <title>Grafo metropolitano del agua</title>
+    <meta name="description" content="Grafo de conocimiento del agua en la Zona Metropolitana de Ciudad de México: municipios, colonias, acuíferos, pozos y presas, consultado con SPARQL en el navegador.">
+    <link rel="stylesheet" href="assets/vendor/leaflet-1.9.4.css">
+    <link rel="stylesheet" href="assets/estilo.css">
+    <link rel="stylesheet" href="assets/paginas.css">
+    <link rel="stylesheet" href="ijcopi/zm.css">
+    <script src="assets/i18n.js"></script>
+</head>
+<body>
+<header data-barra></header>
+<div class="app-container" role="main">
+    <div class="zm-cabecera">
+        <div>
+            <h1 data-t="titulo"></h1>
+            <p data-t="lema"></p>
+        </div>
+        <nav class="zm-nav" aria-label="Versión extendida">
+            <a href="ijcopi/mapa-zm.html" data-t="nav.mapa"></a>
+            <a href="ijcopi/grafo-zm.html" aria-current="page" data-t="nav.grafo"></a>
+            <a href="ijcopi/consultas.html" data-t="nav.consultas"></a>
+        </nav>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <div class="zm-kpis">
+        <div class="panel zm-kpi"><span data-t="k.tripletas"></span><b id="kTripletas">—</b></div>
+        <div class="panel zm-kpi"><span data-t="k.municipios"></span><b id="kMunicipios">—</b></div>
+        <div class="panel zm-kpi"><span data-t="k.fronteras"></span><b id="kFronteras">—</b></div>
+        <div class="panel zm-kpi"><span data-t="k.colonias"></span><b id="kColonias">—</b></div>
+        <div class="panel zm-kpi"><span data-t="k.vecinas"></span><b id="kVecinas">—</b></div>
+    </div>
+
+    <div class="zm-g2">
+        <div class="map-wrap"><div id="map"></div></div>
+        <aside class="panel zm-lateral">
+            <h2 class="zm-sub" data-t="r.titulo"></h2>
+            <p class="zm-nota" data-t="r.ayuda"></p>
+            <div id="leyendaGrafo"></div>
+            <div id="recorrido"></div>
+        </aside>
+    </div>
+
+    <section class="panel zm-card zm-sparql">
+        <h2 data-t="s.titulo"></h2>
+        <p class="zm-nota" data-t="s.ayuda"></p>
+        <div class="zm-s2">
+            <div id="ejemplos" class="zm-ejemplos"></div>
+            <div>
+                <label for="consulta" data-t="s.etiqueta"></label>
+                <textarea id="consulta" spellcheck="false"></textarea>
+                <div class="zm-acciones">
+                    <button class="btn btn-primary" id="ejecutar" type="button" disabled data-t="s.ejecutar"></button>
+                    <span id="metrica" class="zm-meta"></span>
+                </div>
+            </div>
+        </div>
+        <div id="salida" class="zm-tabla"></div>
+    </section>
+
+    <section class="panel zm-origen">
+        <h2 data-t="o.titulo"></h2>
+        <p data-t="o.texto"></p>
+        <p id="origenHash" class="zm-meta"></p>
+    </section>
+</div>
+<footer data-pie></footer>
+<script src="assets/vendor/leaflet-1.9.4.js"></script>
+<script src="assets/mapa-teselas.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/vendor/n3-1.17.2.min.js"></script>
+<script src="assets/vendor/comunica-browser-v3.js"></script>
+<script src="ijcopi/grafo-zm.js"></script>
+</body>
+</html>

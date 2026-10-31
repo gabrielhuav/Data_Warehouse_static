@@ -1,0 +1,14 @@
+# es: Sin agua del otro lado del límite | Colonias fuera de la CDMX, pegadas a ella, con más de 2 % sin agua entubada
+# en: No water across the boundary | Neighbourhoods touching Mexico City from outside, over 2 % without piped water
+PREFIX agua: <https://w3id.org/cdmx/agua/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?colonia ?municipio ?pctSinAgua WHERE {
+  ?c agua:touchesAcrossCityLimit ?vecina ;
+     rdfs:label ?colonia ;
+     agua:occupantsWithoutWaterPct ?pctSinAgua ;
+     agua:inMunicipality ?m .
+  ?m agua:isMexicoCityBorough false ;
+     rdfs:label ?municipio .
+  FILTER(?pctSinAgua > 2)
+} ORDER BY DESC(?pctSinAgua)

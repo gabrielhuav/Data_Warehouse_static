@@ -1,0 +1,15 @@
+# es: El hundimiento cruza el límite | Pares de vecinos, uno en la CDMX y otro fuera, que se hunden más de 5 cm al año
+# en: Subsidence crosses the boundary | Neighbours, one in Mexico City and one outside, sinking over 5 cm a year
+PREFIX agua: <https://w3id.org/cdmx/agua/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?alcaldia ?cmAlcaldia ?vecino ?cmVecino WHERE {
+  ?a agua:isMexicoCityBorough true ;
+     rdfs:label ?alcaldia ;
+     agua:verticalLandMotion ?cmAlcaldia ;
+     agua:sharesBoundaryWith ?v .
+  ?v agua:isMexicoCityBorough false ;
+     rdfs:label ?vecino ;
+     agua:verticalLandMotion ?cmVecino .
+  FILTER(?cmAlcaldia < -5 && ?cmVecino < -5)
+} ORDER BY ?cmVecino ?alcaldia

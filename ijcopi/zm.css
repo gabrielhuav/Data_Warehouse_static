@@ -56,8 +56,34 @@ pre.zm-pre,.zm-origen pre,.zm-card pre,.zm-sql pre{background:var(--superficie-2
 
 .zm-etiqueta{background:transparent; border:0; box-shadow:none; color:#123; font-size:11px; font-weight:700; text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff}
 
+/* Pagina del grafo */
+.zm-kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:.7rem; margin-bottom:1rem}
+.zm-kpi{padding:.7rem .9rem; display:flex; flex-direction:column; gap:.15rem; font-size:.78rem; color:var(--texto-2)}
+.zm-kpi b{font-size:1.3rem; color:var(--marca-700); font-variant-numeric:tabular-nums}
+.zm-g2{display:grid; gap:1rem; grid-template-columns:minmax(0,3fr) minmax(320px,2fr); align-items:start}
+@media (max-width:1000px){ .zm-g2{grid-template-columns:minmax(0,1fr)} }
+.zm-sub{margin:0 0 .3rem; font-size:1.02rem; color:var(--marca-700)}
+.zm-sparql{margin-top:1rem}
+.zm-s2{display:grid; gap:1rem; grid-template-columns:minmax(0,2fr) minmax(0,3fr); align-items:start; margin-top:.6rem}
+@media (max-width:1000px){ .zm-s2{grid-template-columns:minmax(0,1fr)} }
+.zm-ejemplos{display:flex; flex-direction:column; gap:.3rem}
+.zm-ejemplo{text-align:left; cursor:pointer; padding:.5rem .65rem; font:inherit; font-size:.82rem; line-height:1.3; background:transparent; color:var(--texto); border:1px solid var(--borde); border-radius:var(--r-s)}
+.zm-ejemplo:hover{background:var(--superficie-2)}
+.zm-ejemplo[aria-pressed="true"]{border-color:var(--marca-700); background:var(--superficie-2); font-weight:600}
+.zm-ejemplo small{display:block; font-weight:400; color:var(--texto-3); font-size:.74rem; margin-top:.1rem}
+.zm-sparql label{display:block; font-weight:600; margin-bottom:.25rem}
+.zm-sparql textarea{width:100%; min-height:250px; padding:.6rem .7rem; font:.76rem/1.4 var(--mono); background:var(--superficie-2); color:var(--texto); border:1px solid var(--borde); border-radius:var(--r-s); resize:vertical}
+.zm-acciones{display:flex; gap:.7rem; align-items:center; margin-top:.5rem; flex-wrap:wrap}
+.zm-acciones .zm-meta{margin:0}
+.zm-sparql .zm-tabla{margin-top:.8rem; max-height:420px}
+#recorrido .zm-tabla{max-height:240px; overflow:auto}
+#recorrido details{margin-top:.3rem; font-size:.78rem}
+#recorrido summary{cursor:pointer; color:var(--marca-700)}
+#leyendaGrafo{margin:.5rem 0 .8rem}
+
 /* Vista limpia para las figuras del articulo: ?vista=figura */
-html.figura .barra,html.figura .pie,html.figura .zm-cabecera,html.figura .zm-control,html.figura .zm-origen,html.figura #detalle,html.figura .status,html.figura .mapa-teselas,html.figura .leaflet-control-zoom,html.figura .zm-ley-nota{display:none !important}
+html.figura .barra,html.figura .pie,html.figura .zm-cabecera,html.figura .zm-control,html.figura .zm-origen,html.figura #detalle,html.figura .status,html.figura .mapa-teselas,html.figura .leaflet-control-zoom,html.figura .zm-ley-nota,html.figura .zm-kpis,html.figura .zm-sparql,html.figura #recorrido,html.figura .zm-sub,html.figura .zm-lateral .zm-nota{display:none !important}
+html.figura .zm-g2{display:block}
 html.figura .leaflet-tile-pane{opacity:.6}
 html.figura .app-container{max-width:none; padding:0}
 html.figura .zm-rejilla{display:block}

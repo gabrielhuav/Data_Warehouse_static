@@ -1,0 +1,13 @@
+# es: Quién colinda con la CDMX | Municipios de otras entidades vecinos de cada alcaldía
+# en: Who borders Mexico City | Municipalities of other states next to each borough
+PREFIX agua: <https://w3id.org/cdmx/agua/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?alcaldia ?vecino ?estado WHERE {
+  ?a agua:isMexicoCityBorough true ;
+     rdfs:label ?alcaldia ;
+     agua:sharesBoundaryWith ?v .
+  ?v agua:isMexicoCityBorough false ;
+     rdfs:label ?vecino ;
+     agua:state ?estado .
+} ORDER BY ?alcaldia ?vecino

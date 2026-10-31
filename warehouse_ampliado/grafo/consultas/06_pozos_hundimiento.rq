@@ -1,0 +1,13 @@
+# es: Pozos y hundimiento | Descenso del nivel en los municipios que más se hunden
+# en: Wells and subsidence | Water table fall in the municipalities that sink the most
+PREFIX agua: <https://w3id.org/cdmx/agua/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?municipio ?cmPorAnio (COUNT(?p) AS ?pozos) (ROUND(AVG(?caida) * 10) / 10 AS ?descensoMedio) WHERE {
+  ?p a agua:Well ;
+     agua:locatedIn ?m ;
+     agua:levelFall ?caida .
+  ?m rdfs:label ?municipio ;
+     agua:verticalLandMotion ?cmPorAnio .
+  FILTER(?cmPorAnio < -5)
+} GROUP BY ?municipio ?cmPorAnio ORDER BY ?cmPorAnio

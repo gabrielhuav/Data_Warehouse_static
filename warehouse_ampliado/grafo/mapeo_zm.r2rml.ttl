@@ -1,0 +1,243 @@
+# =====================================================================
+# mapeo_zm.r2rml.ttl
+# R2RML: almacen ampliado (PostgreSQL) -> grafo metropolitano
+#
+# Extiende el grafo de mapping.r2rml.ttl a la Zona Metropolitana de Ciudad de Mexico.
+# Comparte el espacio de nombres agua: y enlaza con sus IRIs de alcaldia y colonia, asi que los
+# dos grafos se pueden unir. Un valor NULL no produce tripleta: lo que la fuente no reporta,
+# el grafo no lo afirma.
+# =====================================================================
+
+@prefix rr:   <http://www.w3.org/ns/r2rml#> .
+@prefix geo:  <http://www.opengis.net/ont/geosparql#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix agua: <https://w3id.org/cdmx/agua/> .
+
+# ---------------------------------------------------------------------
+# Municipios y alcaldias
+# ---------------------------------------------------------------------
+<#Municipio> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """
+    SELECT z.cve_mun, z.nom_mun, z.nom_ent,
+           CASE WHEN m.cve_ent = '09' THEN 'true' ELSE 'false' END AS es_alcaldia,
+           z.pob_2019, z.litros_hab_dia_dom, z.calidad_volumen,
+           ROUND(100.0 * m.vph_agua_dentro_2020 / NULLIF(m.viv_part_hab_2020, 0), 1) AS pct_viv_agua_dentro,
+           ROUND(z.pct_ocup_sin_agua_2020, 2) AS pct_ocup_sin_agua,
+           z.gm_2020,
+           ROUND(z.recaudacion_shcp_2018 / NULLIF(z.pob_2019, 0), 1) AS recaudacion_pc_2018,
+           ROUND(z.vlm_media_cm_anio, 2) AS vlm_cm_anio
+    FROM   v_zm_indicadores_agua z
+    JOIN   dim_municipio m USING (cve_mun)
+  """ ] ;
+  rr:subjectMap [ rr:template "https://w3id.org/cdmx/agua/municipio/{cve_mun}" ;
+                  rr:class agua:Municipality, geo:Feature ] ;
+  rr:predicateObjectMap [ rr:predicate rdfs:label ;
+                          rr:objectMap [ rr:column "nom_mun" ; rr:language "es" ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:state ; rr:objectMap [ rr:column "nom_ent" ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:isMexicoCityBorough ;
+                          rr:objectMap [ rr:column "es_alcaldia" ; rr:datatype xsd:boolean ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:population ;
+                          rr:objectMap [ rr:column "pob_2019" ; rr:datatype xsd:integer ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:billedLitresPerDay ;
+                          rr:objectMap [ rr:column "litros_hab_dia_dom" ; rr:datatype xsd:decimal ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:volumeQuality ; rr:objectMap [ rr:column "calidad_volumen" ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:pipedWaterDwellingsPct ;
+                          rr:objectMap [ rr:column "pct_viv_agua_dentro" ; rr:datatype xsd:decimal ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:occupantsWithoutWaterPct ;
+                          rr:objectMap [ rr:column "pct_ocup_sin_agua" ; rr:datatype xsd:decimal ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:marginalisationLevel ; rr:objectMap [ rr:column "gm_2020" ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:waterRevenuePerInhabitant ;
+                          rr:objectMap [ rr:column "recaudacion_pc_2018" ; rr:datatype xsd:decimal ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:verticalLandMotion ;
+                          rr:objectMap [ rr:column "vlm_cm_anio" ; rr:datatype xsd:decimal ] ] .
+
+<#VecinoMunicipio> a rr:TriplesMap ;
+  rr:logicalTable [ rr:tableName "puente_municipio_vecino" ] ;
+  rr:subjectMap [ rr:template "https://w3id.org/cdmx/agua/municipio/{cve_mun}" ] ;
+  rr:predicateObjectMap [ rr:predicate agua:sharesBoundaryWith ;
+                          rr:objectMap [ rr:template "https://w3id.org/cdmx/agua/municipio/{cve_vecino}" ] ] .
+
+# Enlace con el grafo original: la alcaldia de ICOKG es el mismo territorio
+<#AlcaldiaOriginal> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery "SELECT DISTINCT cve_mun, alcaldia FROM dim_ubicacion" ] ;
+  rr:subjectMap [ rr:template "https://w3id.org/cdmx/agua/municipio/{cve_mun}" ] ;
+  rr:predicateObjectMap [ rr:predicate skos:exactMatch ;
+                          rr:objectMap [ rr:template "https://w3id.org/cdmx/agua/alcaldia/{alcaldia}" ] ] .
+
+# ---------------------------------------------------------------------
+# Agua subterranea
+# ---------------------------------------------------------------------
+<#Acuifero> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """
+    SELECT v.clv_acui, v.nom_acui, v.extraccion_entre_recarga,
+           ROUND(v.dma_negativa, 1) AS deficit_hm3, c.pozos_2010_2019, c.descenso_medio_m
+    FROM   v_acuiferos_zmvm v
+    LEFT   JOIN (SELECT p.clv_acui, COUNT(*) AS pozos_2010_2019,
+                        ROUND(AVG(b.profundidad_nivel_m - a.profundidad_nivel_m), 1) AS descenso_medio_m
+                 FROM   dim_pozo p
+                 JOIN   fact_nivel_piezometrico a ON a.id_pozo = p.id_pozo AND a.anio = 2010
+                 JOIN   fact_nivel_piezometrico b ON b.id_pozo = p.id_pozo AND b.anio = 2019
+                 GROUP  BY p.clv_acui) c USING (clv_acui)
+  """ ] ;
+  rr:subjectMap [ rr:template "https://w3id.org/cdmx/agua/acuifero/{clv_acui}" ;
+                  rr:class agua:Aquifer, geo:Feature ] ;
+  rr:predicateObjectMap [ rr:predicate rdfs:label ;
+                          rr:objectMap [ rr:column "nom_acui" ; rr:language "es" ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:extractionRechargeRatio ;
+                          rr:objectMap [ rr:column "extraccion_entre_recarga" ; rr:datatype xsd:decimal ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:deficit ;
+                          rr:objectMap [ rr:column "deficit_hm3" ; rr:datatype xsd:decimal ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:wellsCompared ;
+                          rr:objectMap [ rr:column "pozos_2010_2019" ; rr:datatype xsd:integer ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:meanLevelFall ;
+                          rr:objectMap [ rr:column "descenso_medio_m" ; rr:datatype xsd:decimal ] ] .
+
+<#BajoAcuifero> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """
+    SELECT x.cve_mun, x.clv_acui
+    FROM   puente_municipio_acuifero x
+    JOIN   dim_municipio m USING (cve_mun)
+    WHERE  m.en_zm_ciudad_mexico AND x.pct_municipio >= 1
+  """ ] ;
+  rr:subjectMap [ rr:template "https://w3id.org/cdmx/agua/municipio/{cve_mun}" ] ;
+  rr:predicateObjectMap [ rr:predicate agua:overliesAquifer ;
+                          rr:objectMap [ rr:template "https://w3id.org/cdmx/agua/acuifero/{clv_acui}" ] ] .
+
+<#Pozo> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """
+    SELECT p.id_pozo, p.nom_pozo, p.clv_acui,
+           CASE WHEN m.en_zm_ciudad_mexico THEN p.cve_mun END AS cve_zm,
+           ROUND(n19.profundidad_nivel_m - n10.profundidad_nivel_m, 2) AS descenso_m
+    FROM   dim_pozo p
+    JOIN   fact_nivel_piezometrico n10 ON n10.id_pozo = p.id_pozo AND n10.anio = 2010
+    JOIN   fact_nivel_piezometrico n19 ON n19.id_pozo = p.id_pozo AND n19.anio = 2019
+    LEFT   JOIN dim_municipio m ON m.cve_mun = p.cve_mun
+    WHERE  p.clv_acui IN (SELECT clv_acui FROM v_acuiferos_zmvm)
+  """ ] ;
+  rr:subjectMap [ rr:template "https://w3id.org/cdmx/agua/pozo/{id_pozo}" ;
+                  rr:class agua:Well, geo:Feature ] ;
+  rr:predicateObjectMap [ rr:predicate rdfs:label ;
+                          rr:objectMap [ rr:column "nom_pozo" ; rr:language "es" ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:inAquifer ;
+                          rr:objectMap [ rr:template "https://w3id.org/cdmx/agua/acuifero/{clv_acui}" ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:locatedIn ;
+                          rr:objectMap [ rr:template "https://w3id.org/cdmx/agua/municipio/{cve_zm}" ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:levelFall ;
+                          rr:objectMap [ rr:column "descenso_m" ; rr:datatype xsd:decimal ] ] .
+
+# ---------------------------------------------------------------------
+# Presas y calidad del agua
+# ---------------------------------------------------------------------
+<#Presa> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """
+    SELECT e.clave, e.nombre, e.cuenca_disponibilidad,
+           CASE WHEN m.en_zm_ciudad_mexico THEN e.cve_mun END AS cve_zm,
+           ROUND(AVG(f.volumen_hm3) FILTER (WHERE t.anio = 2019), 1) AS volumen_2019,
+           ROUND(AVG(f.volumen_hm3) FILTER (WHERE t.anio = 2023), 1) AS volumen_2023
+    FROM   dim_estacion_hidrometrica e
+    JOIN   fact_presa_diaria f USING (clave)
+    JOIN   dim_tiempo t USING (id_tiempo)
+    LEFT   JOIN dim_municipio m ON m.cve_mun = e.cve_mun
+    GROUP  BY e.clave, e.nombre, e.cuenca_disponibilidad, m.en_zm_ciudad_mexico, e.cve_mun
+  """ ] ;
+  rr:subjectMap [ rr:template "https://w3id.org/cdmx/agua/presa/{clave}" ;
+                  rr:class agua:Dam, geo:Feature ] ;
+  rr:predicateObjectMap [ rr:predicate rdfs:label ;
+                          rr:objectMap [ rr:column "nombre" ; rr:language "es" ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:basin ; rr:objectMap [ rr:column "cuenca_disponibilidad" ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:locatedIn ;
+                          rr:objectMap [ rr:template "https://w3id.org/cdmx/agua/municipio/{cve_zm}" ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:meanStorage2019 ;
+                          rr:objectMap [ rr:column "volumen_2019" ; rr:datatype xsd:decimal ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:meanStorage2023 ;
+                          rr:objectMap [ rr:column "volumen_2023" ; rr:datatype xsd:decimal ] ] .
+
+<#SitioCalidad> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """
+    SELECT s.id_sitio, s.nombre, s.tipo_agua, s.semaforo, s.contaminantes, s.cve_mun
+    FROM   dim_sitio_calidad s
+    JOIN   dim_municipio m USING (cve_mun)
+    WHERE  m.en_zm_ciudad_mexico
+  """ ] ;
+  rr:subjectMap [ rr:template "https://w3id.org/cdmx/agua/sitio/{id_sitio}" ;
+                  rr:class agua:QualitySite, geo:Feature ] ;
+  rr:predicateObjectMap [ rr:predicate rdfs:label ;
+                          rr:objectMap [ rr:column "nombre" ; rr:language "es" ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:locatedIn ;
+                          rr:objectMap [ rr:template "https://w3id.org/cdmx/agua/municipio/{cve_mun}" ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:waterType ; rr:objectMap [ rr:column "tipo_agua" ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:trafficLight ; rr:objectMap [ rr:column "semaforo" ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:aboveLimit ; rr:objectMap [ rr:column "contaminantes" ] ] .
+
+# ---------------------------------------------------------------------
+# Colonias de CONAPO. Consumo y reportes solo existen en la CDMX.
+# ---------------------------------------------------------------------
+<#Colonia> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """
+    SELECT c.cve_col, c.cve_mun, c.colonia, ROUND(c.pob_total) AS pob_total,
+           ROUND(c.pct_ocup_sin_agua, 2) AS pct_sin_agua, c.gm_2020,
+           ROUND(s.consumo_dom_m3 * 1000 / NULLIF(s.pob_sacmex * 181, 0), 1) AS litros_hab_dia_dom,
+           ROUND(s.falta * 1000.0 / NULLIF(s.pob_sacmex, 0), 2) AS falta_por_mil_hab,
+           ROUND(s.fugas * 1000.0 / NULLIF(s.pob_sacmex, 0), 2) AS fugas_por_mil_hab,
+           ROUND(s.vlm, 2) AS vlm_cm_anio
+    FROM   dim_colonia_conapo c
+    JOIN   dim_municipio m USING (cve_mun)
+    LEFT   JOIN (SELECT u.cve_col_conapo AS cve_col, SUM(v.consumo_dom_m3) AS consumo_dom_m3,
+                        SUM(v.pob_censo_2020) AS pob_sacmex, SUM(v.falta_agua_2019_s1) AS falta,
+                        SUM(v.fugas_2021_2024) AS fugas, AVG(v.vlm_media_cm_anio) AS vlm
+                 FROM   v_consumo_colonia_integrado v
+                 JOIN   dim_ubicacion u USING (id_ubicacion)
+                 WHERE  u.cve_col_conapo IS NOT NULL
+                 GROUP  BY u.cve_col_conapo) s USING (cve_col)
+    WHERE  m.en_zm_ciudad_mexico
+  """ ] ;
+  rr:subjectMap [ rr:template "https://w3id.org/cdmx/agua/coloniaConapo/{cve_col}" ;
+                  rr:class agua:Neighbourhood, geo:Feature ] ;
+  rr:predicateObjectMap [ rr:predicate rdfs:label ;
+                          rr:objectMap [ rr:column "colonia" ; rr:language "es" ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:inMunicipality ;
+                          rr:objectMap [ rr:template "https://w3id.org/cdmx/agua/municipio/{cve_mun}" ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:population ;
+                          rr:objectMap [ rr:column "pob_total" ; rr:datatype xsd:integer ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:occupantsWithoutWaterPct ;
+                          rr:objectMap [ rr:column "pct_sin_agua" ; rr:datatype xsd:decimal ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:marginalisationLevel ; rr:objectMap [ rr:column "gm_2020" ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:billedLitresPerDay ;
+                          rr:objectMap [ rr:column "litros_hab_dia_dom" ; rr:datatype xsd:decimal ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:shortageReportsPerThousand ;
+                          rr:objectMap [ rr:column "falta_por_mil_hab" ; rr:datatype xsd:decimal ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:leakReportsPerThousand ;
+                          rr:objectMap [ rr:column "fugas_por_mil_hab" ; rr:datatype xsd:decimal ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:verticalLandMotion ;
+                          rr:objectMap [ rr:column "vlm_cm_anio" ; rr:datatype xsd:decimal ] ] .
+
+<#VecinaColonia> a rr:TriplesMap ;
+  rr:logicalTable [ rr:tableName "puente_colonia_vecina" ] ;
+  rr:subjectMap [ rr:template "https://w3id.org/cdmx/agua/coloniaConapo/{cve_col}" ] ;
+  rr:predicateObjectMap [ rr:predicate geo:sfTouches ;
+                          rr:objectMap [ rr:template "https://w3id.org/cdmx/agua/coloniaConapo/{cve_vecina}" ] ] .
+
+# Subconjunto de sfTouches: las colonias que se tocan a uno y otro lado del limite de la CDMX.
+# Evita recorrer 31,020 colindancias en el navegador para preguntar por 338.
+<#VecinaCruzaLimite> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """
+    SELECT v.cve_col, v.cve_vecina
+    FROM   puente_colonia_vecina v
+    JOIN   dim_colonia_conapo a ON a.cve_col = v.cve_col
+    JOIN   dim_colonia_conapo b ON b.cve_col = v.cve_vecina
+    WHERE  (LEFT(a.cve_mun, 2) = '09') <> (LEFT(b.cve_mun, 2) = '09')
+  """ ] ;
+  rr:subjectMap [ rr:template "https://w3id.org/cdmx/agua/coloniaConapo/{cve_col}" ] ;
+  rr:predicateObjectMap [ rr:predicate agua:touchesAcrossCityLimit ;
+                          rr:objectMap [ rr:template "https://w3id.org/cdmx/agua/coloniaConapo/{cve_vecina}" ] ] .
+
+# Enlace con el grafo original: cada colonia de SACMEX queda dentro de una colonia de CONAPO
+<#ColoniaOriginal> a rr:TriplesMap ;
+  rr:logicalTable [ rr:sqlQuery """
+    SELECT id_ubicacion, cve_col_conapo FROM dim_ubicacion WHERE cve_col_conapo IS NOT NULL
+  """ ] ;
+  rr:subjectMap [ rr:template "https://w3id.org/cdmx/agua/colonia/{id_ubicacion}" ] ;
+  rr:predicateObjectMap [ rr:predicate agua:withinNeighbourhood ;
+                          rr:objectMap [ rr:template "https://w3id.org/cdmx/agua/coloniaConapo/{cve_col_conapo}" ] ] .

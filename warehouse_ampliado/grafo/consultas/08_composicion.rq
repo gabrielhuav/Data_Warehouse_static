@@ -1,0 +1,5 @@
+# es: De qué está hecho el grafo | Instancias de cada clase
+# en: What the graph is made of | Instances of each class
+SELECT ?clase (COUNT(?s) AS ?instancias) WHERE {
+  ?s a ?clase .
+} GROUP BY ?clase ORDER BY DESC(?instancias)

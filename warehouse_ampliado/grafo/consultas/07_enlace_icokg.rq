@@ -1,0 +1,12 @@
+# es: El puente con el grafo de ICOKG | Colonias del grafo original enlazadas a las colonias de CONAPO, por alcaldía
+# en: The bridge to the ICOKG graph | Neighbourhoods of the original graph linked to CONAPO's, by borough
+PREFIX agua: <https://w3id.org/cdmx/agua/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT ?alcaldia ?iriIcokg (COUNT(?original) AS ?coloniasOriginales) WHERE {
+  ?original agua:withinNeighbourhood ?c .
+  ?c agua:inMunicipality ?m .
+  ?m rdfs:label ?alcaldia ;
+     skos:exactMatch ?iriIcokg .
+} GROUP BY ?alcaldia ?iriIcokg ORDER BY DESC(?coloniasOriginales)

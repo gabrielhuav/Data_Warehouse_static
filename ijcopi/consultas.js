@@ -4,14 +4,14 @@
 
   const TXT = {
     es: {
-      titulo: 'Consultas al almacén', 'nav.mapa': 'Mapa', 'nav.consultas': 'Consultas al almacén',
+      titulo: 'Consultas al almacén', 'nav.mapa': 'Mapa', 'nav.grafo': 'Grafo', 'nav.consultas': 'Consultas al almacén',
       lema: 'Lo que muestra el mapa es el resultado de estas consultas. Cada una se puede repetir en la base de datos.',
       pasos: 'Cómo comprobarlo',
       'pasos.t': 'Con el almacén levantado, estos comandos arrancan la base de datos, copian las consultas, corren una, abren la consola de PostgreSQL y comparan el mapa con la base de datos.',
       filas: '{n} filas', sql: 'Ver SQL', primeras: 'Ver las primeras {n} filas', comando: 'Comando',
     },
     en: {
-      titulo: 'Warehouse queries', 'nav.mapa': 'Map', 'nav.consultas': 'Warehouse queries',
+      titulo: 'Warehouse queries', 'nav.mapa': 'Map', 'nav.grafo': 'Graph', 'nav.consultas': 'Warehouse queries',
       lema: 'What the map shows is the result of these queries. Each one can be repeated in the database.',
       pasos: 'How to check it',
       'pasos.t': 'With the warehouse running, these commands start the database, copy the queries, run one of them, open the PostgreSQL console and compare the map with the database.',

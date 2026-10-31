@@ -1,0 +1,5 @@
+# Entorno aparte del ETL: morph-kgc fija otras versiones de pandas.
+morph-kgc==2.10.0
+rdflib==7.2.1
+SQLAlchemy==2.0.55
+psycopg2-binary==2.9.13
