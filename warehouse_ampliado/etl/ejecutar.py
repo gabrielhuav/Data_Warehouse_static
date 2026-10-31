@@ -35,6 +35,7 @@ PASOS = {
     "clima": ("cargar_clima", ["fact_clima_colonia", "fact_clima_municipio"]),
     "subsidencia": ("cargar_subsidencia", ["fact_subsidencia_colonia", "fact_subsidencia_municipio"]),
     "vulnerabilidad": ("cargar_vulnerabilidad", ["fact_vulnerabilidad_alcaldia"]),
+    "geometria": ("cargar_geometria", ["geo_territorio"]),
 }
 
 

@@ -1,0 +1,208 @@
+{
+ "generado_en": "2026-10-31 19:43 UTC",
+ "consultas": [
+  {
+   "consulta": "01_fuentes_cargadas.sql",
+   "datos": "01_fuentes_cargadas.json",
+   "filas": 93,
+   "columnas": [
+    "id_fuente",
+    "publicador",
+    "nombre",
+    "archivo",
+    "tabla_destino",
+    "filas",
+    "bytes",
+    "sha256_inicio",
+    "md5_oficial_coincide",
+    "doi"
+   ],
+   "sha256_consulta": "62c44a8aabeaa4bb184163b1bc25c3a6f84f04b3d1a196d268c133631b8d3eb2",
+   "sha256_datos": "0846a632e532515b904d0aacea4f1ec15bc28e1be4c4d2f69d45e0fb958df153"
+  },
+  {
+   "consulta": "02_tablas_del_almacen.sql",
+   "datos": "02_tablas_del_almacen.json",
+   "filas": 43,
+   "columnas": [
+    "tabla",
+    "filas"
+   ],
+   "sha256_consulta": "f327e5c6c8c1c38475770c83af0ac81465af4ab2959fe14f5924702e40da5caf",
+   "sha256_datos": "e294c6d0a715b79e580fdef43223bd85bbdee6b7939f63fbbddd0e2ca06a5da9"
+  },
+  {
+   "consulta": "03_municipios_zm.sql",
+   "datos": "03_municipios_zm.json",
+   "filas": 63,
+   "columnas": [
+    "cve_mun",
+    "nom_ent",
+    "nom_mun",
+    "municipio_central",
+    "pob_2019",
+    "fuente_volumen",
+    "litros_hab_dia_dom",
+    "calidad_volumen",
+    "pct_poblacion_servida",
+    "pct_viv_agua_dentro",
+    "pct_ocup_sin_agua",
+    "im_2020",
+    "gm_2020",
+    "recaudacion_pc_2018",
+    "razon_ingreso_shcp",
+    "vlm_cm_anio",
+    "acuifero_principal",
+    "pct_acuifero"
+   ],
+   "sha256_consulta": "cefc8d8a4c3056365875c15a474ff35990f1f2209bc391a30396cbadf735760f",
+   "sha256_datos": "3b54880dbbfbd5ddb4ed41a2ca92e1356410e666b6c8cb598f5a4f8f1c9c2483"
+  },
+  {
+   "consulta": "04_colonias_zm.sql",
+   "datos": "04_colonias_zm.json",
+   "filas": 5830,
+   "columnas": [
+    "cve_col",
+    "cve_mun",
+    "colonia",
+    "pob_total",
+    "pct_sin_agua",
+    "pct_sin_drenaje",
+    "im_2020",
+    "gm_2020",
+    "colonias_sacmex",
+    "litros_hab_dia_dom",
+    "falta_agua_2019_s1",
+    "falta_por_mil_hab",
+    "fugas_2021_2024",
+    "fugas_por_mil_hab",
+    "vlm_cm_anio"
+   ],
+   "sha256_consulta": "f397b69a63f606f7706452fefb910edd0d8217c5bc137edb8a9d6a1c18d33f35",
+   "sha256_datos": "26fc327d74f603678eb3c3643c4e499831c85b40aa0ca1ebb709cb7e178e72c6"
+  },
+  {
+   "consulta": "05_acuiferos_zm.sql",
+   "datos": "05_acuiferos_zm.json",
+   "filas": 10,
+   "columnas": [
+    "clv_acui",
+    "nom_acui",
+    "area_km2",
+    "recarga_hm3",
+    "extraccion_hm3",
+    "deficit_hm3",
+    "extraccion_entre_recarga",
+    "pozos",
+    "pozos_2010_2019",
+    "descenso_medio_m"
+   ],
+   "sha256_consulta": "62e5923cde9fc485442433d7c44abf524aa2c424559ac174f0b2198ac4d1eca2",
+   "sha256_datos": "10f8fd584b62170d69989b79ebafb9a36f162473a6551c4e81e5c0b328b55fb6"
+  },
+  {
+   "consulta": "06_pozos_zm.sql",
+   "datos": "06_pozos_zm.json",
+   "filas": 255,
+   "columnas": [
+    "id_pozo",
+    "nom_pozo",
+    "clv_acui",
+    "nom_acui",
+    "latitud",
+    "longitud",
+    "profundidad_2010_m",
+    "profundidad_2019_m",
+    "descenso_m"
+   ],
+   "sha256_consulta": "4de1f423381434a3ceb82e67744531b83e4a3b895c8359464ba7cfb43732bcd4",
+   "sha256_datos": "62b0af4fb5d20a160480c2d41dec8380070ee68477d33746b32030003bb9018c"
+  },
+  {
+   "consulta": "07_presas.sql",
+   "datos": "07_presas.json",
+   "filas": 15,
+   "columnas": [
+    "clave",
+    "nombre",
+    "estado",
+    "latitud",
+    "longitud",
+    "cuenca_disponibilidad",
+    "ultima_fecha",
+    "volumen_ultimo_hm3",
+    "volumen_medio_2019_hm3",
+    "volumen_medio_2023_hm3"
+   ],
+   "sha256_consulta": "81fb1afdb7d753e9573025ad52d9cbcbee46a1bf88675b30d606e848b1532443",
+   "sha256_datos": "0536e8f88e413c12345f47f5f84f4ddf2c7e23da565eb2b33695cabe381983ba"
+  },
+  {
+   "consulta": "08_presas_mensual.sql",
+   "datos": "08_presas_mensual.json",
+   "filas": 1551,
+   "columnas": [
+    "clave",
+    "mes",
+    "volumen_hm3"
+   ],
+   "sha256_consulta": "3315a383e0c1d6854fabb44ad2efbd656533e13019ddc18d5368eb7427c3c6aa",
+   "sha256_datos": "7f3de9eb8160b7f12b3b17324b1a6786ec3ff31b30812f35cd582d45103b4a31"
+  },
+  {
+   "consulta": "09_sequia_zm.sql",
+   "datos": "09_sequia_zm.json",
+   "filas": 27531,
+   "columnas": [
+    "cve_mun",
+    "fecha",
+    "severidad"
+   ],
+   "sha256_consulta": "3729a175afe0f8217d5fcd66204f61c01ea7aa5774c016fd2071e86628e505fd",
+   "sha256_datos": "5b670257f19514648767599c0cd969d1b41316e0d7b3043d1b2c2db5ff9cca35"
+  },
+  {
+   "consulta": "10_calidad_zm.sql",
+   "datos": "10_calidad_zm.json",
+   "filas": 133,
+   "columnas": [
+    "id_sitio",
+    "clave_sitio",
+    "tipo_agua",
+    "nombre",
+    "municipio",
+    "latitud",
+    "longitud",
+    "periodo",
+    "semaforo",
+    "contaminantes"
+   ],
+   "sha256_consulta": "15f1e65ddd9cad8ec7e772c772c1a40e27ea8b909228f33af0f8ddb14da93a65",
+   "sha256_datos": "cd8bd2d499c77d6891f6c3c82bbf1026fd468a34dfd8906ee980beaab116f5da"
+  },
+  {
+   "consulta": "11_cruces_colonia.sql",
+   "datos": "11_cruces_colonia.json",
+   "filas": 8,
+   "columnas": [
+    "medida",
+    "valor"
+   ],
+   "sha256_consulta": "05f6467871338a0f10213aecdf876a2cacb1cf50f3f5139eee7e206094d11677",
+   "sha256_datos": "3f168f9eab9b576dfeb2fc48cfa47106795ec2e7e673dcb0d8144ccffd8c6389"
+  },
+  {
+   "consulta": "12_geometrias.sql",
+   "datos": "12_geometrias.json",
+   "filas": 5903,
+   "columnas": [
+    "capa",
+    "clave",
+    "geojson"
+   ],
+   "sha256_consulta": "52fc3c8e2c8c0101a9b2a964b71ad08b66525847a2237547318ce83f973ac1ae",
+   "sha256_datos": "5cfde44bee55bfec5b959400353ee4c4aad0b3ce7d11261ad139f29425c32695"
+  }
+ ]
+}

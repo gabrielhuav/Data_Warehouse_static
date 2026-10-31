@@ -219,6 +219,15 @@ CREATE TABLE dim_tipo_toma (
     descripcion  TEXT NOT NULL
 );
 
+-- Geometria simplificada de lo que dibuja el mapa. Esta aqui para que el mapa salga de una
+-- consulta, igual que sus datos. El original sigue siendo el archivo de cada fuente.
+CREATE TABLE geo_territorio (
+    capa    VARCHAR(10) NOT NULL CHECK (capa IN ('municipio', 'colonia', 'acuifero')),
+    clave   TEXT NOT NULL,
+    geojson TEXT NOT NULL,
+    PRIMARY KEY (capa, clave)
+);
+
 -- Reportes ciudadanos de SACMEX
 CREATE TABLE dim_tipo_reporte (
     id_tipo_reporte SERIAL PRIMARY KEY,

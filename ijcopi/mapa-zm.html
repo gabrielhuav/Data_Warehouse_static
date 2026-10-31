@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- La pagina comparte assets/ con la demostracion de ICOKG; base evita tocar esos archivos. -->
+    <base href="../">
+    <title>Agua en la ZM de Ciudad de México</title>
+    <meta name="description" content="Mapa del almacén de datos ampliado de agua: 63 municipios, 5,830 colonias, acuíferos, pozos, presas, sequía y calidad del agua en la Zona Metropolitana de Ciudad de México.">
+    <link rel="stylesheet" href="assets/vendor/leaflet-1.9.4.css">
+    <link rel="stylesheet" href="assets/estilo.css">
+    <link rel="stylesheet" href="assets/paginas.css">
+    <link rel="stylesheet" href="ijcopi/zm.css">
+    <script src="assets/i18n.js"></script>
+</head>
+<body>
+<header data-barra></header>
+<div class="app-container" role="main">
+    <div class="zm-cabecera">
+        <div>
+            <h1 data-t="titulo"></h1>
+            <p data-t="lema"></p>
+        </div>
+        <nav class="zm-nav" aria-label="Versión extendida">
+            <a href="ijcopi/mapa-zm.html" aria-current="page" data-t="nav.mapa"></a>
+            <a href="ijcopi/consultas.html" data-t="nav.consultas"></a>
+        </nav>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <div class="zm-rejilla">
+        <aside class="panel zm-control">
+            <label for="indicador" data-t="c.indicador"></label>
+            <select id="indicador"></select>
+            <p id="notaIndicador" class="zm-nota"></p>
+            <div id="bloqueFecha" hidden>
+                <label for="fecha" data-t="c.fecha"></label>
+                <input type="range" id="fecha" min="0" max="0" step="1">
+                <output id="fechaTexto" for="fecha"></output>
+            </div>
+            <fieldset>
+                <legend data-t="c.capas"></legend>
+                <label><input type="checkbox" data-capa="acuiferos"> <span data-t="capa.acuiferos"></span></label>
+                <label><input type="checkbox" data-capa="pozos"> <span data-t="capa.pozos"></span></label>
+                <label><input type="checkbox" data-capa="presas"> <span data-t="capa.presas"></span></label>
+                <label><input type="checkbox" data-capa="calidad"> <span data-t="capa.calidad"></span></label>
+            </fieldset>
+            <ul id="conteos" class="zm-conteos"></ul>
+        </aside>
+
+        <div class="map-wrap"><div id="map"></div></div>
+
+        <aside class="panel zm-lateral">
+            <div id="leyenda"></div>
+            <div id="detalle"></div>
+        </aside>
+    </div>
+
+    <section class="panel zm-origen">
+        <h2 data-t="o.titulo"></h2>
+        <p id="origenTexto"></p>
+        <pre id="origenComando"></pre>
+        <details>
+            <summary data-t="o.versql"></summary>
+            <pre id="origenSql"></pre>
+        </details>
+    </section>
+</div>
+<footer data-pie></footer>
+<script src="assets/vendor/leaflet-1.9.4.js"></script>
+<script src="assets/mapa-teselas.js"></script>
+<script src="assets/nav.js"></script>
+<script src="ijcopi/mapa-zm.js"></script>
+</body>
+</html>

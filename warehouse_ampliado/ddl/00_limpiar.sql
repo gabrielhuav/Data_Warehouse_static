@@ -16,7 +16,7 @@ DROP TABLE IF EXISTS
     fact_recaudacion_agua, fact_poblacion_municipio,
     dim_medio_recepcion, dim_tipo_reporte, dim_tipo_toma, dim_tipo_fuente_captacion,
     dim_categoria_sequia, dim_estacion_hidrometrica, puente_municipio_acuifero, dim_pozo,
-    dim_acuifero, control_ingesta_fuentes
+    dim_acuifero, control_ingesta_fuentes, geo_territorio
     CASCADE;
 
 ALTER TABLE dim_ubicacion

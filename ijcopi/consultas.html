@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../">
+    <title>Consultas al almacén de agua</title>
+    <meta name="description" content="Consultas SQL al almacén de datos ampliado, con su resultado, su hash y los comandos para repetirlas en la base de datos.">
+    <link rel="stylesheet" href="assets/estilo.css">
+    <link rel="stylesheet" href="assets/paginas.css">
+    <link rel="stylesheet" href="ijcopi/zm.css">
+    <script src="assets/i18n.js"></script>
+</head>
+<body>
+<header data-barra></header>
+<div class="app-container" role="main">
+    <div class="zm-cabecera">
+        <div>
+            <h1 data-t="titulo"></h1>
+            <p data-t="lema"></p>
+        </div>
+        <nav class="zm-nav" aria-label="Versión extendida">
+            <a href="ijcopi/mapa-zm.html" data-t="nav.mapa"></a>
+            <a href="ijcopi/consultas.html" aria-current="page" data-t="nav.consultas"></a>
+        </nav>
+    </div>
+
+    <section class="panel zm-card">
+        <h2 data-t="pasos"></h2>
+        <p data-t="pasos.t"></p>
+        <pre class="zm-pre">docker start data_warehouse_cdmx
+docker cp warehouse_ampliado/consultas/. data_warehouse_cdmx:/consultas
+docker exec data_warehouse_cdmx psql -U postgres -d data_warehouse -f /consultas/02_tablas_del_almacen.sql
+docker exec -it data_warehouse_cdmx psql -U postgres -d data_warehouse
+warehouse_ampliado/.venv/Scripts/python -I warehouse_ampliado/verificacion/verificar_mapa.py</pre>
+    </section>
+
+    <div id="lista"></div>
+</div>
+<footer data-pie></footer>
+<script src="assets/nav.js"></script>
+<script src="ijcopi/consultas.js"></script>
+</body>
+</html>
