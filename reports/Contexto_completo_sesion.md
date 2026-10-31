@@ -9,7 +9,8 @@ decidió en la conversación, qué contiene la v1 y qué quedó sin verificar. L
 
 - `main` quedó en `f404787`, igual en GitHub, con el almacén ampliado ya subido. Gabriel
   autorizó ese push con los fallos del verificador; la autorización no vale para otros.
-- **Todo lo de IJCOPI va en la rama `ijcopi-zmvm`.** `main` queda congelada para ICOKG.
+- **Todo lo de IJCOPI va en la rama `ijcopi-zmvm`.** `main` queda congelada para ICOKG. La versión
+  extendida se publica aparte en `gabrielhuav/Data_Warehouse_ZMVM`, con su propio Pages.
 - La regla 2 pide `fallos: 0` y el verificador no llega a eso desde esta PC: el enlace
   `datos.cdmx.gob.mx/dataset/consumo-agua` da 403 porque el cortafuegos de la ADIP bloquea
   esta PC. Gabriel debe decidir antes de cada push: comprobarlo desde otra red o autorizarlo

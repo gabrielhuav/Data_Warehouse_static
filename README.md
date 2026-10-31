@@ -145,7 +145,8 @@ billed volume by the 2020 Census residents of each borough
 `warehouse_ampliado/` extends the warehouse to the 63 municipalities of the Mexico City Metropolitan
 Area, `ijcopi/mapa-zm.html` maps it and `ijcopi/consultas.html` lists the SQL behind every layer.
 `warehouse_ampliado/README.md` explains how to rebuild it from a clone. Nothing here changes a page
-or a link of the ICOKG release.
+or a link of the ICOKG release. It is published at
+<https://gabrielhuav.github.io/Data_Warehouse_ZMVM/ijcopi/mapa-zm.html>.
 
 ## Base map
 

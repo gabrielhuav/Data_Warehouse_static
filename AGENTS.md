@@ -9,7 +9,11 @@ que el repositorio no dice por sí mismo.
 Conversa con Gabriel en español. **Rama de trabajo: `ijcopi-zmvm`.** `main` queda congelada
 para ICOKG (regla 6). Actualiza este archivo conforme avances, no solo al final: si se acaba
 el límite, otra sesión debe poder seguir desde aquí.
-Repositorio: <https://github.com/gabrielhuav/Data_Warehouse_static>
+Repositorio de trabajo: <https://github.com/gabrielhuav/Data_Warehouse_static>
+Versión extendida publicada: <https://github.com/gabrielhuav/Data_Warehouse_ZMVM>, con el mapa en
+<https://gabrielhuav.github.io/Data_Warehouse_ZMVM/ijcopi/mapa-zm.html>
+
+Los dos repositorios son públicos: no escribas aquí enlaces a correos, borradores ni datos personales.
 
 ## Reglas que no se negocian
 
@@ -31,7 +35,7 @@ Repositorio: <https://github.com/gabrielhuav/Data_Warehouse_static>
 6. **Todo lo de IJCOPI va en la rama `ijcopi-zmvm` y con enlaces nuevos.** Es la regla que
    Gabriel marcó como más importante. Los enlaces de ICOKG quedan intactos: no fusiones a
    `main`, no cambies la configuración de Pages y no reutilices esos URL en el artículo de la
-   revista. Lo nuevo va en rutas nuevas de esta rama y en un release nuevo.
+   revista. Lo nuevo va en rutas nuevas de esta rama y se publica en `Data_Warehouse_ZMVM`.
 
 ## El trabajo
 
@@ -86,6 +90,7 @@ participación de los trabajos 37 y 38 ya se confirmó por correo el 13 de octub
 | `warehouse_ampliado/` | **Almacén ampliado**: `fuentes.json` (manifiesto con hashes), `ddl/`, `etl/`, `snapshots/` y `verificacion/`. Su `README.md` explica cómo reproducirlo |
 | `warehouse_ampliado/consultas/` | Las 13 consultas SQL del mapa y del artículo. Su `README.md` trae los comandos para verlas en la base de datos |
 | `ijcopi/` | **Mapa nuevo** (`mapa-zm.html`), consultas (`consultas.html`) y sus datos (`datos/`, generados, no se editan a mano). No toca las páginas de ICOKG |
+| `ijcopi/publicar.ps1`, `ijcopi/README_publico.md` | Preparan la copia que va a `Data_Warehouse_ZMVM`: sin memoria de trabajo, sin manuscrito y sin el workflow de `main` |
 | `paper/presentacion/` | Presentaciones de ICOKG (ES y EN) |
 | `evaluacion-ml/`, `scripts/` | Análisis reproducibles y sus evidencias |
 
@@ -107,6 +112,13 @@ Para actualizar el mapa después de cambiar datos o consultas (desde la raíz):
 ```bash
 warehouse_ampliado/.venv/Scripts/python -I warehouse_ampliado/etl/exportar_mapa.py
 warehouse_ampliado/.venv/Scripts/python -I warehouse_ampliado/verificacion/verificar_mapa.py
+```
+
+Para publicar esos cambios, primero haz commit en la rama. Esto prepara la copia en `%TEMP%\zmvm`
+sin subir nada; después se revisa, se hace commit y se sube desde esa carpeta:
+
+```bash
+powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
 ```
 
 ## Hechos establecidos (no volver a investigar)
@@ -163,7 +175,8 @@ warehouse_ampliado/.venv/Scripts/python -I warehouse_ampliado/verificacion/verif
   1,997.6 MB en 11.5 minutos, sin fallos, y el almacén reconstruido aparte devolvió las 13
   consultas con los mismos SHA-256 (`verificacion/evidencia_clon_limpio.txt`).
 - **GitHub Pages solo publica `main`** (`build_type: legacy`, raíz). Una rama nueva da enlaces de
-  código, pero no una página pública. Cambiar eso tocaría el sitio de ICOKG.
+  código, pero no una página pública. Cambiar eso tocaría el sitio de ICOKG. Por eso, con el visto
+  bueno de Gabriel, la versión extendida se publica en el repositorio `Data_Warehouse_ZMVM`.
 - **Facturar poco no significa demandar poco.** Las 435 colonias bajo 10 l/hab/día reportan 4.15
   faltas de agua por mil habitantes, contra 4.93 del resto; Spearman de volumen contra reportes
   0.18 (`11_cruces_colonia.sql`, confirmado con scipy).
@@ -235,8 +248,8 @@ warehouse_ampliado/.venv/Scripts/python -I warehouse_ampliado/verificacion/verif
 - El correo a `datosabiertos@cdmx.gob.mx` sigue como borrador en el Gmail de Gabriel,
   sin enviar (revisado el 2026-10-31). No se sabe si presentó la solicitud en la PNT.
 - Confirmar serie, volumen y páginas de la referencia de ICOKG, ahora "in press".
-- Crear un release nuevo cuando se suba la rama. El Data Availability Statement de la v2 ya apunta
-  a `tree/ijcopi-zmvm`, enlace que no existe hasta el push. El tag v1.5 no se toca.
+- Crear el release `v2.0-ijcopi` en `Data_Warehouse_ZMVM` cuando Gabriel apruebe el texto final. El
+  Data Availability Statement de la v2 apunta por ahora al repositorio. El tag v1.5 no se toca.
 - `SACMEX (n.d.)`, los reportes de agua, cita `datos.cdmx.gob.mx/dataset/reportes-de-agua`, que esta
   PC no puede abrir. Los datos vienen de la copia verificada contra el CKAN. Confirmar el enlace.
 - Decidir si se implementa en el demo el diseño de tres listas; hoy es trabajo futuro.
@@ -252,12 +265,12 @@ warehouse_ampliado/.venv/Scripts/python -I warehouse_ampliado/verificacion/verif
 3. [x] Mapa nuevo en `ijcopi/mapa-zm.html` y consultas en `ijcopi/consultas.html`, alimentados
    por `etl/exportar_mapa.py`. `verificacion/verificar_mapa.py` repite cada consulta y compara.
 4. [x] Artículo v2 con capturas del mapa, todo lo agregado en amarillo y título nuevo.
-5. [ ] **Decisión de Gabriel: publicar.** Nada de esta rama está en GitHub todavía. Pages solo
-   publica `main`, así que para una URL pública del mapa sin tocar ICOKG se recomienda un
-   repositorio nuevo solo para esto, con su propio Pages. Cualquier push necesita antes su
-   autorización por el 403 de la ADIP (regla 2). Después: crear el release nuevo, poner en el
-   artículo la URL pública del mapa y regenerar la v2.
+5. [x] Publicado el 31 oct en `Data_Warehouse_ZMVM`, con su propio Pages. El artículo ya trae el
+   mapa en la sección 5.7 y el repositorio en el Data Availability Statement.
 6. [ ] Revisión humana del texto nuevo y aprobación del título antes del 9 de noviembre.
+7. [ ] Cuando el texto quede aprobado: release `v2.0-ijcopi`, poner ese enlace en el artículo y
+   regenerar la v2. Cada push al repositorio de trabajo necesita antes la autorización de
+   Gabriel por el 403 de la ADIP (regla 2).
 
 **El cubo de datos sigue pospuesto.** Gabriel debe revisar la sección 0 del informe: varias
 cifras de su primera versión eran falsas, sobre todo lo de fugas en 2019. Cuando decida
@@ -298,4 +311,7 @@ retomar el cubo, sigue la sección 4.4 del informe.
   `reports/Contexto_completo_sesion.md`. Subió el shapefile de colonias en partes, guardó las
   geometrías en la base de datos, escribió 13 consultas SQL, el mapa `ijcopi/mapa-zm.html` y su
   verificación contra la base, y generó la v2 del artículo. Un clon limpio reconstruyó el almacén
-  con resultados idénticos byte por byte. Nada de esta rama se ha subido a GitHub.
+  con resultados idénticos byte por byte. Con la autorización de Gabriel, y con el 403 de la ADIP
+  como único fallo, creó `Data_Warehouse_ZMVM`, activó su Pages y subió la rama. Quitó del historial
+  local el enlace a un borrador de Gmail antes de publicar. Comprobó en línea los 13 hashes; `main`
+  siguió en `f404787` y el tag v1.5 en `c4de86d`.
