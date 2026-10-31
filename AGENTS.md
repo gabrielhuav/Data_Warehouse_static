@@ -74,7 +74,9 @@ participación de los trabajos 37 y 38 ya se confirmó por correo el 13 de octub
 | `paper/ijcopi/word_a_pdf.ps1` | Exporta a PDF con Word y cuenta páginas y palabras |
 | `paper/ijcopi/verificar_amarillo.py` | Comprueba que todo lo agregado esté en amarillo |
 | `paper/ijcopi/dw_agua_IJCOPI_v0_base.docx` | Base congelada: texto idéntico al de Springer. No se modifica |
-| `paper/ijcopi/dw_agua_IJCOPI_v1_extendida.docx` | Versión extendida generada (y su PDF) |
+| `paper/ijcopi/dw_agua_IJCOPI_v1_extendida.docx` | Primera versión extendida, sin la ampliación regional (y su PDF) |
+| `paper/ijcopi/dw_agua_IJCOPI_v2_zmvm.docx` | **Versión actual para enviar** (y su PDF), con la ampliación metropolitana |
+| `paper/ijcopi/capturar_mapa.ps1` | Genera las figuras del artículo desde el mapa real, con Edge sin ventana |
 | `paper/ijcopi/solicitudes_de_datos.md` | Plantillas para pedir más datos |
 | `reports/Datos abiertos de agua CDMX.md` | Informe de fuentes de datos, con plan ordenado por valor y esfuerzo |
 | `reports/Deep_Research_Ampliacion_DWH_IJCOPI.md` | Fuentes verificadas de la ampliación, correcciones a su primera versión, descartes y modelo implementado |
@@ -82,20 +84,30 @@ participación de los trabajos 37 y 38 ya se confirmó por correo el 13 de octub
 | `research_notes/` | Notas detalladas de esa investigación |
 | `warehouse/` | Almacén original, componente importado. No se edita, y un push ahí regenera `consumo.json` |
 | `warehouse_ampliado/` | **Almacén ampliado**: `fuentes.json` (manifiesto con hashes), `ddl/`, `etl/`, `snapshots/` y `verificacion/`. Su `README.md` explica cómo reproducirlo |
+| `warehouse_ampliado/consultas/` | Las 13 consultas SQL del mapa y del artículo. Su `README.md` trae los comandos para verlas en la base de datos |
+| `ijcopi/` | **Mapa nuevo** (`mapa-zm.html`), consultas (`consultas.html`) y sus datos (`datos/`, generados, no se editan a mano). No toca las páginas de ICOKG |
 | `paper/presentacion/` | Presentaciones de ICOKG (ES y EN) |
 | `evaluacion-ml/`, `scripts/` | Análisis reproducibles y sus evidencias |
 
-Para regenerar la v1 (desde `paper/ijcopi/`):
+Para regenerar la v2 (desde `paper/ijcopi/`):
 
 ```bash
-py -3 latex_a_ijcopi.py dw_agua_ijcopi.tex 2027-IJCOPI_template_simple_British_English.docx . dw_agua_IJCOPI_v1_extendida.docx
-py -3 verificar_amarillo.py dw_agua_IJCOPI_v0_base.docx dw_agua_IJCOPI_v1_extendida.docx
+py -3 latex_a_ijcopi.py dw_agua_ijcopi.tex 2027-IJCOPI_template_simple_British_English.docx . dw_agua_IJCOPI_v2_zmvm.docx
+py -3 verificar_amarillo.py dw_agua_IJCOPI_v0_base.docx dw_agua_IJCOPI_v2_zmvm.docx
 ```
 
 Si alguien edita el `.docx` a mano, esa edición se pierde al regenerar. Mientras el
 texto siga cambiando, edita el `.tex`; pasa al Word solo en el ajuste final. Las
-diferencias "sin amarillo" que quedan (46 palabras) son renumeración y cortes de
-línea; revísalas si ese número cambia.
+diferencias "sin amarillo" que quedan (50 palabras) son renumeración y cortes de
+línea; revísalas si ese número cambia. Una imagen no admite resaltado: las figuras nuevas
+llevan un marco amarillo, que pone `recuadro()` en el conversor.
+
+Para actualizar el mapa después de cambiar datos o consultas (desde la raíz):
+
+```bash
+warehouse_ampliado/.venv/Scripts/python -I warehouse_ampliado/etl/exportar_mapa.py
+warehouse_ampliado/.venv/Scripts/python -I warehouse_ampliado/verificacion/verificar_mapa.py
+```
 
 ## Hechos establecidos (no volver a investigar)
 
@@ -147,6 +159,14 @@ línea; revísalas si ese número cambia.
   cargadas; `presas_sih.csv` lista 210. Hidro-MX no trae las de Cutzamala en 2018-2024.
 - **No hay archivo descargable de:** REPDA (formulario de consulta por título), SINA (redirige a
   la portada de CONAGUA), CAEM y PIGOO (el DNS de `pigoo.gob.mx` no resuelve).
+- **El ETL se reproduce desde un clon limpio.** El 31 oct, un clon con entorno nuevo bajó los
+  1,997.6 MB en 11.5 minutos, sin fallos, y el almacén reconstruido aparte devolvió las 13
+  consultas con los mismos SHA-256 (`verificacion/evidencia_clon_limpio.txt`).
+- **GitHub Pages solo publica `main`** (`build_type: legacy`, raíz). Una rama nueva da enlaces de
+  código, pero no una página pública. Cambiar eso tocaría el sitio de ICOKG.
+- **Facturar poco no significa demandar poco.** Las 435 colonias bajo 10 l/hab/día reportan 4.15
+  faltas de agua por mil habitantes, contra 4.93 del resto; Spearman de volumen contra reportes
+  0.18 (`11_cruces_colonia.sql`, confirmado con scipy).
 
 ## Avisos técnicos
 
@@ -161,6 +181,12 @@ línea; revísalas si ese número cambia.
   la pantalla de Gabriel. Revisa eso antes de concluir que el sitio rechaza la petición, y
   no dejes diálogos abiertos.
 - `ndownloader.figshare.com` responde 202 a peticiones por rango; la descarga completa funciona.
+- Clona en una ruta corta: con una ruta muy larga, como el scratchpad de una sesión, las DLL de
+  `shapely` no cargan en Windows.
+- `docker cp warehouse_ampliado/consultas/. data_warehouse_cdmx:/consultas` lleva `/.` a propósito:
+  sin eso, la segunda vez crea `/consultas/consultas` y psql sigue leyendo la versión vieja.
+- Docker puede reiniciarse y dejar `data_warehouse_cdmx` apagado. Los datos siguen en el volumen
+  `warehouse_pgdata`: basta con `docker start data_warehouse_cdmx`.
 - CNGMD: los faltantes son `-1`, `-2`, `-3` en 2018 y `NA`, `ND`, `NSS` en 2020. El código de
   fuente 8 cambió de "Otra" a "Mina": cruza catálogos por descripción, no por número.
 - Censos Económicos 2019: lee con `index_col=False`; los valores traen tabuladores y espacios.
@@ -179,15 +205,20 @@ línea; revísalas si ese número cambia.
   Gemini y `prdx919/Agua_en_la_cdmx`) en `reports/Deep_Research_Ampliacion_DWH_IJCOPI.md`,
   con DOIs, URLs de descarga directa, tamaños, sumas MD5/SHA-256, fuentes descartadas y
   propuesta de esquema de constelación y cubo de datos (`GROUP BY CUBE` + W3C `qb:DataSet`).
-- **Hecho (31 oct):** almacén ampliado en `warehouse_ampliado/`, sin cubo: 2,756,838 filas en
-  41 tablas, 62 archivos verificados y `verificar_ampliado.py` sin fallos. Agrega el Bloque D
+- **Hecho (31 oct):** almacén ampliado en `warehouse_ampliado/`, sin cubo: 2,762,834 filas en
+  43 tablas, 62 archivos verificados y `verificar_ampliado.py` sin fallos. Agrega el Bloque D
   (CNGMD, SHCP, piezometría, acuíferos, sequía, presas, Hidro-MX, calidad del agua y CONAPO) y
   carga los bloques A, B y C1. La sección 0 del informe lista los errores que se corrigieron de
   su primera versión.
+- **Hecho (31 oct, rama `ijcopi-zmvm`):** ETL completo desde un clon, 13 consultas SQL, mapa nuevo
+  y v2 del artículo: 9,153 palabras (+63 % sobre la base de 5,615), 15 páginas, resumen de 149
+  palabras, título nuevo, sección 5.7 y Fig. 3 con capturas del mapa. El título es una propuesta
+  que Gabriel debe aprobar.
 - **Trabajo 37:** tiene su base en Word en `PublicMunicipalWorks_DWH/paper/ijcopi/`;
   falta extenderlo.
-- **Sin revisar por humanos:** el texto nuevo de la v1, los informes de datos y el almacén
-  ampliado. El manuscrito de IJCOPI aún no incorpora nada de la ampliación.
+- **Sin revisar por humanos:** el texto nuevo de la v1 y de la v2, los informes de datos, el
+  almacén ampliado y el mapa. La declaración de IA de la v2 dice que los autores verificaron las
+  cifras: debe ser cierto antes de enviar.
 
 ### Pendientes conocidos
 
@@ -201,13 +232,13 @@ línea; revísalas si ese número cambia.
   baja desde otra red, sus MD5 oficiales están en el informe. Con `C2`, los cruces por
   proximidad a colonia se pueden sustituir por polígonos.
 - `C5` (tarifas del art. 172) no tiene archivo verificado y no alimenta ninguna tabla.
-- Reproducir el ETL en otra máquina requiere bajar `colonias_imc2020_shp.zip` (47 MB) con un
-  navegador. No se subió para no cargar el repositorio.
 - El correo a `datosabiertos@cdmx.gob.mx` sigue como borrador en el Gmail de Gabriel,
   sin enviar (revisado el 2026-10-31). No se sabe si presentó la solicitud en la PNT.
 - Confirmar serie, volumen y páginas de la referencia de ICOKG, ahora "in press".
-- Crear un release nuevo con los análisis y cambiar a él el Data Availability Statement,
-  que hoy apunta a `v1.5-icokg2026`, que no los contiene. El tag v1.5 no se toca.
+- Crear un release nuevo cuando se suba la rama. El Data Availability Statement de la v2 ya apunta
+  a `tree/ijcopi-zmvm`, enlace que no existe hasta el push. El tag v1.5 no se toca.
+- `SACMEX (n.d.)`, los reportes de agua, cita `datos.cdmx.gob.mx/dataset/reportes-de-agua`, que esta
+  PC no puede abrir. Los datos vienen de la copia verificada contra el CKAN. Confirmar el enlace.
 - Decidir si se implementa en el demo el diseño de tres listas; hoy es trabajo futuro.
 - Aclarar la moneda de la contribución y revisar la licencia firmada con Springer.
 
@@ -215,17 +246,18 @@ línea; revísalas si ese número cambia.
 
 **Pedido de Gabriel del 31 oct, en curso en la rama `ijcopi-zmvm`:**
 
-1. [ ] ETL completo y reproducible: `colonias_imc2020_shp.zip` ya está en
-   `warehouse_ampliado/snapshots/partes/` y `descargar.py` lo reconstruye. Falta terminar la
-   prueba desde un clon limpio (hay uno bajando datos en el scratchpad de la sesión).
+1. [x] ETL completo y reproducible: `colonias_imc2020_shp.zip` va en
+   `warehouse_ampliado/snapshots/partes/` y `descargar.py` lo reconstruye. Probado desde un clon.
 2. [x] Consultas SQL reales al almacén en `warehouse_ampliado/consultas/`, con su `README.md`.
 3. [x] Mapa nuevo en `ijcopi/mapa-zm.html` y consultas en `ijcopi/consultas.html`, alimentados
    por `etl/exportar_mapa.py`. `verificacion/verificar_mapa.py` repite cada consulta y compara.
-4. [ ] Artículo actualizado con capturas del mapa nuevo, todo lo agregado en amarillo y un título
-   que deje ver la extensión. Máximo 15 páginas. Cada referencia nueva debe salir de
-   `control_ingesta_fuentes`.
-5. [ ] Enlaces nuevos para el artículo. Pages solo publica `main`, así que esta rama no tiene
-   URL pública propia: Gabriel debe elegir cómo desplegarla.
+4. [x] Artículo v2 con capturas del mapa, todo lo agregado en amarillo y título nuevo.
+5. [ ] **Decisión de Gabriel: publicar.** Nada de esta rama está en GitHub todavía. Pages solo
+   publica `main`, así que para una URL pública del mapa sin tocar ICOKG se recomienda un
+   repositorio nuevo solo para esto, con su propio Pages. Cualquier push necesita antes su
+   autorización por el 403 de la ADIP (regla 2). Después: crear el release nuevo, poner en el
+   artículo la URL pública del mapa y regenerar la v2.
+6. [ ] Revisión humana del texto nuevo y aprobación del título antes del 9 de noviembre.
 
 **El cubo de datos sigue pospuesto.** Gabriel debe revisar la sección 0 del informe: varias
 cifras de su primera versión eran falsas, sobre todo lo de fugas en 2019. Cuando decida
@@ -262,3 +294,8 @@ retomar el cubo, sigue la sección 4.4 del informe.
   corrigió con `.gitattributes` y lo confirmó en dos clones nuevos. El verificador de Springer
   terminó en `fallos: 2` (el 403 conocido y una caída de `azcatl.azc.uam.mx`). Gabriel autorizó
   este push con esos fallos; al subir solo quedaba el 403. Esa autorización no vale para otros.
+- 2026-10-31, Claude (Claude Code, Opus 5.5): abrió `ijcopi-zmvm` e integró
+  `reports/Contexto_completo_sesion.md`. Subió el shapefile de colonias en partes, guardó las
+  geometrías en la base de datos, escribió 13 consultas SQL, el mapa `ijcopi/mapa-zm.html` y su
+  verificación contra la base, y generó la v2 del artículo. Un clon limpio reconstruyó el almacén
+  con resultados idénticos byte por byte. Nada de esta rama se ha subido a GitHub.

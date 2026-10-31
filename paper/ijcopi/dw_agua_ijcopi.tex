@@ -74,8 +74,8 @@
 \begin{document}
 
 
-\title{Territorial Information Retrieval from Heterogeneous Open Data through the Construction of a Data Warehouse for Water Management in Mexico City}
-\titlerunning{A Data Warehouse for Water Management in Mexico City}
+\title{Territorial Information Retrieval from Heterogeneous Open Data\nuevo{: Extending a Water Data Warehouse from Mexico City to its Metropolitan Area}}
+\titlerunning{Extending a Water Data Warehouse to the Mexico City Metropolitan Area}
 
 \author{%
 Eduardo Uriel Vel\'azquez Arrieta\orcidID{\href{https://orcid.org/0009-0001-8745-2717}{0009-0001-8745-2717}} \and
@@ -99,7 +99,7 @@ Gabriel Hurtado Avil\'es\thanks{Corresponding author: \href{mailto:gabrielhuav@g
 \maketitle
 
 \begin{abstract}
-This work presents a data warehouse for the territorial information retrieval of water consumption in Mexico City (CDMX), built from heterogeneous open sources. The contribution lies in three methodological elements: an ETL process that consolidates SACMEX data into a dimensional model of 70,886 records, a declarative R2RML mapping that republishes the resulting star schema as an RDF knowledge graph whose Data Cube structure is validated against the vocabulary's integrity constraints, and a deployment methodology that guarantees a demonstration through a static version published on GitHub Pages. The prototype exposes the model through an interactive choropleth map, filters by year, bimester, borough and \nuevo{neighbourhood}, and an exploratory module for atypical consumption. \nuevo{Against the 2020 Census, its billed volumes amount to 47 litres per inhabitant per day, 38\,\% of published consumption, least in the periphery; and the module's score finds spikes but structurally misses drops, which a logarithmic scale recovers.}
+This work presents a data warehouse for the territorial information retrieval of water consumption in Mexico City, built from heterogeneous open sources\nuevo{ and extended to its metropolitan area}. The contribution lies in three elements: an ETL process that consolidates SACMEX data into a dimensional model of 70,886 records, a declarative R2RML mapping that republishes the star schema as an RDF knowledge graph, and a deployment methodology that guarantees a demonstration through a static version. \nuevo{Against the 2020 Census, billed volumes amount to 47 litres per inhabitant per day, 38\,\% of published consumption, least in the periphery, and the atypical-consumption score structurally misses drops. The extension integrates 62 verified files on 63 municipalities into 2.76 million rows: municipal volumes require a quality filter, and neighbourhoods with almost no billed volume report shortages nearly as often as the rest. Every layer of a new map is a verified SQL query.}
 \end{abstract}
 
 \keywords{Data warehouse, Open data, Knowledge graph, RDF Data Cube, Water consumption, \nuevo{Anomaly detection}}
@@ -115,7 +115,7 @@ The contribution of this work is \icokg{threefold}: (i) a reproducible ETL proce
 The analysis of the 70,886 consolidated records reveals that the boroughs of Cuauht\'emoc and Miguel Hidalgo lead the total consumption (Table~\ref{tab:top5_alcaldias}), and that consumption varies across the available bimesters without a direct causal relationship with dry or rainy periods. \icokg{The system serves citizens querying their own neighbourhood, public servants diagnosing territorial demand, researchers, journalists and civil organisations monitoring water management.}
 
 \begin{nuevobloque}
-This article extends the version presented at ICOKG 2026~\cite{velazquez2026icokg}. It adds four
+This article extends the version presented at ICOKG 2026~\cite{velazquez2026icokg}. It adds five
 elements. The first is an account of what a consumption value in the source actually is, taken from
 the publisher's clarifying note (Section~\ref{sec:grain}). The second measures, against the 2020
 Census, how much of the city's consumption the billed volumes in the export represent and how the
@@ -124,7 +124,9 @@ atypical-consumption module over the prevalence, composition and magnitude of th
 shows that the deployed statistic is structurally blind to consumption drops
 (Section~\ref{sec:sens}). The fourth is a diagnosis of the same statistic on the real data, with a
 log-scale variant and the evidence that each scale is biased in one direction
-(Section~\ref{sec:real}).
+(Section~\ref{sec:real}). The fifth extends the warehouse from the city to its metropolitan area
+and publishes the result in a map whose layers are verified SQL queries
+(Section~\ref{sec:metro}).
 \end{nuevobloque}
 
 Section~\ref{sec:edo} reviews related work, Section~\ref{sec:met} describes the methodology, Section~\ref{sec:res} presents the results and Section~\ref{sec:con} the conclusions.
@@ -772,6 +774,61 @@ bills unmetered intakes by averages (Section~\ref{sec:grain}) may signal a data
 gap as much as an absence of use, which is why earlier spatial studies exclude
 colonias with zero consumption or no metering~\cite{ramosbueno2021}. The analysis is reproducible with
 \texttt{evaluacion-ml/ranking\_real.py}.
+
+\subsection{From the City to the Metropolitan Area}
+\label{sec:metro}
+
+The open export stops at the city boundary, but the water system does not. We therefore extended
+the warehouse additively to the official metropolitan delimitation of 2020~\cite{conapo2025b}: 63
+municipalities, of which 16 are boroughs, 45 lie in the State of Mexico and two in Hidalgo. Sixty-two
+files, each checked against a manifest of sizes and hashes before loading, now feed 2.76 million
+rows in 43 tables, joined to the original location dimension through a conformed municipal
+dimension; the original fact tables are untouched. The new facts cover municipal services and
+billing~\cite{inegicngmd}, water revenue~\cite{shcp2026}, aquifers and wells~\cite{conagua2026a},
+dams~\cite{conagua2026b}, drought~\cite{smn2026}, water quality~\cite{conaguacalidad},
+marginalisation~\cite{conapo2025a}, land motion~\cite{khorrami2023} and 555,752 citizen
+reports~\cite{sacmexreportes}.
+
+Integration exposes what no single source shows. Municipal volumes cannot be compared without a
+filter: of the 47 municipalities outside Mexico City, 24 report no volume, 7 fall outside a
+plausibility band of 10 to 400 litres per inhabitant per day and 16 remain
+(Fig.~\ref{fig:zm-a}), while the revenue they declare does track federal records (Spearman 0.934
+over 89 municipalities of the State of Mexico, Pearson 0.322), which confines the errors to a
+few captures. The reports also bound what can be asked of 2019: the source records no leaks before
+2021, so all 39,685 reports of the semester are water shortages. Across 1,508 neighbourhoods, billed
+volume barely ranks shortage reports (Spearman 0.18), and the 435 neighbourhoods billed below 10
+litres file almost as many reports per thousand inhabitants as the rest (4.15 against 4.93).
+Near-zero billing therefore does not mean near-zero demand, which supports the reading of
+Section~\ref{sec:percapita}. So does access: about 238,000 people in the metropolitan area live in
+dwellings without piped water (Fig.~\ref{fig:zm-b}), and in Mexico City the five boroughs with the
+largest share of them are among the six with the lowest billed volume. Groundwater gives the
+physical context. The four aquifers beneath the urban area extract between 1.49 and 1.96 times
+their recharge, in wells read in both years the mean water table fell between 6.0 and 18.7 metres
+from 2010 to 2019, and mean land motion reaches $-$23.5~cm per year in Nezahualc\'oyotl.
+
+\begin{figure}[tbp]
+\centering
+\begin{subfigure}[t]{0.485\textwidth}
+  \centering
+  \includegraphics[width=\linewidth,keepaspectratio]{figura_zm_volumen.png}
+  \caption{Billed litres per inhabitant per day.}
+  \label{fig:zm-a}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.485\textwidth}
+  \centering
+  \includegraphics[width=\linewidth,keepaspectratio]{figura_zm_colonias.png}
+  \caption{Occupants without piped water, aquifers and wells.}
+  \label{fig:zm-b}
+\end{subfigure}
+\caption{Two views of the metropolitan map, each the output of SQL queries. Base map \copyright{} OpenStreetMap contributors (ODbL).}
+\label{fig:zm}
+\end{figure}
+
+The static deployment follows the warehouse without a server. Each layer of the map is the literal
+result of one of thirteen SQL queries distributed in the repository, exported to \texttt{JSON} with
+its hash, and \texttt{verificar\_mapa.py} repeats every query and compares the result byte by byte
+with the published files. A warehouse rebuilt from a clean clone returned the same bytes for all
+thirteen queries.
 \end{nuevobloque}
 
 \subsection{Performance Metrics}
@@ -864,12 +921,12 @@ A data warehouse was presented for the territorial information retrieval of wate
 
 The findings reveal that water consumption in Mexico City is concentrated in the boroughs of Cuauht\'emoc and Miguel Hidalgo (Table~\ref{tab:top5_alcaldias})\nuevo{ in billed totals, although Benito Ju\'arez leads per inhabitant and volumetric billing captures little of the consumption of the eastern and southern periphery (Table~\ref{tab:percapita})}, and that it varies across the available bimesters without establishing in this work a causal relationship with dry or rainy periods.
 
-\icokg{The three central contributions ---the consolidation ETL, the validated graph layer derived from it, and the always-accessible demo methodology--- constitute} a replicable method for bringing heterogeneous official open data to queryable and verifiable territorial information. \nuevo{The extension adds a negative result with a practical consequence: as deployed, the atypical-consumption module can only report excess consumption; a log-scale score removes that blindness in synthetic tests, but on the real data it must be presented as separate lists for excess and deficit.}
+\icokg{The three central contributions ---the consolidation ETL, the validated graph layer derived from it, and the always-accessible demo methodology--- constitute} a replicable method for bringing heterogeneous official open data to queryable and verifiable territorial information. \nuevo{The extension adds a negative result with a practical consequence: as deployed, the atypical-consumption module can only report excess consumption; a log-scale score removes that blindness in synthetic tests, but on the real data it must be presented as separate lists for excess and deficit. Extending the warehouse to the 63 municipalities of the metropolitan area shows that municipal volumes need a quality filter before any comparison, and that low billing cannot be read as low demand.}
 
 \begin{icokgblock}
 \subsection{Threats to Validity and Limitations}
 
-\nuevo{Five} limitations bound what may be concluded. The temporal extent is the first:
+\nuevo{Six} limitations bound what may be concluded. The temporal extent is the first:
 the source publishes three bimesters of a single year, so the seasonal variation
 observed is a within-semester comparison and the climate correlation rests on
 three aggregated points, enough to describe a direction but not to estimate one.
@@ -889,7 +946,9 @@ although they appear to cover nearly all volumetric billing, they add up to abou
 38\,\% of published per-capita consumption, with the gap concentrated in the
 periphery. Territorial contrasts and atypicality scores therefore describe billing,
 and coincide with physical use only where intakes are metered and billed by
-volume.}
+volume. The sixth concerns the metropolitan layers: they combine reference years from 2018 to 2020,
+the neighbourhood polygons are CONAPO's rather than the utility's, several joins rest on spatial
+proximity, and reports count what citizens file, not what is missing.}
 
 \subsection{Future Work}
 
@@ -901,6 +960,7 @@ would let the resource be joined with other municipal datasets without prior
 schema agreement, which is the interoperability argument that motivates the graph
 layer. The anomaly module should be re-evaluated when labelled leak data exist\nuevo{,
 with the three-list design of Section~\ref{sec:real} implemented in the interface}.
+\nuevo{A data cube over the extended warehouse is the next step for the metropolitan analysis.}
 Finally, the method transfers to other open urban-data domains ---mobility, air
 quality and seismic risk--- where the same combination of dispersed official
 files and absent query tooling recurs.
@@ -911,11 +971,13 @@ files and absent query tooling recurs.
 
 The authors used a generative AI assistant, under their direction, for language
 editing, \LaTeX{} formatting, \nuevo{converting the manuscript to the journal
-template,} drafting text subsequently revised and approved by
+template, searching and verifying the regional data sources, and writing the ETL,
+queries and map of the metropolitan extension,} drafting text subsequently revised and approved by
 the authors, and writing the auxiliary scripts distributed with the artefact. The
-research questions, the dimensional design, the ETL, the data collection, the
+research questions, the dimensional design, the \nuevo{original} ETL, the data collection
+\nuevo{of the conference version}, the
 experiments and the interpretation of the results are the authors' own work.
-Every reported quantity was recomputed from the two published source files and
+Every reported quantity was recomputed from the published source files and
 verified by the authors, and the scripts that perform that recomputation are
 distributed with the release. The authors take full responsibility for the
 content.
@@ -976,6 +1038,26 @@ The authors declare that they have no conflicts of interest relevant to the cont
 \bibitem{vetro2016} Vetr\`o, A., Canova, L., Torchiano, M., Orozco Minotas, C., Iemma, R., Morando, F.: Open data quality measurement framework. Government Information Quarterly \textbf{33}(2), 325--337 (2016). \url{https://doi.org/10.1016/j.giq.2016.02.001}
 
 \bibitem{villa2026} \icokg{Villa Vargas, J.M., Hurtado Avil\'es, G., Climent Hern\'andez, J.A.: Cuando M\'exico tiembla: la historia contada por los datos. AZCATL Revista de Divulgaci\'on en Ciencias, Ingenier\'ia e Innovaci\'on \textbf{4}(6), 28--33 (2026). \url{https://doi.org/10.24275/AZC2026E1004}}
+
+\bibitem{conapo2025a} Consejo Nacional de Poblaci\'on: \'Indices de marginaci\'on. datos.gob.mx (2025)
+
+\bibitem{conapo2025b} Consejo Nacional de Poblaci\'on: Las metr\'opolis de M\'exico, 2020. datos.gob.mx (2025)
+
+\bibitem{inegicngmd} Instituto Nacional de Estad\'istica y Geograf\'ia: Censo Nacional de Gobiernos Municipales y Demarcaciones Territoriales de la Ciudad de M\'exico, ediciones 2019 y 2021
+
+\bibitem{shcp2026} Secretar\'ia de Hacienda y Cr\'edito P\'ublico: Derechos de agua municipal. datos.gob.mx (2026)
+
+\bibitem{conagua2026a} Comisi\'on Nacional del Agua: Aguas subterr\'aneas. datos.gob.mx (2026)
+
+\bibitem{conagua2026b} Comisi\'on Nacional del Agua: Sistema de Informaci\'on Hidrol\'ogica, series diarias de presas (2026)
+
+\bibitem{conaguacalidad} Comisi\'on Nacional del Agua: Indicadores de calidad del agua
+
+\bibitem{smn2026} Servicio Meteorol\'ogico Nacional: Monitor de Sequ\'ia de M\'exico, municipios (2026)
+
+\bibitem{khorrami2023} Khorrami, M., Shirzaei, M., Ghobadi-Far, K., Werth, S., Carlson, G., Zhai, G.: Groundwater volume loss in Mexico City constrained by InSAR and GRACE observations and mechanical models. Geophysical Research Letters \textbf{50}(5), e2022GL101962 (2023). \url{https://doi.org/10.1029/2022GL101962}
+
+\bibitem{sacmexreportes} SACMEX: Reportes de agua. Portal de Datos Abiertos de la Ciudad de M\'exico. \url{https://datos.cdmx.gob.mx/dataset/reportes-de-agua}
 
 \bibitem{r2rml}\icokg{ World Wide Web Consortium: R2RML --- RDB to RDF mapping language. W3C Recommendation, 27 September 2012. \url{https://www.w3.org/TR/r2rml/}}
 

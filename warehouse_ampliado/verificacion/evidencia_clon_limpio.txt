@@ -1,0 +1,33 @@
+Prueba de reproduccion desde un clon limpio, 2026-10-31.
+Clon nuevo de la rama, entorno virtual nuevo desde requirements.txt, descarga de todas las fuentes
+y almacen construido en un contenedor aparte (puerto 5434), sin tocar el almacen de trabajo.
+
+## Descarga
+[D15] uniendo 3 partes de snapshots/partes/
+fallos: 0
+descargar exit: 0, minutos: 11.5
+
+## Construccion y verificacion
+clon en: 88dbbff Warn about long Windows paths when reproducing the ETL
+almacen original listo: True (70886 filas)
+ejecutar exit: 0, minutos: 2
+verificaciones fallidas: 0
+verificar_ampliado exit: 0
+[OK ] 13 consultas, las mismas del manifiesto
+[OK ] 01_fuentes_cargadas: 93 filas, sha256 0846a632e532515b
+[OK ] 02_tablas_del_almacen: 43 filas, sha256 e294c6d0a715b79e
+[OK ] 03_municipios_zm: 63 filas, sha256 3b54880dbbfbd5dd
+[OK ] 04_colonias_zm: 5,830 filas, sha256 26fc327d74f60367
+[OK ] 05_acuiferos_zm: 10 filas, sha256 10f8fd584b62170d
+[OK ] 06_pozos_zm: 255 filas, sha256 62b0af4fb5d20a16
+[OK ] 07_presas: 15 filas, sha256 0536e8f88e413c12
+[OK ] 08_presas_mensual: 1,551 filas, sha256 7f3de9eb8160b7f1
+[OK ] 09_sequia_zm: 27,531 filas, sha256 5b670257f1951464
+[OK ] 10_calidad_zm: 133 filas, sha256 cd8bd2d499c77d68
+[OK ] 11_cruces_colonia: 8 filas, sha256 3f168f9eab9b576d
+[OK ] 12_geometrias: 5,903 filas, sha256 5cfde44bee55bfec
+[OK ] 13_sin_agua_zm: 3 filas, sha256 2c831dfab5482b0c
+verificaciones fallidas: 0
+verificar_mapa exit: 0
+
+Los sha256 son los de ijcopi/datos/manifiesto.json: el almacen reconstruido devuelve lo mismo, byte por byte.

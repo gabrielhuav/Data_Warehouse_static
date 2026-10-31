@@ -1,4 +1,4 @@
-Evidencia del mapa, generada 2026-10-31 19:48 UTC
+Evidencia del mapa, generada 2026-10-31 19:56 UTC
 Exportacion comprobada: 2026-10-31 19:48 UTC
 
 [OK ] 13 consultas, las mismas del manifiesto

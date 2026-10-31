@@ -140,6 +140,13 @@ the real export (`evidencia_ranking_real.txt`). The third divides domestic
 billed volume by the 2020 Census residents of each borough
 (`scripts/evidencia_per_capita.txt`).
 
+## Metropolitan extension (branch `ijcopi-zmvm`)
+
+`warehouse_ampliado/` extends the warehouse to the 63 municipalities of the Mexico City Metropolitan
+Area, `ijcopi/mapa-zm.html` maps it and `ijcopi/consultas.html` lists the SQL behind every layer.
+`warehouse_ampliado/README.md` explains how to rebuild it from a clone. Nothing here changes a page
+or a link of the ICOKG release.
+
 ## Base map
 
 Both maps, `mapa.html` and `vecindad.html`, take their base map from

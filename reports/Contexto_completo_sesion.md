@@ -34,10 +34,11 @@ decidió en la conversación, qué contiene la v1 y qué quedó sin verificar. L
 
 ## 3. La versión extendida (v1)
 
-Fuente: `paper/ijcopi/dw_agua_ijcopi.tex`. Salida:
-`paper/ijcopi/dw_agua_IJCOPI_v1_extendida.docx` y su PDF. Son 14 páginas y 8,311 palabras, 48 %
-más que las 5,615 de la base. Gabriel dijo que la revisaría; no hay constancia de que lo haya
-hecho. **Todavía no incorpora nada de `warehouse_ampliado/`.**
+Fuente: `paper/ijcopi/dw_agua_ijcopi.tex`. La v1 (`dw_agua_IJCOPI_v1_extendida.docx`) tiene 14
+páginas y 8,311 palabras, 48 % más que las 5,615 de la base. Gabriel dijo que la revisaría; no hay
+constancia de que lo haya hecho. **La versión actual es la v2** (`dw_agua_IJCOPI_v2_zmvm.docx`,
+rama `ijcopi-zmvm`): 15 páginas, con el título nuevo, la sección 5.7 y la Fig. 3. La tabla de
+abajo describe lo que agregó la v1.
 
 | Sección | Qué se agregó | Reproducción |
 | --- | --- | --- |

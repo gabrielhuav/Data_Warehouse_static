@@ -32,6 +32,7 @@ NBSP = "\u00a0"
 NNBSP = "\u202f"
 W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 M = "http://schemas.openxmlformats.org/officeDocument/2006/math"
+A = "http://schemas.openxmlformats.org/drawingml/2006/main"
 avisos = []
 
 # ---------------------------------------------------------------- citas APA 7
@@ -65,6 +66,17 @@ CITAS = {
     "lippolis2025": (["Lippolis", "Lodi", "Nuzzolese"], "2025"),
     "inegi2021": (["Instituto Nacional de Estadística y Geografía"], "2021"),
     "infocdmx2022": (["INFO CDMX"], "2022"),
+    # Ampliacion a la zona metropolitana. Cada una alimenta una tabla: ver control_ingesta_fuentes.
+    "conapo2025a": (["CONAPO"], "2025a"),
+    "conapo2025b": (["CONAPO"], "2025b"),
+    "inegicngmd": (["Instituto Nacional de Estadística y Geografía"], "n.d."),
+    "shcp2026": (["SHCP"], "2026"),
+    "conagua2026a": (["CONAGUA"], "2026a"),
+    "conagua2026b": (["CONAGUA"], "2026b"),
+    "conaguacalidad": (["CONAGUA"], "n.d."),
+    "smn2026": (["SMN"], "2026"),
+    "khorrami2023": (["Khorrami", "Shirzaei", "Ghobadi-Far", "Werth", "Carlson", "Zhai"], "2023"),
+    "sacmexreportes": (["SACMEX"], "n.d."),
 }
 
 # Referencias APA 7 por clave. Se escriben en orden alfabetico y solo las que el .tex
@@ -126,6 +138,49 @@ REFERENCIAS = {
     "lippolis2025": (
         "!Lippolis, A. S., Lodi, G., & Nuzzolese, A. G. (2025). The Water Health Open Knowledge Graph. *Scientific "
         "Data, 12*, 274. https://doi.org/10.1038/s41597-025-04537-4"
+    ),
+    "conapo2025a": (
+        "!CONAPO [Consejo Nacional de Población]. (2025a). *Índices de marginación* [Data set]. datos.gob.mx. "
+        "https://www.datos.gob.mx/dataset/d8f2a534-bcee-4114-853d-82982a81ce24"
+    ),
+    "conapo2025b": (
+        "!CONAPO [Consejo Nacional de Población]. (2025b). *Las metrópolis de México, 2020* [Data set]. datos.gob.mx. "
+        "https://www.datos.gob.mx/dataset/da65ccd9-888c-4ce8-b3b5-6bd867be344d"
+    ),
+    "inegicngmd": (
+        "!Instituto Nacional de Estadística y Geografía. (n.d.). *Censo Nacional de Gobiernos Municipales y "
+        "Demarcaciones Territoriales de la Ciudad de México, 2019 and 2021 editions* [Data set]. Retrieved October "
+        "31, 2026, from https://www.inegi.org.mx/programas/cngmd/2021/"
+    ),
+    "shcp2026": (
+        "!SHCP [Secretaría de Hacienda y Crédito Público]. (2026). *Derechos de agua municipal* [Data set]. "
+        "datos.gob.mx. https://www.datos.gob.mx/dataset/derechos_agua_municipal"
+    ),
+    "conagua2026a": (
+        "!CONAGUA [Comisión Nacional del Agua]. (2026a). *Aguas subterráneas* [Data set]. datos.gob.mx. "
+        "https://www.datos.gob.mx/dataset/aguas_subterraneas"
+    ),
+    "conagua2026b": (
+        "!CONAGUA [Comisión Nacional del Agua]. (2026b). *Sistema de Información Hidrológica: Series diarias de "
+        "presas* [Data set, 15 CSV files]. Retrieved October 30, 2026, from "
+        "https://sih.conagua.gob.mx/basedatos/Presas/VBRMX.csv"
+    ),
+    "conaguacalidad": (
+        "!CONAGUA [Comisión Nacional del Agua]. (n.d.). *Indicadores de calidad del agua* [Data set]. Retrieved "
+        "October 31, 2026, from https://www.gob.mx/conagua/es/articulos/indicadores-de-calidad-del-agua?idiom=es"
+    ),
+    "smn2026": (
+        "!SMN [Servicio Meteorológico Nacional]. (2026). *Monitor de Sequía de México: Municipios* [Data set]. "
+        "CONAGUA. https://smn.conagua.gob.mx/tools/RESOURCES/Monitor%20de%20Sequia%20en%20Mexico/MunicipiosSequia.xlsx"
+    ),
+    "khorrami2023": (
+        "!Khorrami, M., Shirzaei, M., Ghobadi-Far, K., Werth, S., Carlson, G., & Zhai, G. (2023). Groundwater volume "
+        "loss in Mexico City constrained by InSAR and GRACE observations and mechanical models. *Geophysical "
+        "Research Letters, 50*(5), e2022GL101962. https://doi.org/10.1029/2022GL101962"
+    ),
+    "sacmexreportes": (
+        "!SACMEX. (n.d.). *Reportes de agua* [Data set, CSV]. Portal de Datos Abiertos de la Ciudad de México. "
+        "https://datos.cdmx.gob.mx/dataset/reportes-de-agua"
     ),
     "saito2015": (
         "!Saito, T., & Rehmsmeier, M. (2015). The precision-recall plot is more informative than the ROC plot when "
@@ -764,6 +819,13 @@ def bloque_tabla(contenido):
     doc.add_paragraph().paragraph_format.space_after = Pt(0)
 
 
+def recuadro(forma):
+    """Una imagen no admite resaltado: una figura nueva se marca con un borde amarillo."""
+    if RESALTAR[0]:
+        forma._inline.graphic.graphicData.pic.spPr.append(parse_xml(
+            f'<a:ln xmlns:a="{A}" w="38100"><a:solidFill><a:srgbClr val="FFFF00"/></a:solidFill></a:ln>'))
+
+
 def bloque_figura(contenido):
     subfiguras = re.findall(r"\\begin\{subfigure\}.*?\\end\{subfigure\}", contenido, flags=re.S)
     if not subfiguras:
@@ -773,7 +835,7 @@ def bloque_figura(contenido):
         p = doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p.paragraph_format.keep_with_next = True
-        p.add_run().add_picture(f"{IMGS}/{archivo}", width=Cm(16.5))
+        recuadro(p.add_run().add_picture(f"{IMGS}/{archivo}", width=Cm(16.5)))
         leyenda(f"Fig. {numero}. ", parrafo_latex(titulo), False)
         return
     resto = contenido[contenido.rindex("\\end{subfigure}"):]
@@ -787,10 +849,11 @@ def bloque_figura(contenido):
         p = tabla.cell(0, k).paragraphs[0]
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p.paragraph_format.keep_with_next = True
-        p.add_run().add_picture(f"{IMGS}/{archivo}", width=Cm(8.4))
+        recuadro(p.add_run().add_picture(f"{IMGS}/{archivo}", width=Cm(8.4)))
         q = tabla.cell(1, k).paragraphs[0]
         q.style = doc.styles["IJCOPI Caption"]
         q.paragraph_format.space_before = Pt(0)
+        q.paragraph_format.keep_with_next = True
         marcar(q.add_run(f"({'abcdefg'[k]}) "))
         escribir(q, parrafo_latex(sub_titulo))
     leyenda(f"Fig. {numero}. ", parrafo_latex(titulo), False)
@@ -870,7 +933,7 @@ for a in autores:
 p_titulo = Paragraph(elems[0], doc._body)
 for r in list(p_titulo.runs):
     r._r.getparent().remove(r._r)
-p_titulo.add_run(titulo_art)
+escribir(p_titulo, en_linea(titulo_art))
 
 p_autores = Paragraph(elems[1], doc._body)
 for r in list(p_autores.runs):
@@ -965,7 +1028,7 @@ assert not RESALTAR[0], "nuevobloque sin cerrar"
 # ---- referencias
 p = doc.add_paragraph(style="Heading 1")
 p.add_run("References").font.name = "Times New Roman"
-for ref in sorted((REFERENCIAS[k] for k in claves_bib), key=lambda t: unicodedata.normalize("NFD", t.lstrip("!"))):
+for ref in sorted((REFERENCIAS[k] for k in claves_bib), key=lambda t: unicodedata.normalize("NFD", t.lstrip("!")).lower()):
     nueva = ref.startswith("!")
     p = doc.add_paragraph()
     pf = p.paragraph_format
@@ -1000,10 +1063,15 @@ def declaracion(etiqueta, runs):
 
 URL_RELEASE = "https://github.com/gabrielhuav/Data_Warehouse_static/releases/tag/v1.5-icokg2026"
 assert URL_RELEASE in tex
+# Enlaces nuevos de la version extendida. La rama solo existe en GitHub despues del push.
+URL_RAMA = "https://github.com/gabrielhuav/Data_Warehouse_static/tree/ijcopi-zmvm"
 declaracion("Data Availability Statement:", [
     {"text": "The source files, the warehouse, the R2RML mapping, the scripts and the static demonstration are "
              "distributed in the archived release "},
-    {"text": URL_RELEASE, "link": URL_RELEASE}, {"text": "."}])
+    {"text": URL_RELEASE, "link": URL_RELEASE}, {"text": "."},
+    {"text": " The extended warehouse, its verified manifest of sources, the SQL queries and the metropolitan map "
+             "are in the branch ", "hl": True},
+    {"text": URL_RAMA, "link": URL_RAMA, "hl": True}, {"text": ".", "hl": True}])
 declaracion("Declaration on the Use of Generative AI:", parrafo_latex(decl_ia))
 declaracion("Conflicts of Interest:", parrafo_latex(interes))
 
@@ -1014,7 +1082,7 @@ for p in encab.paragraphs:
     for r in p.runs:
         if "Author et al." in r.text:
             r.text = r.text.replace("Author et al.", "Velázquez Arrieta et al.")
-doc.core_properties.title = titulo_art
+doc.core_properties.title = "".join(r.get("text", "") for r in en_linea(titulo_art))
 doc.core_properties.author = ""
 doc.core_properties.last_modified_by = ""
 doc.core_properties.comments = ""
