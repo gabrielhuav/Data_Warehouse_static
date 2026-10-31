@@ -29,6 +29,14 @@ def leer_manifiesto() -> dict:
     return json.loads(MANIFIESTO.read_text(encoding="utf-8"))
 
 
+def guardar_manifiesto(man: dict) -> None:
+    """Una fuente por linea, para que los cambios se lean bien en git."""
+    lineas = [f'  "_nota": {json.dumps(man["_nota"], ensure_ascii=False)},', '  "fuentes": [']
+    lineas += ["    " + json.dumps(f, ensure_ascii=False) + ("," if i < len(man["fuentes"]) - 1 else "")
+               for i, f in enumerate(man["fuentes"])]
+    MANIFIESTO.write_text("{\n" + "\n".join(lineas) + "\n  ]\n}\n", encoding="utf-8")
+
+
 def fuentes() -> dict[str, dict]:
     return {f["id"]: f for f in leer_manifiesto()["fuentes"]}
 
@@ -53,6 +61,22 @@ def huellas(p: Path) -> tuple[int, str, str]:
 
 class FuenteInvalida(RuntimeError):
     pass
+
+
+def armar_partes(f: dict, destino: Path) -> None:
+    """Une en destino las partes de snapshots/. Una parte alterada detiene la union."""
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    parcial = destino.with_name(destino.name + ".part")
+    with open(parcial, "wb") as sal:
+        for parte in f["partes"]:
+            p = SNAPSHOTS / parte["archivo"]
+            if not p.exists():
+                raise FuenteInvalida(f"{f['id']}: falta {p}")
+            datos = p.read_bytes()
+            if hashlib.sha256(datos).hexdigest() != parte["sha256"]:
+                raise FuenteInvalida(f"{f['id']}: {p.name} no coincide con el manifiesto")
+            sal.write(datos)
+    parcial.replace(destino)
 
 
 def verificar(id_fuente: str, cache: dict | None = None) -> tuple[Path, dict]:

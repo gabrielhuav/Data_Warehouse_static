@@ -37,14 +37,17 @@ warehouse_ampliado/.venv/Scripts/python -I warehouse_ampliado/etl/ejecutar.py
 warehouse_ampliado/.venv/Scripts/python -I warehouse_ampliado/verificacion/verificar_ampliado.py
 ```
 
-`descargar.py` baja los archivos a `datos_crudos/`, que no se sube al repositorio, y falla
-si alguno no coincide con [`fuentes.json`](fuentes.json). Un archivo no baja por script:
-`repodatos.atdt.gob.mx` y `sih.conagua.gob.mx` responden 403 a los programas. Los pequeños ya
-están en `snapshots/`, pero `colonias_imc2020_shp.zip` pesa 47 MB: ábrelo en un navegador y guárdalo
-en `datos_crudos/D15/`, donde se verificará su hash. `ejecutar.py` deja el almacén como
+`descargar.py` deja los archivos en `datos_crudos/`, que no se sube al repositorio, y falla
+si alguno no coincide con [`fuentes.json`](fuentes.json). No hace falta bajar nada a mano. Lo que
+`repodatos.atdt.gob.mx` y `sih.conagua.gob.mx` rechazan a los programas ya viene en el repositorio:
+los archivos pequeños en `snapshots/` y `colonias_imc2020_shp.zip` (47 MB) dividido en
+`snapshots/partes/`. `descargar.py` une las partes y comprueba el MD5 y el SHA-256 del original.
+El resto, unos 1.9 GB, baja por script desde su origen. `ejecutar.py` deja el almacén como
 lo construye `warehouse/` y lo vuelve a extender, así que se puede repetir sin acumular datos.
 Con `--pasos clima subsidencia` repite solo esos pasos. `verificar_ampliado.py` recalcula las
 cifras y las escribe en [`verificacion/evidencia_ampliado.txt`](verificacion/evidencia_ampliado.txt).
+
+`etl/partir.py D15 --mb 20` rehace las partes a partir del original verificado.
 
 ## Qué garantiza el ETL
 

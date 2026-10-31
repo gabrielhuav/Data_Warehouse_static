@@ -8,18 +8,20 @@
 
 Los archivos con snapshot=true viven en snapshots/ y no se vuelven a bajar salvo con
 --actualizar-snapshots: su origen cambia, asi que la copia congelada es la version usada.
-Los que tienen manual=true estan en hosts que responden 403 a scripts: se verifican, pero
-si faltan hay que bajarlos con un navegador desde la URL del manifiesto.
+Los que tienen manual=true estan en hosts que responden 403 a scripts. Los que ademas traen
+"partes" se reconstruyen desde snapshots/partes/; si no hay partes ni copia, hay que bajarlos
+con un navegador desde la URL del manifiesto.
 """
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from comun import MANIFIESTO, descargar, huellas, leer_manifiesto, ruta  # noqa: E402
+from comun import (  # noqa: E402
+    FuenteInvalida, armar_partes, descargar, guardar_manifiesto, huellas, leer_manifiesto, ruta,
+)
 
 
 def main() -> int:
@@ -36,6 +38,14 @@ def main() -> int:
             continue
         p = ruta(f)
         rehacer = args.actualizar_snapshots and f.get("snapshot")
+        if f.get("partes") and not p.exists():
+            print(f"[{f['id']}] uniendo {len(f['partes'])} partes de snapshots/partes/")
+            try:
+                armar_partes(f, p)
+            except FuenteInvalida as e:
+                print(f"[{f['id']}] FALLA {e}")
+                fallos += 1
+                continue
         if f.get("manual") and not p.exists():
             print(f"[{f['id']}] FALTA: el host rechaza scripts. Abre {f['url']} en un navegador y guardalo en {p}")
             fallos += 1
@@ -66,10 +76,7 @@ def main() -> int:
         print(f"[{f['id']}] ok {n:,} B md5 {md5} sha256 {sha[:16]}...")
 
     if args.registrar:
-        lineas = [f'  "_nota": {json.dumps(man["_nota"], ensure_ascii=False)},', '  "fuentes": [']
-        lineas += ["    " + json.dumps(f, ensure_ascii=False) + ("," if i < len(man["fuentes"]) - 1 else "")
-                   for i, f in enumerate(man["fuentes"])]
-        MANIFIESTO.write_text("{\n" + "\n".join(lineas) + "\n  ]\n}\n", encoding="utf-8")
+        guardar_manifiesto(man)
         print("manifiesto actualizado")
     print(f"fallos: {fallos}")
     return 1 if fallos else 0
