@@ -159,11 +159,11 @@ línea; revísalas si ese número cambia.
 - Censos Económicos 2019: lee con `index_col=False`; los valores traen tabuladores y espacios.
 - El texto extraído del PDF de Huerta-Vergara no respeta el orden de las tablas.
   `cargar_vulnerabilidad.py` lo resuelve y valida contra el Apéndice B.
-
 - Esta PC tiene `core.autocrlf=true`, que altera los saltos de línea al guardar y al clonar.
   `warehouse_ampliado/.gitattributes` protege `snapshots/`; sin él, el MD5 del manifiesto falla
   en un clon. Para comprobarlo usa `git show HEAD:<ruta>` o un clon nuevo: el árbol de trabajo
   puede coincidir aunque Git haya guardado otros bytes.
+
 ## Estado actual
 
 - **Hecho:** v0 base y v1 extendida (8,311 palabras contra 5,615, +48 %; 14 páginas;
@@ -189,7 +189,7 @@ línea; revísalas si ese número cambia.
   externo: es una página "Acceso Restringido" de la ADIP. No se pudo confirmar que el enlace
   siga vivo. Gabriel debe decidir antes de cada push: comprobarlo desde otra red o autorizar
   el push con esa excepción. El 31 oct, además, `azcatl.azc.uam.mx`, destino del DOI
-  `10.24275/AZC2026E1004`, dejó de responder tras haber dado 200 horas antes; el DOI resuelve.
+  `10.24275/AZC2026E1004`, dejó de responder y volvió el mismo día; el DOI resuelve.
 - `C2`, `C3` y `C4` (colonias, IDS y tandeo) siguen bloqueados y sin cargador. Si Gabriel los
   baja desde otra red, sus MD5 oficiales están en el informe. Con `C2`, los cruces por
   proximidad a colonia se pueden sustituir por polígonos.
@@ -246,5 +246,5 @@ datos, así que ya se puede retomar si lo decide.
   están en el PDF, formato y mínimo de InSAR, 63 municipios en la ZM) y detectó que el volumen
   del CNGMD no sirve sin filtro. Un clon de prueba mostró que Git alteraba 19 snapshots; lo
   corrigió con `.gitattributes` y lo confirmó en dos clones nuevos. El verificador de Springer
-  terminó en `fallos: 2` (el 403 conocido y una caída de `azcatl.azc.uam.mx`), así que dejó el
-  trabajo en commits locales y el push queda sujeto a la decisión de Gabriel.
+  terminó en `fallos: 2` (el 403 conocido y una caída de `azcatl.azc.uam.mx`). Gabriel autorizó
+  este push con esos fallos; al subir solo quedaba el 403. Esa autorización no vale para otros.
