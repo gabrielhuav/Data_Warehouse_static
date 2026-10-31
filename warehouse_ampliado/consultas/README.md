@@ -17,6 +17,8 @@ resultado en `ijcopi/datos/` y el mapa dibuja ese resultado. No hay otra fuente 
 | `11_cruces_colonia.sql` | Cruces entre consumo, reportes y fugas | Artículo |
 | `12_geometrias.sql` | Polígonos simplificados | Mapa |
 | `13_sin_agua_zm.sql` | Acceso al agua entubada por entidad | Artículo |
+| `14_vecinos_municipio.sql` | Municipios que comparten frontera, con su longitud | Consultas |
+| `15_frontera_cdmx.sql` | Lo que cruza el límite de la CDMX | Artículo |
 
 ## Verlas en la base de datos
 
@@ -57,7 +59,7 @@ contraseña `postgres`.
 
 ## Comprobar que el mapa es la base de datos
 
-Repite las 13 consultas y compara cada resultado con lo publicado en `ijcopi/datos/`:
+Repite las 15 consultas y compara cada resultado con lo publicado en `ijcopi/datos/`:
 
 ```bash
 warehouse_ampliado/.venv/Scripts/python -I warehouse_ampliado/verificacion/verificar_mapa.py

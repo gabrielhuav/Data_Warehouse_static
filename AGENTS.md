@@ -81,7 +81,8 @@ participación de los trabajos 37 y 38 ya se confirmó por correo el 13 de octub
 | `paper/ijcopi/verificar_amarillo.py` | Comprueba que todo lo agregado esté en amarillo |
 | `paper/ijcopi/dw_agua_IJCOPI_v0_base.docx` | Base congelada: texto idéntico al de Springer. No se modifica |
 | `paper/ijcopi/dw_agua_IJCOPI_v1_extendida.docx` | Primera versión extendida, sin la ampliación regional (y su PDF) |
-| `paper/ijcopi/dw_agua_IJCOPI_v2_zmvm.docx` | **Versión actual para enviar** (y su PDF), con la ampliación metropolitana |
+| `paper/ijcopi/dw_agua_IJCOPI_v2_zmvm.docx` | Ampliación metropolitana sin el grafo (y su PDF). Gabriel la tenía abierta en Word el 31 oct, por eso no se sobrescribió |
+| `paper/ijcopi/dw_agua_IJCOPI_v3_grafo.docx` | **Versión actual para enviar** (y su PDF): agrega el grafo metropolitano y la aclaración del color |
 | `paper/ijcopi/capturar_mapa.ps1` | Genera las figuras del artículo desde el mapa real, con Edge sin ventana |
 | `paper/ijcopi/solicitudes_de_datos.md` | Plantillas para pedir más datos |
 | `reports/Datos abiertos de agua CDMX.md` | Informe de fuentes de datos, con plan ordenado por valor y esfuerzo |
@@ -90,23 +91,25 @@ participación de los trabajos 37 y 38 ya se confirmó por correo el 13 de octub
 | `research_notes/` | Notas detalladas de esa investigación |
 | `warehouse/` | Almacén original, componente importado. No se edita, y un push ahí regenera `consumo.json` |
 | `warehouse_ampliado/` | **Almacén ampliado**: `fuentes.json` (manifiesto con hashes), `ddl/`, `etl/`, `snapshots/` y `verificacion/`. Su `README.md` explica cómo reproducirlo |
-| `warehouse_ampliado/consultas/` | Las 13 consultas SQL del mapa y del artículo. Su `README.md` trae los comandos para verlas en la base de datos |
-| `ijcopi/` | **Mapa nuevo** (`mapa-zm.html`), consultas (`consultas.html`) y sus datos (`datos/`, generados, no se editan a mano). No toca las páginas de ICOKG |
+| `warehouse_ampliado/consultas/` | Las 15 consultas SQL del mapa y del artículo. Su `README.md` trae los comandos para verlas en la base de datos |
+| `warehouse_ampliado/grafo/` | **Grafo metropolitano**: mapeo R2RML, vocabulario, `materializar.py`, consultas `.rq` y `requirements.txt` propio |
+| `ijcopi/` | **Mapa nuevo** (`mapa-zm.html`), **grafo** (`grafo-zm.html`, `kg_zm.ttl`), consultas (`consultas.html`) y sus datos (`datos/`, generados, no se editan a mano). No toca las páginas de ICOKG |
 | `ijcopi/publicar.ps1`, `ijcopi/README_publico.md`, `ijcopi/ajustes_publicos.py` | Preparan la copia que va a `Data_Warehouse_ZMVM`: sin memoria de trabajo, sin manuscrito y sin el workflow de `main`. Los ajustes dan al sitio su marca metropolitana y portada, y solo tocan la copia: en la rama, `assets/` y las páginas siguen iguales a `main` |
 | `paper/presentacion/` | Presentaciones de ICOKG (ES y EN) |
 | `evaluacion-ml/`, `scripts/` | Análisis reproducibles y sus evidencias |
 
-Para regenerar la v2 (desde `paper/ijcopi/`):
+Para regenerar la v3 (desde `paper/ijcopi/`):
 
 ```bash
-py -3 latex_a_ijcopi.py dw_agua_ijcopi.tex 2027-IJCOPI_template_simple_British_English.docx . dw_agua_IJCOPI_v2_zmvm.docx
-py -3 verificar_amarillo.py dw_agua_IJCOPI_v0_base.docx dw_agua_IJCOPI_v2_zmvm.docx
+py -3 latex_a_ijcopi.py dw_agua_ijcopi.tex 2027-IJCOPI_template_simple_British_English.docx . dw_agua_IJCOPI_v3_grafo.docx
+py -3 verificar_amarillo.py dw_agua_IJCOPI_v0_base.docx dw_agua_IJCOPI_v3_grafo.docx
 ```
 
 Si alguien edita el `.docx` a mano, esa edición se pierde al regenerar. Mientras el
 texto siga cambiando, edita el `.tex`; pasa al Word solo en el ajuste final. Las
-diferencias "sin amarillo" que quedan (57 palabras) son renumeración, cortes de línea y el
-reordenamiento de autores; revísalas si ese número cambia. Una imagen no admite resaltado: las figuras nuevas
+diferencias "sin amarillo" que quedan (61 palabras) son renumeración, cortes de línea y el
+reordenamiento de autores; revísalas si ese número cambia. La v3 ocupa las 15 páginas: cualquier
+figura nueva debe sustituir a otra. Una imagen no admite resaltado: las figuras nuevas
 llevan un marco amarillo, que pone `recuadro()` en el conversor.
 
 Para actualizar el mapa después de cambiar datos o consultas (desde la raíz):
@@ -188,6 +191,11 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
   traducir, resumir o apoyar el análisis, y advierte: "Failure to disclose relevant AI use may
   result in rejection or retraction". La declaración de la v2 ya es breve, pero conserva lo
   esencial, y no puede decir menos que la de Springer, que ya menciona redacción y scripts.
+- **Vecindad municipal.** Los polígonos de INEGI se solapan hasta 0.49 m², así que `touches` estricto
+  deja a Iztapalapa sin vecinos. El grafo usa `agua:sharesBoundaryWith` (al menos 50 m de frontera),
+  no `geo:sfTouches`. En colonias de CONAPO, `geo:sfTouches` sí es estricto: 15,510 pares.
+- **El color del mapa no mide quién consume más.** Lo dijo Gabriel y el mapa lo aclara. Ordena valores
+  disponibles por quintiles, y cada capa dice cuántas unidades tienen dato.
 - **Facturar poco no significa demandar poco.** Las 435 colonias bajo 10 l/hab/día reportan 4.15
   faltas de agua por mil habitantes, contra 4.93 del resto; Spearman de volumen contra reportes
   0.18 (`11_cruces_colonia.sql`, confirmado con scipy).
@@ -205,6 +213,11 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
   la pantalla de Gabriel. Revisa eso antes de concluir que el sitio rechaza la petición, y
   no dejes diálogos abiertos.
 - `ndownloader.figshare.com` responde 202 a peticiones por rango; la descarga completa funciona.
+- morph-kgc entrega los `NULL` como el texto `None`. `materializar.py` lo declara en `na_values`; sin
+  eso salen 18,591 tripletas falsas, incluidos enlaces a `municipio/None`.
+- En el navegador, Comunica se vuelve lento al unir predicados con miles de tripletas. Para eso están
+  `agua:touchesAcrossCityLimit` y `agua:inMunicipality`. Mide cada `.rq` nuevo en `grafo-zm.html`.
+- Si `paper/ijcopi/` tiene un archivo `~$...`, Word tiene ese `.docx` abierto: no lo sobrescribas.
 - Clona en una ruta corta: con una ruta muy larga, como el scratchpad de una sesión, las DLL de
   `shapely` no cargan en Windows.
 - `docker cp warehouse_ampliado/consultas/. data_warehouse_cdmx:/consultas` lleva `/.` a propósito:
@@ -234,9 +247,10 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
   (CNGMD, SHCP, piezometría, acuíferos, sequía, presas, Hidro-MX, calidad del agua y CONAPO) y
   carga los bloques A, B y C1. La sección 0 del informe lista los errores que se corrigieron de
   su primera versión.
-- **Hecho (31 oct, rama `ijcopi-zmvm`):** ETL completo desde un clon, 13 consultas SQL, mapa nuevo
-  y v2 del artículo: 9,088 palabras (+62 % sobre la base de 5,615), 15 páginas, resumen de 149
-  palabras, sección 5.7 y Fig. 3 con capturas del mapa. Gabriel aprobó el título nuevo.
+- **Hecho (31 oct, rama `ijcopi-zmvm`):** ETL completo desde un clon, 15 consultas SQL, mapa y grafo
+  nuevos, y v3 del artículo: 9,347 palabras (+66 % sobre la base de 5,615), 15 páginas, resumen de
+  144 palabras, secciones 5.7 y 5.8 y Fig. 3 con el mapa y el grafo. El almacén tiene 2,794,184
+  filas en 45 tablas y el grafo 82,393 tripletas. Gabriel aprobó el título nuevo.
   En el mapa, la CDMX va en verde, el color del mapa original, y lo agregado en morado.
 - **Trabajo 37:** tiene su base en Word en `PublicMunicipalWorks_DWH/paper/ijcopi/`;
   falta extenderlo.
@@ -278,14 +292,14 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
 4. [x] Artículo v2 con capturas del mapa, todo lo agregado en amarillo y título nuevo.
 5. [x] Publicado el 31 oct en `Data_Warehouse_ZMVM`, con su propio Pages. El artículo ya trae el
    mapa en la sección 5.7 y el repositorio en el Data Availability Statement.
-6. [ ] Antes del 9 de noviembre: revisión humana del texto nuevo y acuerdo de los coautores con
+6. [ ] Antes del 9 de noviembre: revisión humana del texto nuevo, incluida la sección 5.8 y la
+   sustitución del panel de colonias por el grafo en la Fig. 3, y acuerdo de los coautores con
    el orden de autores. Si Gabriel agrega un autor, confirmarlo antes con los editores.
 7. [ ] Cuando el texto quede aprobado: release `v2.0-ijcopi`, poner ese enlace en el artículo y
    regenerar la v2. Cada push al repositorio de trabajo necesita antes la autorización de
    Gabriel por el 403 de la ADIP (regla 2).
-8. [ ] La rama local va adelante de `origin/ijcopi-zmvm` con la v2 final, a la espera de esa
-   autorización. `Data_Warehouse_ZMVM` ya tiene el sitio corregido: el push a ese repositorio no
-   toca enlaces de Springer y se hizo porque Gabriel pidió corregir la página.
+8. [ ] Gabriel sube la rama por su cuenta a `origin/ijcopi-zmvm`; hazlo tú solo si lo autoriza.
+   `Data_Warehouse_ZMVM` se actualiza con `ijcopi/publicar.ps1`: ese push no toca enlaces de Springer.
 
 **El cubo de datos sigue pospuesto.** Gabriel debe revisar la sección 0 del informe: varias
 cifras de su primera versión eran falsas, sobre todo lo de fugas en 2019. Cuando decida
@@ -331,4 +345,6 @@ retomar el cubo, sigue la sección 4.4 del informe.
   local el enlace a un borrador de Gmail antes de publicar. Comprobó en línea los 13 hashes; `main`
   siguió en `f404787` y el tag v1.5 en `c4de86d`. Después, a pedido de Gabriel: marca metropolitana
   en el sitio público, verde para la CDMX y morado para lo agregado, Gabriel como primer autor y
-  declaración de IA más breve. El título quedó aprobado.
+  declaración de IA más breve. El título quedó aprobado. Luego aclaró en el mapa qué significa el
+  color, tradujo "Guinda" y expandió el grafo a la zona metropolitana con vecindad real por
+  polígonos, mapeo R2RML y página propia, verificado contra la base y repetido desde un clon.

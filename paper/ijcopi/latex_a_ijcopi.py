@@ -832,10 +832,12 @@ def bloque_figura(contenido):
         archivo = re.search(r"\\includegraphics(?:\[[^\]]*\])?\{([^}]*)\}", contenido).group(1)
         titulo, _ = leer_grupo(contenido, contenido.index("\\caption{") + len("\\caption"))
         numero = NUM[re.findall(r"\\label\{([^}]*)\}", contenido)[-1]]
+        ancho = re.search(r"width=([\d.]*)\\textwidth", contenido)
+        escala = float(ancho.group(1)) if ancho and ancho.group(1) else 1.0
         p = doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p.paragraph_format.keep_with_next = True
-        recuadro(p.add_run().add_picture(f"{IMGS}/{archivo}", width=Cm(16.5)))
+        recuadro(p.add_run().add_picture(f"{IMGS}/{archivo}", width=Cm(16.5 * escala)))
         leyenda(f"Fig. {numero}. ", parrafo_latex(titulo), False)
         return
     resto = contenido[contenido.rindex("\\end{subfigure}"):]

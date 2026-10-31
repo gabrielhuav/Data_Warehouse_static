@@ -54,6 +54,39 @@ cifras y las escribe en [`verificacion/evidencia_ampliado.txt`](verificacion/evi
 Las consultas al almacén, los comandos para verlas en la base de datos y cómo se publican en el mapa
 están en [`consultas/README.md`](consultas/README.md).
 
+## El grafo metropolitano
+
+`grafo/mapeo_zm.r2rml.ttl` publica el almacén ampliado como grafo RDF, con el mismo motor R2RML del
+grafo original. Enlaza con sus IRIs de alcaldía y colonia, así que los dos grafos se pueden unir. Usa
+un entorno aparte, porque morph-kgc fija otras versiones de sus dependencias:
+
+```bash
+py -3 -m venv warehouse_ampliado/.venv_grafo
+```
+
+```bash
+warehouse_ampliado/.venv_grafo/Scripts/python -m pip install -r warehouse_ampliado/grafo/requirements.txt
+```
+
+```bash
+warehouse_ampliado/.venv_grafo/Scripts/python -I warehouse_ampliado/grafo/materializar.py
+```
+
+```bash
+warehouse_ampliado/.venv_grafo/Scripts/python -I warehouse_ampliado/verificacion/verificar_grafo_zm.py
+```
+
+`verificar_grafo_zm.py` vuelve a materializar y compara, contrasta cada relación con su tabla y corre
+las consultas de `grafo/consultas/`, las mismas que ofrece `ijcopi/grafo-zm.html`.
+
+**Vecindad.** Las colonias usan `geo:sfTouches` estricto sobre los polígonos de CONAPO. Los municipios
+no: los polígonos de INEGI se solapan hasta 0.49 m², la prueba estricta falla en pares que sí colindan
+y solo 134 relaciones sobrevivían. Por eso usan `agua:sharesBoundaryWith`, una relación propia y
+documentada: los polígonos se intersecan y comparten al menos 50 m de frontera.
+
+**Lo que no hay.** Un `NULL` no produce tripleta. morph-kgc recibe los `NULL` como el texto `None`, y por
+eso `materializar.py` lo declara nulo: sin eso aparecían 18,591 tripletas falsas.
+
 ## Qué garantiza el ETL
 
 - **Todo dato viene de un archivo verificado.** Antes de leer una fuente, `comun.verificar()`

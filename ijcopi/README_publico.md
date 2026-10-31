@@ -5,6 +5,7 @@ Conference on Ontologies and Knowledge Graphs (ICOKG 2026)**, prepared for the s
 *International Journal of Combinatorial Optimization Problems and Informatics*.
 
 - **Map → <https://gabrielhuav.github.io/Data_Warehouse_ZMVM/ijcopi/mapa-zm.html>**
+- **Knowledge graph → <https://gabrielhuav.github.io/Data_Warehouse_ZMVM/ijcopi/grafo-zm.html>**
 - **Warehouse queries → <https://gabrielhuav.github.io/Data_Warehouse_ZMVM/ijcopi/consultas.html>**
 
 The conference version remains frozen as release
@@ -16,13 +17,15 @@ repository adds to that work and does not change it.
 
 The original warehouse holds the billed water consumption of Mexico City. This one extends it,
 additively, to the 63 municipalities of the official 2020 metropolitan delimitation: 62 verified
-files, 2.76 million rows and 43 tables. The original fact tables are untouched.
+files, 2.79 million rows and 45 tables, published as a map and as a knowledge graph of 82,393
+triples. The original fact tables are untouched.
 
 | Path | Content |
 | --- | --- |
-| `ijcopi/` | The map, the query page and the exported results |
+| `ijcopi/` | The map, the graph, the query page and the exported results |
 | `warehouse_ampliado/` | Manifest of sources with hashes, DDL, ETL, frozen sources and verification |
-| `warehouse_ampliado/consultas/` | The 13 SQL queries behind the map and the article |
+| `warehouse_ampliado/consultas/` | The 15 SQL queries behind the map and the article |
+| `warehouse_ampliado/grafo/` | The R2RML mapping, the vocabulary and the SPARQL queries of the graph |
 | `warehouse/` | The original warehouse: star schema, ETL, source data and container |
 | `reports/` | Sources, corrections, discarded datasets and the implemented model |
 | Root pages, `assets/`, `scripts/`, `evaluacion-ml/` | The conference demonstration and its analyses |
@@ -32,8 +35,18 @@ files, 2.76 million rows and 43 tables. The original fact tables are untouched.
 The map is static: it does not query PostgreSQL live. `etl/exportar_mapa.py` runs each query and
 stores its result in `ijcopi/datos/`, with a hash. `verificacion/verificar_mapa.py` repeats every query
 and compares the result byte by byte with the published files. A warehouse rebuilt from a clean
-clone returned the same bytes for all 13 queries
+clone returned the same bytes for all 15 queries and the same graph
 ([evidence](warehouse_ampliado/verificacion/evidencia_clon_limpio.txt)).
+
+## The knowledge graph
+
+The conference graph stops at the city boundary and joins neighbourhoods by centroid proximity. This
+one is materialised from the extended warehouse by `warehouse_ampliado/grafo/mapeo_zm.r2rml.ttl` and
+links back to the boroughs and neighbourhoods of the first graph. Neighbourhoods are joined by strict
+`geo:sfTouches` over CONAPO's polygons. Municipalities use `agua:sharesBoundaryWith`, because the
+official polygons overlap by centimetres and the strict test fails for pairs that do adjoin. A value
+that a source does not report produces no triple. See
+[`warehouse_ampliado/README.md`](warehouse_ampliado/README.md) to rebuild and verify it.
 
 ## Rebuilding it
 
@@ -74,6 +87,7 @@ refuse scripts are already stored here, the largest one in parts. Commands to ru
 
 ## Limits of the data
 
+- Colour intensity on the map orders the available values. It does not show who uses more water.
 - Consumption values are billed volumes, not meter readings, and cover January to June 2019.
 - Municipal volumes need the quality filter in `v_zm_indicadores_agua`: 24 of the 47 municipalities
   outside Mexico City report none and 7 are atypical.

@@ -99,7 +99,7 @@ Clara Aide Hern\'andez Mart\'inez\orcidID{\href{https://orcid.org/0009-0008-0647
 \maketitle
 
 \begin{abstract}
-This work presents a data warehouse for the territorial information retrieval of water consumption in Mexico City, built from heterogeneous open sources\nuevo{ and extended to its metropolitan area}. The contribution lies in three elements: an ETL process that consolidates SACMEX data into a dimensional model of 70,886 records, a declarative R2RML mapping that republishes the star schema as an RDF knowledge graph, and a deployment methodology that guarantees a demonstration through a static version. \nuevo{Against the 2020 Census, billed volumes amount to 47 litres per inhabitant per day, 38\,\% of published consumption, least in the periphery, and the atypical-consumption score structurally misses drops. The extension integrates 62 verified files on 63 municipalities into 2.76 million rows: municipal volumes require a quality filter, and neighbourhoods with almost no billed volume report shortages nearly as often as the rest. Every layer of a new map is a verified SQL query.}
+This work presents a data warehouse for the territorial information retrieval of water consumption in Mexico City, built from heterogeneous open sources\nuevo{ and extended to its metropolitan area}. The contribution lies in three elements: an ETL process that consolidates SACMEX data into a dimensional model of 70,886 records, a declarative R2RML mapping that republishes the star schema as an RDF knowledge graph, and a static deployment methodology. \nuevo{Against the 2020 Census, billed volumes amount to 47 litres per inhabitant per day, 38\,\% of published consumption, least in the periphery, and the atypical-consumption score structurally misses drops. The extension integrates 62 verified files on 63 municipalities into 2.79 million rows and a metropolitan knowledge graph: municipal volumes require a quality filter, and neighbourhoods with almost no billed volume report shortages nearly as often as the rest. Every map layer is a verified SQL query.}
 \end{abstract}
 
 \keywords{Data warehouse, Open data, Knowledge graph, RDF Data Cube, Water consumption, \nuevo{Anomaly detection}}
@@ -125,8 +125,8 @@ shows that the deployed statistic is structurally blind to consumption drops
 (Section~\ref{sec:sens}). The fourth is a diagnosis of the same statistic on the real data, with a
 log-scale variant and the evidence that each scale is biased in one direction
 (Section~\ref{sec:real}). The fifth extends the warehouse from the city to its metropolitan area
-and publishes the result in a map whose layers are verified SQL queries
-(Section~\ref{sec:metro}).
+and publishes the result in a map whose layers are verified SQL queries and in a knowledge graph
+that crosses the city boundary (Sections~\ref{sec:metro} and~\ref{sec:kgmetro}).
 \end{nuevobloque}
 
 Section~\ref{sec:edo} reviews related work, Section~\ref{sec:met} describes the methodology, Section~\ref{sec:res} presents the results and Section~\ref{sec:con} the conclusions.
@@ -458,7 +458,7 @@ the data support. The mapping therefore declares its own
 \texttt{agua:nearbyWithin1500m}, documented in \texttt{schema.ttl} as centroid
 proximity below 1.5~km. Official polygons would allow \texttt{geo:sfTouches} in
 the strict sense; that is a substitution in the source data, and we leave it as
-future work.}
+future work.} \nuevo{Section~\ref{sec:kgmetro} takes that step for the metropolitan graph.}
 
 \subsection{Territorial Retrieval as Graph Traversal}
 \label{sec:sparql}
@@ -781,8 +781,8 @@ colonias with zero consumption or no metering~\cite{ramosbueno2021}. The analysi
 The open export stops at the city boundary, but the water system does not. We therefore extended
 the warehouse additively to the official metropolitan delimitation of 2020~\cite{conapo2025b}: 63
 municipalities, of which 16 are boroughs, 45 lie in the State of Mexico and two in Hidalgo. Sixty-two
-files, each checked against a manifest of sizes and hashes before loading, now feed 2.76 million
-rows in 43 tables, joined to the original location dimension through a conformed municipal
+files, each checked against a manifest of sizes and hashes before loading, now feed 2.79 million
+rows in 45 tables, joined to the original location dimension through a conformed municipal
 dimension; the original fact tables are untouched. The new facts cover municipal services and
 billing~\cite{inegicngmd}, water revenue~\cite{shcp2026}, aquifers and wells~\cite{conagua2026a},
 dams~\cite{conagua2026b}, drought~\cite{smn2026}, water quality~\cite{conaguacalidad},
@@ -800,7 +800,7 @@ volume barely ranks shortage reports (Spearman 0.18), and the 435 neighbourhoods
 litres file almost as many reports per thousand inhabitants as the rest (4.15 against 4.93).
 Near-zero billing therefore does not mean near-zero demand, which supports the reading of
 Section~\ref{sec:percapita}. So does access: about 238,000 people in the metropolitan area live in
-dwellings without piped water (Fig.~\ref{fig:zm-b}), and in Mexico City the five boroughs with the
+dwellings without piped water, and in Mexico City the five boroughs with the
 largest share of them are among the six with the lowest billed volume. Groundwater gives the
 physical context. The four aquifers beneath the urban area extract between 1.49 and 1.96 times
 their recharge, in wells read in both years the mean water table fell between 6.0 and 18.7 metres
@@ -816,20 +816,39 @@ from 2010 to 2019, and mean land motion reaches $-$23.5~cm per year in Nezahualc
 \end{subfigure}\hfill
 \begin{subfigure}[t]{0.485\textwidth}
   \centering
-  \includegraphics[width=\linewidth,keepaspectratio]{figura_zm_colonias.png}
-  \caption{Occupants without piped water, aquifers and wells.}
+  \includegraphics[width=\linewidth,keepaspectratio]{figura_zm_grafo.png}
+  \caption{The graph: municipalities and shared boundaries.}
   \label{fig:zm-b}
 \end{subfigure}
-\caption{Two views of the metropolitan map: Mexico City in green, the added municipalities in purple. Base map \copyright{} OpenStreetMap contributors (ODbL).}
+\caption{The metropolitan map and graph: Mexico City in green, the added municipalities in purple. In (a), stronger colour marks a higher available value, not higher use; in (b), orange edges cross the city limit. Base map \copyright{} OpenStreetMap contributors (ODbL).}
 \label{fig:zm}
 \end{figure}
 
 The static deployment follows the warehouse without a server. Each layer of the map
 (\url{https://gabrielhuav.github.io/Data_Warehouse_ZMVM/ijcopi/mapa-zm.html}) is the literal
-result of one of thirteen SQL queries distributed in the repository, exported to \texttt{JSON} with
+result of one of fifteen SQL queries distributed in the repository, exported to \texttt{JSON} with
 its hash, and \texttt{verificar\_mapa.py} repeats every query and compares the result byte by byte
 with the published files. A warehouse rebuilt from a clean clone returned the same bytes for all
-thirteen queries.
+fifteen queries.
+
+\subsection{A Metropolitan Knowledge Graph}
+\label{sec:kgmetro}
+
+The graph of Section~\ref{sec:kg} stops at the city boundary and joins neighbourhoods by centroid
+proximity, because the warehouse held only points. Official polygons lift both limits. A second
+R2RML mapping materialises the extended warehouse into 82,393 triples, linked to the boroughs and
+neighbourhoods of the first graph so that the two can be merged. Its 5,830 neighbourhoods carry
+15,510 pairs of strict \texttt{geo:sfTouches}. Municipalities required more care: the official
+polygons overlap by up to 0.49~m$^2$, so the strict relation fails for pairs that do adjoin, and
+rather than misuse the standard predicate the graph declares \texttt{agua:sharesBoundaryWith} for
+the 163 pairs sharing at least 50~m of boundary (Fig.~\ref{fig:zm-b}). A value the sources do not
+report produces no triple, so absence stays explicit. Traversal then crosses what the sources keep
+apart: 18 municipal boundaries and 169 neighbourhood adjacencies cross the Mexico City limit;
+subsidence does not stop there, with Nezahualc\'oyotl sinking 23.5~cm per year next to Venustiano
+Carranza at 16.5~cm; and 21 municipalities that report no volume overlie an aquifer extracting more
+than 1.5 times its recharge, context the billing data cannot give. Every relation matches its
+warehouse table, and the example queries run in the browser against the published graph
+(\url{https://gabrielhuav.github.io/Data_Warehouse_ZMVM/ijcopi/grafo-zm.html}).
 \end{nuevobloque}
 
 \subsection{Performance Metrics}
@@ -956,7 +975,8 @@ proximity, and reports count what citizens file, not what is missing.}
 The most immediate line is to materialise the knowledge graph into a persistent
 triple store with a public SPARQL endpoint, and to replace the centroid-based
 adjacency with official neighbourhood polygons, which would make the topological
-predicates exact. Aligning the territorial identifiers with external authorities
+predicates exact\nuevo{; the metropolitan graph does so with CONAPO's polygons, while the
+utility's own remain inaccessible}. Aligning the territorial identifiers with external authorities
 would let the resource be joined with other municipal datasets without prior
 schema agreement, which is the interoperability argument that motivates the graph
 layer. The anomaly module should be re-evaluated when labelled leak data exist\nuevo{,
@@ -972,7 +992,7 @@ files and absent query tooling recurs.
 
 The authors used a generative AI assistant, under their direction, for language
 editing, drafting text subsequently revised and approved by
-the authors, \nuevo{locating data sources,} and writing the \nuevo{scripts, queries and map} distributed with the artefact. The
+the authors, \nuevo{locating data sources,} and writing the \nuevo{scripts, queries, map and graph mapping} distributed with the artefact. The
 research questions and the interpretation of the results are the authors' own work.
 The authors take full responsibility for the
 content.

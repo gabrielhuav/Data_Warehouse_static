@@ -38,9 +38,9 @@ decidió en la conversación, qué contiene la v1 y qué quedó sin verificar. L
 
 Fuente: `paper/ijcopi/dw_agua_ijcopi.tex`. La v1 (`dw_agua_IJCOPI_v1_extendida.docx`) tiene 14
 páginas y 8,311 palabras, 48 % más que las 5,615 de la base. Gabriel dijo que la revisaría; no hay
-constancia de que lo haya hecho. **La versión actual es la v2** (`dw_agua_IJCOPI_v2_zmvm.docx`,
-rama `ijcopi-zmvm`): 15 páginas, con el título nuevo, la sección 5.7 y la Fig. 3. La tabla de
-abajo describe lo que agregó la v1.
+constancia de que lo haya hecho. **La versión actual es la v3** (`dw_agua_IJCOPI_v3_grafo.docx`,
+rama `ijcopi-zmvm`): 15 páginas, con el título nuevo, las secciones 5.7 y 5.8 y la Fig. 3. La tabla
+de abajo describe lo que agregó la v1.
 
 | Sección | Qué se agregó | Reproducción |
 | --- | --- | --- |
