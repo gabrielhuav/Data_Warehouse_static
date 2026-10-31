@@ -129,12 +129,13 @@ línea; revísalas si ese número cambia.
 
 - **Hecho:** v0 base y v1 extendida (8,311 palabras contra 5,615, +48 %; 14 páginas;
   resumen de 149 palabras; 6 palabras clave). Informe de datos. Presentaciones con logos.
+- **Hecho (31 oct):** Deep research y auditoría completa de fuentes candidatas (lista de
+  Gemini y `prdx919/Agua_en_la_cdmx`) en `reports/Deep_Research_Ampliacion_DWH_IJCOPI.md`,
+  con DOIs, URLs de descarga directa, tamaños, sumas MD5/SHA-256, fuentes descartadas y
+  propuesta de esquema de constelación y cubo de datos (`GROUP BY CUBE` + W3C `qb:DataSet`).
 - **Trabajo 37:** tiene su base en Word en `PublicMunicipalWorks_DWH/paper/ijcopi/`;
   falta extenderlo.
-- **Sin revisar por humanos:** el texto nuevo de la v1 y el informe.
-- **Sin commit (31 oct):** la reorganización de `paper/` y este AGENTS.md. Gabriel decide
-  cuándo se hace commit. No hay push mientras el verificador marque el 403 del portal;
-  falta que Gabriel abra el enlace en su navegador para confirmar que sigue vivo.
+- **Sin revisar por humanos:** el texto nuevo de la v1 y los informes de datos.
 
 ### Pendientes conocidos
 
@@ -148,34 +149,23 @@ línea; revísalas si ese número cambia.
 
 ## Siguiente paso
 
-**La idea de Gabriel para la extensión (31 oct):** ampliar el almacén con muchos más
-datos: nuevas tablas de hechos y dimensiones, un cubo de datos, y lo que haga falta
-para que el DWH crezca. El primer paso es una investigación a fondo (deep research)
-de fuentes abiertas confiables, de preferencia con DOI o ISBN, con enlace de descarga.
+**Esperando confirmación de Gabriel sobre la propuesta en `reports/Deep_Research_Ampliacion_DWH_IJCOPI.md` antes de escribir código:**
 
-Condiciones que salen de la revisión del profesor al ejercicio de un alumno
-(repo `prdx919/Agua_en_la_cdmx`), y que esta extensión debe cumplir:
-
-- Cada cifra debe aparecer de verdad en la fuente citada. Nada inventado ni mal
-  atribuido. Las listas de deep research (incluida la de Gemini que Gabriel compartió)
-  son candidatas, no hechos: cada DOI, enlace y cifra se verifica antes de usarse.
-- Los datos nuevos entran por un ETL real desde el archivo descargado: nada de valores
-  escritos a mano en SQL o JS, ni CSV que no se cargan.
-- Toda fuente citada se usa en algún dato; si no se usa, no se cita.
-- Hay que tocar los datos originales (integrarlos), no solo agregar capas sueltas.
-
-Referencia de cómo se hizo bien: `Actronix09/fuentes-alternas`, carpeta
-`agua-reportes-sacmex/` (ETL con procedencia y SHA-256, 555,752 reportes integrados).
-
-Para la investigación:
-
-- Parte de `reports/Datos abiertos de agua CDMX.md` y de `research_notes/`, que ya
-  están verificados. No los repitas.
-- Gabriel pasará en la sesión la lista de Gemini y el correo del profesor; no están en
-  el repositorio.
-- datos.cdmx.gob.mx bloquea esta PC: lo que venga de ahí lo descarga Gabriel en su
-  navegador, o se usa una copia verificada por MD5 contra el CKAN.
-- Límite de 15 páginas: la v1 ya ocupa 14, así que lo nuevo obliga a recortar.
+1. Una vez aprobada la propuesta de esquema ampliado (constelación de hechos + cubo OLAP y
+   RDF `qb:DataSet`), implementar el ETL reproducible con verificación SHA-256/MD5 para:
+   - **Bloque A (con DOI y descarga directa activa):** `MexHiResClimDB` 2019 (~600 m,
+     DOI `10.6084/m9.figshare.c.7689428.v2`), subsidencia InSAR Sentinel-1 de Khorrami et al.
+     (2023, DOI `10.7294/21935947`) e indicadores históricos por alcaldía de Huerta-Vergara
+     et al. (2022, DOI `10.18268/BSGM2022v74n1a071021`).
+   - **Bloque B (INEGI descarga directa activa `HTTP 206`):** Censo 2020 por manzana urbana
+     e ITER CDMX, Marco Geoestadístico 2020, Censos Económicos 2019 y DENUE CDMX.
+   - **Bloque C (CDMX):** 555,752 reportes de agua SACMEX 2018–2024 (ya disponibles
+     localmente con MD5 verificado en `Actronix09/fuentes-alternas/agua-reportes-sacmex/datos/`)
+     y tarifas del Art. 172 del Código Fiscal CDMX (más colonias IECM, IDS 2020 y tandeo IPDP
+     si Gabriel los descarga desde su navegador).
+2. Integrar los resultados verificados del almacén ampliado y del cubo en
+   `paper/ijcopi/dw_agua_ijcopi.tex` y `paper/ijcopi/latex_a_ijcopi.py`, cuidando no rebasar
+   el tope de 15 páginas.
 
 ## Bitácora
 
@@ -188,4 +178,12 @@ Para la investigación:
   Separó las carpetas: ICOKG queda en la raíz de `paper/`; la plantilla y
   `figura_anomalias.png` pasaron a `paper/ijcopi/`, con copias de `Mapa1.png` y
   `Mapa2.png`. La v1 regenerada tiene el mismo texto (MD5 `f680bc67...`, 46 palabras
-  sin amarillo). Registró la idea de Gabriel en "Siguiente paso".
+  sin amarillo). Registró la idea de Gabriel en "Siguiente paso". Subido en `3f31bc3`
+  ("Update context 2/4").
+- 2026-10-31, Antigravity (Gemini): auditó la lista de candidatas de Gemini y el repo
+  `prdx919/Agua_en_la_cdmx` contra APIs primarias (`doi.org`, Crossref, Figshare, Zenodo,
+  INEGI). Detectó y descartó trampas (ZIP de Zenodo `10.5281/zenodo.13830947` de 21 KB
+  solo con código R, Livneh cortado en 2013, GRACE a 300 km, DOI `10.3390/w14101584`
+  mal atribuido, enlaces `404`/`500` de REDMET/SMN/CONAPO y libros con ISBN sin datos
+  tabulares). Documentó las fuentes verificadas y la propuesta de esquema ampliado con
+  cubo de datos en `reports/Deep_Research_Ampliacion_DWH_IJCOPI.md`.
