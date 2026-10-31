@@ -78,16 +78,16 @@
 \titlerunning{Extending a Water Data Warehouse to the Mexico City Metropolitan Area}
 
 \author{%
+Gabriel Hurtado Avil\'es\thanks{Corresponding author: \href{mailto:gabrielhuav@gmail.com}{gabrielhuav@gmail.com}}\orcidID{\href{https://orcid.org/0009-0002-5686-1822}{0009-0002-5686-1822}} \and
 Eduardo Uriel Vel\'azquez Arrieta\orcidID{\href{https://orcid.org/0009-0001-8745-2717}{0009-0001-8745-2717}} \and
 % ORCID enlazados a orcid.org. Desde llncs 2.24 \orcidID se compone en modo texto, asi que la X va
 % cursiva matematica y al copiarla del PDF da U+1D44B en vez de X: el ORCID
 % quedaria roto. \mathrm{X} la deja recta y copiable.
 Omar Fernando Pulido Morales\orcidID{\href{https://orcid.org/0009-0001-5698-987X}{0009-0001-5698-987X}} \and
 Emilio Garc\'ia L\'opez\orcidID{\href{https://orcid.org/0009-0005-2550-0671}{0009-0005-2550-0671}} \and
-Clara Aide Hern\'andez Mart\'inez\orcidID{\href{https://orcid.org/0009-0008-0647-8458}{0009-0008-0647-8458}} \and
-Gabriel Hurtado Avil\'es\thanks{Corresponding author: \href{mailto:gabrielhuav@gmail.com}{gabrielhuav@gmail.com}}\orcidID{\href{https://orcid.org/0009-0002-5686-1822}{0009-0002-5686-1822}}%
+Clara Aide Hern\'andez Mart\'inez\orcidID{\href{https://orcid.org/0009-0008-0647-8458}{0009-0008-0647-8458}}%
 }
-\authorrunning{E. U. Vel\'azquez Arrieta et al.}
+\authorrunning{G. Hurtado Avil\'es et al.}
 \institute{\icokg{Escuela Superior de C\'omputo (ESCOM),} Instituto Polit\'ecnico Nacional, Mexico City, Mexico\\
 \email{\{evelazqueza1900,opulidom2000,egarcial2001,chernandezm1903\}@alumno.ipn.mx}\\
 \email{ghurtadoa@ipn.mx}\\
@@ -820,7 +820,7 @@ from 2010 to 2019, and mean land motion reaches $-$23.5~cm per year in Nezahualc
   \caption{Occupants without piped water, aquifers and wells.}
   \label{fig:zm-b}
 \end{subfigure}
-\caption{Two views of the metropolitan map, each the output of SQL queries. Base map \copyright{} OpenStreetMap contributors (ODbL).}
+\caption{Two views of the metropolitan map: Mexico City in green, the added municipalities in purple. Base map \copyright{} OpenStreetMap contributors (ODbL).}
 \label{fig:zm}
 \end{figure}
 
@@ -971,16 +971,10 @@ files and absent query tooling recurs.
 \section*{Declaration on the Use of Generative AI}
 
 The authors used a generative AI assistant, under their direction, for language
-editing, \LaTeX{} formatting, \nuevo{converting the manuscript to the journal
-template, searching and verifying the regional data sources, and writing the ETL,
-queries and map of the metropolitan extension,} drafting text subsequently revised and approved by
-the authors, and writing the auxiliary scripts distributed with the artefact. The
-research questions, the dimensional design, the \nuevo{original} ETL, the data collection
-\nuevo{of the conference version}, the
-experiments and the interpretation of the results are the authors' own work.
-Every reported quantity was recomputed from the published source files and
-verified by the authors, and the scripts that perform that recomputation are
-distributed with the release. The authors take full responsibility for the
+editing, drafting text subsequently revised and approved by
+the authors, \nuevo{locating data sources,} and writing the \nuevo{scripts, queries and map} distributed with the artefact. The
+research questions and the interpretation of the results are the authors' own work.
+The authors take full responsibility for the
 content.
 \end{icokgblock}
 

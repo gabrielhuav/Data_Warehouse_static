@@ -43,7 +43,9 @@ Artículo aceptado en ICOKG 2026 (5.ª conferencia, BUAP; memorias de Springer):
 almacén de datos y un grafo RDF sobre el consumo de agua de SACMEX en la CDMX,
 primer semestre de 2019. Es el trabajo **ID 38**. Autores: Eduardo Uriel Velázquez
 Arrieta, Omar Fernando Pulido Morales, Emilio García López, Clara Aide Hernández
-Martínez y Gabriel Hurtado Avilés (autor de correspondencia), todos de ESCOM-IPN.
+Martínez y Gabriel Hurtado Avilés (autor de correspondencia), todos de ESCOM-IPN. En la versión
+de IJCOPI, por decisión de Gabriel, él firma primero y sigue como autor de correspondencia. El
+orden de Springer no cambia.
 
 Se invitó una versión extendida al número especial de IJCOPI (ISSN 2007-1558). La
 participación de los trabajos 37 y 38 ya se confirmó por correo el 13 de octubre.
@@ -90,7 +92,7 @@ participación de los trabajos 37 y 38 ya se confirmó por correo el 13 de octub
 | `warehouse_ampliado/` | **Almacén ampliado**: `fuentes.json` (manifiesto con hashes), `ddl/`, `etl/`, `snapshots/` y `verificacion/`. Su `README.md` explica cómo reproducirlo |
 | `warehouse_ampliado/consultas/` | Las 13 consultas SQL del mapa y del artículo. Su `README.md` trae los comandos para verlas en la base de datos |
 | `ijcopi/` | **Mapa nuevo** (`mapa-zm.html`), consultas (`consultas.html`) y sus datos (`datos/`, generados, no se editan a mano). No toca las páginas de ICOKG |
-| `ijcopi/publicar.ps1`, `ijcopi/README_publico.md` | Preparan la copia que va a `Data_Warehouse_ZMVM`: sin memoria de trabajo, sin manuscrito y sin el workflow de `main` |
+| `ijcopi/publicar.ps1`, `ijcopi/README_publico.md`, `ijcopi/ajustes_publicos.py` | Preparan la copia que va a `Data_Warehouse_ZMVM`: sin memoria de trabajo, sin manuscrito y sin el workflow de `main`. Los ajustes dan al sitio su marca metropolitana y portada, y solo tocan la copia: en la rama, `assets/` y las páginas siguen iguales a `main` |
 | `paper/presentacion/` | Presentaciones de ICOKG (ES y EN) |
 | `evaluacion-ml/`, `scripts/` | Análisis reproducibles y sus evidencias |
 
@@ -103,8 +105,8 @@ py -3 verificar_amarillo.py dw_agua_IJCOPI_v0_base.docx dw_agua_IJCOPI_v2_zmvm.d
 
 Si alguien edita el `.docx` a mano, esa edición se pierde al regenerar. Mientras el
 texto siga cambiando, edita el `.tex`; pasa al Word solo en el ajuste final. Las
-diferencias "sin amarillo" que quedan (54 palabras) son renumeración y cortes de
-línea; revísalas si ese número cambia. Una imagen no admite resaltado: las figuras nuevas
+diferencias "sin amarillo" que quedan (57 palabras) son renumeración, cortes de línea y el
+reordenamiento de autores; revísalas si ese número cambia. Una imagen no admite resaltado: las figuras nuevas
 llevan un marco amarillo, que pone `recuadro()` en el conversor.
 
 Para actualizar el mapa después de cambiar datos o consultas (desde la raíz):
@@ -177,6 +179,15 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
 - **GitHub Pages solo publica `main`** (`build_type: legacy`, raíz). Una rama nueva da enlaces de
   código, pero no una página pública. Cambiar eso tocaría el sitio de ICOKG. Por eso, con el visto
   bueno de Gabriel, la versión extendida se publica en el repositorio `Data_Warehouse_ZMVM`.
+- **Autores en IJCOPI (revisado el 31 oct en sus páginas de envíos y de ética).** No fija límite ni
+  reglas para agregar autores o cambiar su orden, y dice seguir a COPE. Su número actual (vol. 18,
+  núm. 1) tiene 28 artículos, con 3 a 7 autores; lo más frecuente son 6. COPE pide que todos los
+  autores acepten por escrito. El correo de invitación no menciona autores nuevos: conviene
+  confirmarlo con `icokg@correo.buap.mx` antes de enviar.
+- **La IA debe declararse.** IJCOPI pide declararla siempre que se use para redactar, editar,
+  traducir, resumir o apoyar el análisis, y advierte: "Failure to disclose relevant AI use may
+  result in rejection or retraction". La declaración de la v2 ya es breve, pero conserva lo
+  esencial, y no puede decir menos que la de Springer, que ya menciona redacción y scripts.
 - **Facturar poco no significa demandar poco.** Las 435 colonias bajo 10 l/hab/día reportan 4.15
   faltas de agua por mil habitantes, contra 4.93 del resto; Spearman de volumen contra reportes
   0.18 (`11_cruces_colonia.sql`, confirmado con scipy).
@@ -224,14 +235,14 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
   carga los bloques A, B y C1. La sección 0 del informe lista los errores que se corrigieron de
   su primera versión.
 - **Hecho (31 oct, rama `ijcopi-zmvm`):** ETL completo desde un clon, 13 consultas SQL, mapa nuevo
-  y v2 del artículo: 9,148 palabras (+63 % sobre la base de 5,615), 15 páginas, resumen de 149
-  palabras, título nuevo, sección 5.7 y Fig. 3 con capturas del mapa. El título es una propuesta
-  que Gabriel debe aprobar.
+  y v2 del artículo: 9,088 palabras (+62 % sobre la base de 5,615), 15 páginas, resumen de 149
+  palabras, sección 5.7 y Fig. 3 con capturas del mapa. Gabriel aprobó el título nuevo.
+  En el mapa, la CDMX va en verde, el color del mapa original, y lo agregado en morado.
 - **Trabajo 37:** tiene su base en Word en `PublicMunicipalWorks_DWH/paper/ijcopi/`;
   falta extenderlo.
 - **Sin revisar por humanos:** el texto nuevo de la v1 y de la v2, los informes de datos, el
-  almacén ampliado y el mapa. La declaración de IA de la v2 dice que los autores verificaron las
-  cifras: debe ser cierto antes de enviar.
+  almacén ampliado y el mapa. La declaración de IA de la v2 dice que los autores revisaron y
+  aprobaron el texto: debe ser cierto antes de enviar.
 
 ### Pendientes conocidos
 
@@ -267,7 +278,8 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
 4. [x] Artículo v2 con capturas del mapa, todo lo agregado en amarillo y título nuevo.
 5. [x] Publicado el 31 oct en `Data_Warehouse_ZMVM`, con su propio Pages. El artículo ya trae el
    mapa en la sección 5.7 y el repositorio en el Data Availability Statement.
-6. [ ] Revisión humana del texto nuevo y aprobación del título antes del 9 de noviembre.
+6. [ ] Antes del 9 de noviembre: revisión humana del texto nuevo y acuerdo de los coautores con
+   el orden de autores. Si Gabriel agrega un autor, confirmarlo antes con los editores.
 7. [ ] Cuando el texto quede aprobado: release `v2.0-ijcopi`, poner ese enlace en el artículo y
    regenerar la v2. Cada push al repositorio de trabajo necesita antes la autorización de
    Gabriel por el 403 de la ADIP (regla 2).
@@ -314,4 +326,6 @@ retomar el cubo, sigue la sección 4.4 del informe.
   con resultados idénticos byte por byte. Con la autorización de Gabriel, y con el 403 de la ADIP
   como único fallo, creó `Data_Warehouse_ZMVM`, activó su Pages y subió la rama. Quitó del historial
   local el enlace a un borrador de Gmail antes de publicar. Comprobó en línea los 13 hashes; `main`
-  siguió en `f404787` y el tag v1.5 en `c4de86d`.
+  siguió en `f404787` y el tag v1.5 en `c4de86d`. Después, a pedido de Gabriel: marca metropolitana
+  en el sitio público, verde para la CDMX y morado para lo agregado, Gabriel como primer autor y
+  declaración de IA más breve. El título quedó aprobado.

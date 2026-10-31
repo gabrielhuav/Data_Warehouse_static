@@ -23,8 +23,11 @@ git -C $raiz -c core.autocrlf=false archive -o $tar $Rama -- @rutas
 tar -xf $tar -C $Destino
 Remove-Item $tar
 
+py -3 -I (Join-Path $Destino "ijcopi\ajustes_publicos.py") $Destino
+if ($LASTEXITCODE -ne 0) { throw "no se pudo ajustar la copia publica" }
 Move-Item -Force (Join-Path $Destino "ijcopi\README_publico.md") (Join-Path $Destino "README.md")
 Remove-Item (Join-Path $Destino "ijcopi\publicar.ps1")
+Remove-Item (Join-Path $Destino "ijcopi\ajustes_publicos.py")
 Remove-Item (Join-Path $Destino "scripts\verificar_enlaces_springer.ps1")
 # Sin esto, Jekyll procesaria los .md del repositorio y podria fallar la publicacion
 New-Item -ItemType File (Join-Path $Destino ".nojekyll") | Out-Null

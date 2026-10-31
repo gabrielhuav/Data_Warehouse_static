@@ -23,6 +23,7 @@
       'o.titulo': 'De dónde sale esta capa', 'o.versql': 'Ver la consulta SQL',
       'o.texto': 'Resultado de {sql}: {filas} filas, exportadas el {fecha}. SHA-256 {hash}…',
       'o.cmd': 'Para ver lo mismo en la base de datos:',
+      'z.cdmx': 'Ciudad de México ({n} alcaldías)', 'z.zm': 'Agregado: Edomex e Hidalgo ({n} municipios)',
       cargando: 'Cargando datos del almacén…', error: 'No se pudieron cargar los datos: {msg}',
       sindato: 'Sin dato', atipico: 'Valor atípico', 'ley.acu': 'Acuíferos: extracción / recarga',
       'ley.pozos': 'Pozos: cambio de nivel 2010-2019', 'ley.presas': 'Presas', 'ley.calidad': 'Calidad del agua',
@@ -53,6 +54,7 @@
       'o.titulo': 'Where this layer comes from', 'o.versql': 'Show the SQL query',
       'o.texto': 'Result of {sql}: {filas} rows, exported on {fecha}. SHA-256 {hash}…',
       'o.cmd': 'To see the same result in the database:',
+      'z.cdmx': 'Mexico City ({n} boroughs)', 'z.zm': 'Added: State of Mexico and Hidalgo ({n} municipalities)',
       cargando: 'Loading warehouse data…', error: 'The data could not be loaded: {msg}',
       sindato: 'No data', atipico: 'Atypical value', 'ley.acu': 'Aquifers: extraction / recharge',
       'ley.pozos': 'Wells: level change 2010-2019', 'ley.presas': 'Dams', 'ley.calidad': 'Water quality',
@@ -74,49 +76,51 @@
     },
   };
 
-  const PALETA = {
-    azul: ['#deebf7', '#9ecae1', '#4292c6', '#2171b5', '#08306b'],
-    rojo: ['#fee5d9', '#fcae91', '#fb6a4a', '#de2d26', '#a50f15'],
-    verde: ['#e0f2f1', '#80cbc4', '#26a69a', '#00897b', '#004d40'],
-    hundimiento: ['#7f0000', '#e34a33', '#fdbb84', '#f7f7f7', '#6baed6'],
+  /* Dos familias de color: verde para la CDMX, el del mapa original, y morado para lo agregado.
+     Tambien distingue fuentes: el volumen de cada lado del limite no se mide igual. */
+  const TONOS = {
+    cdmx: ['#e0f2f1', '#80cbc4', '#26a69a', '#00897b', '#004d40'],
+    zm: ['#f3e5f5', '#ce93d8', '#ab47bc', '#7b1fa2', '#4a148c'],
   };
+  const BORDE = { cdmx: '#00695c', zm: '#6a1b9a' };
+  const zona = r => (String(r.cve_mun).startsWith('09') ? 'cdmx' : 'zm');
   const COL_SEQUIA = { '-1': '#f2f2f2', 0: '#ffff00', 1: '#fcd37f', 2: '#ffaa00', 3: '#e60000', 4: '#730000' };
-  const COL_GM = { 'Muy bajo': '#2c7bb6', Bajo: '#abd9e9', Medio: '#ffffbf', Alto: '#fdae61', 'Muy alto': '#d7191c' };
+  const GRADOS = ['Muy bajo', 'Bajo', 'Medio', 'Alto', 'Muy alto'];
   const COL_CAL = { ROJO: '#c0392b', AMARILLO: '#f1c40f', VERDE: '#27ae60' };
 
   const INDICADORES = [
-    { id: 'm_litros', capa: 'municipio', campo: 'litros_hab_dia_dom', paleta: 'azul', consulta: '03_municipios_zm', calidad: true,
+    { id: 'm_litros', capa: 'municipio', campo: 'litros_hab_dia_dom', consulta: '03_municipios_zm', calidad: true,
       es: 'Litros facturados por habitante al día', en: 'Billed litres per inhabitant per day',
       nes: 'Alcaldías: SACMEX, enero-junio de 2019, anualizado. Demás municipios: CNGMD 2018. Es facturación doméstica, no consumo. La fuente mide distinto a cada lado del límite.',
       nen: 'Boroughs: SACMEX, January-June 2019, annualised. Other municipalities: CNGMD 2018. This is domestic billing, not use, and the source differs across the boundary.' },
-    { id: 'm_viv', capa: 'municipio', campo: 'pct_viv_agua_dentro', paleta: 'azul', consulta: '03_municipios_zm',
+    { id: 'm_viv', capa: 'municipio', campo: 'pct_viv_agua_dentro', consulta: '03_municipios_zm',
       es: 'Viviendas con agua entubada dentro (%)', en: 'Dwellings with piped water inside (%)',
       nes: 'Censo 2020, ITER.', nen: '2020 Census, ITER.' },
-    { id: 'm_recaud', capa: 'municipio', campo: 'recaudacion_pc_2018', paleta: 'verde', consulta: '03_municipios_zm',
+    { id: 'm_recaud', capa: 'municipio', campo: 'recaudacion_pc_2018', consulta: '03_municipios_zm',
       es: 'Recaudación por agua por habitante, 2018 (pesos)', en: 'Water revenue per inhabitant, 2018 (pesos)',
       nes: 'SHCP. La CDMX se reporta como entidad, no por alcaldía.', nen: 'SHCP. Mexico City is reported as a whole, not by borough.' },
-    { id: 'm_vlm', capa: 'municipio', campo: 'vlm_cm_anio', paleta: 'hundimiento', cortes: [-15, -5, -1, 1], consulta: '03_municipios_zm',
+    { id: 'm_vlm', capa: 'municipio', campo: 'vlm_cm_anio', invertir: true,cortes: [-15, -5, -1, 1], consulta: '03_municipios_zm',
       es: 'Movimiento vertical del terreno (cm/año)', en: 'Vertical land motion (cm/year)',
       nes: 'InSAR 2014-2020 (Khorrami et al.). Negativo: el terreno se hunde.', nen: 'InSAR 2014-2020 (Khorrami et al.). Negative: the ground is sinking.' },
     { id: 'm_sequia', capa: 'municipio', sequia: true, consulta: '09_sequia_zm',
       es: 'Sequía (Monitor de Sequía de México)', en: 'Drought (Mexican Drought Monitor)',
       nes: 'SMN-CONAGUA. Mueve la fecha: hay 437 cortes desde 2003.', nen: 'SMN-CONAGUA. Move the date: there are 437 readings since 2003.' },
-    { id: 'c_sinagua', capa: 'colonia', campo: 'pct_sin_agua', paleta: 'rojo', cortes: [0.5, 2, 5, 15], consulta: '04_colonias_zm',
+    { id: 'c_sinagua', capa: 'colonia', campo: 'pct_sin_agua', cortes: [0.5, 2, 5, 15], consulta: '04_colonias_zm',
       es: 'Ocupantes sin agua entubada (%)', en: 'Occupants without piped water (%)',
       nes: 'CONAPO 2020. Cubre toda la ZM, también fuera de la CDMX.', nen: 'CONAPO 2020. Covers the whole metropolitan area, also outside Mexico City.' },
-    { id: 'c_gm', capa: 'colonia', campo: 'gm_2020', categorias: COL_GM, consulta: '04_colonias_zm',
+    { id: 'c_gm', capa: 'colonia', campo: 'gm_2020', categorias: GRADOS, consulta: '04_colonias_zm',
       es: 'Grado de marginación urbana', en: 'Urban marginalisation level',
       nes: 'CONAPO 2020. Cubre toda la ZM.', nen: 'CONAPO 2020. Covers the whole metropolitan area.' },
-    { id: 'c_falta', capa: 'colonia', campo: 'falta_por_mil_hab', paleta: 'rojo', consulta: '04_colonias_zm',
+    { id: 'c_falta', capa: 'colonia', campo: 'falta_por_mil_hab', consulta: '04_colonias_zm',
       es: 'Reportes de falta de agua por mil habitantes, ene-jun 2019', en: 'Water shortage reports per thousand inhabitants, Jan-Jun 2019',
       nes: 'Solo CDMX. Agua potable. Mide lo que se reporta, no lo que falta.', nen: 'Mexico City only. Drinking water. It measures what is reported, not what is missing.' },
-    { id: 'c_fugas', capa: 'colonia', campo: 'fugas_por_mil_hab', paleta: 'rojo', consulta: '04_colonias_zm',
+    { id: 'c_fugas', capa: 'colonia', campo: 'fugas_por_mil_hab', consulta: '04_colonias_zm',
       es: 'Reportes de fuga por mil habitantes, 2021-2024', en: 'Leak reports per thousand inhabitants, 2021-2024',
       nes: 'Solo CDMX. La fuente no registra fugas antes de 2021.', nen: 'Mexico City only. The source records no leaks before 2021.' },
-    { id: 'c_litros', capa: 'colonia', campo: 'litros_hab_dia_dom', paleta: 'azul', consulta: '04_colonias_zm',
+    { id: 'c_litros', capa: 'colonia', campo: 'litros_hab_dia_dom', consulta: '04_colonias_zm',
       es: 'Litros facturados por habitante al día', en: 'Billed litres per inhabitant per day',
       nes: 'Solo CDMX, enero-junio de 2019. Es facturación, no consumo.', nen: 'Mexico City only, January-June 2019. This is billing, not use.' },
-    { id: 'c_vlm', capa: 'colonia', campo: 'vlm_cm_anio', paleta: 'hundimiento', cortes: [-15, -5, -1, 1], consulta: '04_colonias_zm',
+    { id: 'c_vlm', capa: 'colonia', campo: 'vlm_cm_anio', invertir: true,cortes: [-15, -5, -1, 1], consulta: '04_colonias_zm',
       es: 'Movimiento vertical del terreno (cm/año)', en: 'Vertical land motion (cm/year)',
       nes: 'Solo CDMX. InSAR 2014-2020. Negativo: el terreno se hunde.', nen: 'Mexico City only. InSAR 2014-2020. Negative: the ground is sinking.' },
   ];
@@ -134,7 +138,7 @@
   /* Una tabla exportada, como objetos */
   const filas = d => d.filas.map(f => Object.fromEntries(d.columnas.map((c, i) => [c, f[i]])));
 
-  let mapa, lienzo, capaBase = null, estado = { ind: 'm_litros', fecha: 0, capas: new Set() };
+  let mapa, lienzo, capaBase = null, contorno = null, estado = { ind: 'm_litros', fecha: 0, capas: new Set() };
   const D = {}, extras = {}, cortesCache = {};
 
   /* Cortes por quintiles, redondeados para que la leyenda se lea */
@@ -170,6 +174,12 @@
     return i;
   }
 
+  /* Tono de la clase i de n, en la familia de color de esa zona */
+  function tono(ind, i, n, z) {
+    const p = TONOS[z], k = Math.round(i * (p.length - 1) / Math.max(1, n - 1));
+    return p[ind.invertir ? p.length - 1 - k : k];
+  }
+
   function colorDe(ind, r) {
     if (ind.sequia) {
       const s = D.sequia[D.fechas[estado.fecha]] && D.sequia[D.fechas[estado.fecha]][r.cve_mun];
@@ -177,23 +187,35 @@
     }
     const v = r[ind.campo];
     if (v == null) return null;
-    if (ind.categorias) return ind.categorias[v] || null;
-    const p = PALETA[ind.paleta], n = cortes(ind).length + 1;
-    return p[Math.round(clase(ind, v) * (p.length - 1) / Math.max(1, n - 1))];
+    if (ind.categorias) return tono(ind, ind.categorias.indexOf(v), ind.categorias.length, zona(r));
+    return tono(ind, clase(ind, v), cortes(ind).length + 1, zona(r));
   }
 
   function estilo(ind, r) {
     const atipico = ind.calidad && r.calidad_volumen === 'atipico';
     const color = atipico ? '#ffffff' : colorDe(ind, r);
-    const col = ind.capa === 'colonia';
+    const col = ind.capa === 'colonia', z = zona(r);
     return {
       renderer: lienzo,
-      color: atipico ? '#c0392b' : col ? 'rgba(60,60,60,.3)' : '#37474f',
-      weight: atipico ? 2 : col ? 0.3 : 0.9,
+      color: atipico ? '#c0392b' : col ? 'rgba(60,60,60,.25)' : BORDE[z],
+      weight: atipico ? 2 : col ? 0.3 : z === 'cdmx' ? 1.5 : 0.9,
       dashArray: atipico ? '4 3' : null,
       fillColor: color || '#c9ced3',
-      fillOpacity: color ? 0.78 : 0.3,
+      fillOpacity: color ? 0.8 : 0.3,
     };
+  }
+
+  /* Sobre las colonias, los limites municipales dejan ver donde termina la CDMX */
+  function pintarContorno(ind) {
+    if (contorno) { mapa.removeLayer(contorno); contorno = null; }
+    if (ind.capa !== 'colonia') return;
+    contorno = L.geoJSON(coleccion('municipio', D.municipios, 'cve_mun'), {
+      interactive: false,
+      style: f => {
+        const z = zona(f.properties);
+        return { renderer: lienzo, fill: false, color: BORDE[z], weight: z === 'cdmx' ? 1.7 : 0.8 };
+      },
+    }).addTo(mapa);
   }
 
   function coleccion(capa, datos, clave) {
@@ -228,6 +250,7 @@
       },
     }).addTo(mapa);
     capaBase.bringToBack();
+    pintarContorno(ind);
     leyenda();
     origen();
   }
@@ -282,20 +305,29 @@
 
   /* ---- leyenda y paneles ---- */
   const fila = (color, texto, cls) => `<div class="zm-ley"><i class="${cls || ''}" style="${cls === 'linea' ? 'border-top-color' : 'background'}:${color}"></i>${esc(texto)}</div>`;
+  const clase2 = (colores, texto) => `<div class="zm-ley"><span class="par">${colores.map(c => `<i style="background:${c}"></i>`).join('')}</span>${esc(texto)}</div>`;
 
   function leyenda() {
     const ind = porId(estado.ind);
+    const datos = ind.capa === 'municipio' ? D.municipios : D.colonias;
+    const zonas = ind.sequia ? ['cdmx', 'zm'] : ['cdmx', 'zm'].filter(z => datos.some(r => zona(r) === z && r[ind.campo] != null));
+    const cuenta = z => D.municipios.filter(r => zona(r) === z).length;
     let h = `<p class="zm-ley-t">${esc(ind[idioma])}</p>`;
+    zonas.forEach(z => {
+      const texto = t('z.' + z, { n: cuenta(z) });
+      h += ind.sequia ? fila(BORDE[z], texto, 'linea') : fila(TONOS[z][3], texto);
+    });
+    h += '<div class="zm-ley-sep"></div>';
     if (ind.sequia) {
       [4, 3, 2, 1, 0, -1].forEach(s => { h += fila(COL_SEQUIA[s], t('sev.' + s)); });
     } else if (ind.categorias) {
-      Object.keys(ind.categorias).forEach(k => { h += fila(ind.categorias[k], t('gm.' + k)); });
+      ind.categorias.forEach((k, i) => { h += clase2(zonas.map(z => tono(ind, i, ind.categorias.length, z)), t('gm.' + k)); });
     } else {
-      const c = cortes(ind), p = PALETA[ind.paleta], n = c.length + 1;
+      const c = cortes(ind), n = c.length + 1;
       for (let i = 0; i < n; i++) {
         const de = i === 0 ? null : c[i - 1], a = i === n - 1 ? null : c[i];
         const txt = de == null ? `≤ ${fmt(a)}` : a == null ? `> ${fmt(de)}` : `${fmt(de)} – ${fmt(a)}`;
-        h += fila(p[Math.round(i * (p.length - 1) / Math.max(1, n - 1))], txt);
+        h += clase2(zonas.map(z => tono(ind, i, n, z)), txt);
       }
     }
     if (ind.calidad) h += `<div class="zm-ley"><i class="atipico"></i>${esc(t('atipico'))}</div>`;
@@ -515,7 +547,12 @@
 
     const c = (q.get('c') || '').split(',').map(Number);
     if (c.length === 3 && c.every(x => !isNaN(x))) mapa.setView([c[0], c[1]], c[2]);
-    else mapa.fitBounds(L.geoJSON(coleccion('municipio', D.municipios, 'cve_mun')).getBounds(), { padding: [12, 12] });
+    else {
+      /* En la vista de figura la leyenda queda abajo a la izquierda: el encuadre le deja ese lado */
+      const figura = document.documentElement.classList.contains('figura');
+      mapa.fitBounds(L.geoJSON(coleccion('municipio', D.municipios, 'cve_mun')).getBounds(),
+        figura ? { paddingTopLeft: [350, 10], paddingBottomRight: [10, 10] } : { padding: [12, 12] });
+    }
 
     (q.get('capas') || '').split(',').filter(n => ['acuiferos', 'pozos', 'presas', 'calidad'].includes(n)).forEach(n => {
       const caja = document.querySelector(`[data-capa="${n}"]`);

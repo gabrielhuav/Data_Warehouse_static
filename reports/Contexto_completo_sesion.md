@@ -27,6 +27,7 @@ decidió en la conversación, qué contiene la v1 y qué quedó sin verificar. L
 | Commits | En `ijcopi-zmvm`, conforme se avanza. Antes de cualquier push, ver la regla 2 |
 | Fusiones | Nada a `main` sin que él lo pida; ICOKG no se toca |
 | Rama de IJCOPI | Todo en una rama nueva y con enlaces nuevos; es su regla más importante |
+| Título y autores | Aprobó el título nuevo. En IJCOPI él firma primero y sigue como autor de correspondencia |
 | Correos y solicitudes | Mostrarle el texto y esperar su confirmación; nunca enviar antes |
 | Enlaces de Springer | No pueden cambiar ni dejar de funcionar, en ningún cambio futuro |
 | Versión base | La v0 queda idéntica a Springer; lo de cumplimiento va en la v1 y en amarillo |

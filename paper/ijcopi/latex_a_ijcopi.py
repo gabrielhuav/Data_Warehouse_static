@@ -929,6 +929,9 @@ autores = [
 ]
 for a in autores:
     assert a in tex, a
+# El orden de firma lo fija \author de cada .tex: la base conserva el de Springer.
+autores.sort(key=tex.index)
+ORDEN_NUEVO = autores[0] == "Gabriel Hurtado Avilés"
 
 p_titulo = Paragraph(elems[0], doc._body)
 for r in list(p_titulo.runs):
@@ -944,8 +947,12 @@ p_autores.alignment = WD_ALIGN_PARAGRAPH.CENTER
 for k, a in enumerate(autores):
     if k:
         p_autores.add_run(", " if k < len(autores) - 1 else " and ")
-    p_autores.add_run(a)
-    p_autores.add_run("1").font.superscript = True
+    nombre = p_autores.add_run(a)
+    indice = p_autores.add_run("1")
+    indice.font.superscript = True
+    if ORDEN_NUEVO and k == 0:
+        nombre.font.highlight_color = WD_COLOR_INDEX.YELLOW
+        indice.font.highlight_color = WD_COLOR_INDEX.YELLOW
 
 p_afil = Paragraph(elems[2], doc._body)
 p_afil.runs[1].text = " Escuela Superior de Cómputo (ESCOM), Instituto Politécnico Nacional, Mexico City, Mexico"
@@ -953,16 +960,29 @@ p_afil.runs[1].text = " Escuela Superior de Cómputo (ESCOM), Instituto Politéc
 p_correos = Paragraph(elems[3], doc._body)
 for r in list(p_correos.runs):
     r._r.getparent().remove(r._r)
+INSTITUCIONALES = "{evelazqueza1900, opulidom2000, egarcial2001, chernandezm1903}@alumno.ipn.mx"
+PERSONALES = "velazquez.arrieta.uriel@gmail.com, pulido.morales.omar@gmail.com"
+# Cada linea son trozos (texto, resaltado): los correos siguen el orden de firma.
 lineas_correo = [
-    "{evelazqueza1900, opulidom2000, egarcial2001, chernandezm1903}@alumno.ipn.mx",
-    "ghurtadoa@ipn.mx",
-    "velazquez.arrieta.uriel@gmail.com, pulido.morales.omar@gmail.com",
-    "egarlo@hotmail.com, claraahm11@gmail.com, gabrielhuav@gmail.com",
+    [(INSTITUCIONALES, False)],
+    [("ghurtadoa@ipn.mx", False)],
+    [(PERSONALES, False)],
+    [("egarlo@hotmail.com, claraahm11@gmail.com, gabrielhuav@gmail.com", False)],
 ]
+if ORDEN_NUEVO:
+    lineas_correo = [
+        [("ghurtadoa@ipn.mx", True)],
+        [(INSTITUCIONALES, False)],
+        [("gabrielhuav@gmail.com, ", True), (PERSONALES, False)],
+        [("egarlo@hotmail.com, claraahm11@gmail.com", False)],
+    ]
 for k, linea in enumerate(lineas_correo):
     if k:
         p_correos.add_run().add_break()
-    p_correos.add_run(linea)
+    for texto, resaltado in linea:
+        run = p_correos.add_run(texto)
+        if resaltado:
+            run.font.highlight_color = WD_COLOR_INDEX.YELLOW
 
 p_corr = Paragraph(elems[4], doc._body)
 assert p_corr.runs[-1].text == "Corresponding author:"
@@ -1065,13 +1085,16 @@ URL_RELEASE = "https://github.com/gabrielhuav/Data_Warehouse_static/releases/tag
 assert URL_RELEASE in tex
 # La version extendida se publica en su propio repositorio; los enlaces de ICOKG no cambian.
 URL_REPO = "https://github.com/gabrielhuav/Data_Warehouse_ZMVM"
-declaracion("Data Availability Statement:", [
+disponibilidad = [
     {"text": "The source files, the warehouse, the R2RML mapping, the scripts and the static demonstration are "
              "distributed in the archived release "},
-    {"text": URL_RELEASE, "link": URL_RELEASE}, {"text": "."},
-    {"text": " The extended warehouse, its verified manifest of sources, the SQL queries and the metropolitan map "
-             "are in the repository ", "hl": True},
-    {"text": URL_REPO, "link": URL_REPO, "hl": True}, {"text": ".", "hl": True}])
+    {"text": URL_RELEASE, "link": URL_RELEASE}, {"text": "."}]
+if URL_REPO.rsplit("/", 1)[1] in tex:
+    disponibilidad += [
+        {"text": " The extended warehouse, its verified manifest of sources, the SQL queries and the metropolitan map "
+                 "are in the repository ", "hl": True},
+        {"text": URL_REPO, "link": URL_REPO, "hl": True}, {"text": ".", "hl": True}]
+declaracion("Data Availability Statement:", disponibilidad)
 declaracion("Declaration on the Use of Generative AI:", parrafo_latex(decl_ia))
 declaracion("Conflicts of Interest:", parrafo_latex(interes))
 
@@ -1081,7 +1104,7 @@ encab = doc.sections[0].header
 for p in encab.paragraphs:
     for r in p.runs:
         if "Author et al." in r.text:
-            r.text = r.text.replace("Author et al.", "Velázquez Arrieta et al.")
+            r.text = r.text.replace("Author et al.", f"{'Hurtado Avilés' if ORDEN_NUEVO else 'Velázquez Arrieta'} et al.")
 doc.core_properties.title = "".join(r.get("text", "") for r in en_linea(titulo_art))
 doc.core_properties.author = ""
 doc.core_properties.last_modified_by = ""
