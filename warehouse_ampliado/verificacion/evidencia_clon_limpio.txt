@@ -1,21 +1,23 @@
 Prueba de reproduccion desde un clon limpio, 2026-10-31.
-Clon nuevo de la rama, entorno virtual nuevo desde requirements.txt, descarga de todas las fuentes
-y almacen construido en un contenedor aparte (puerto 5434), sin tocar el almacen de trabajo.
+Clon nuevo de la rama, entornos virtuales nuevos desde los requirements.txt y almacen construido
+en un contenedor aparte (puerto 5434), sin tocar el almacen de trabajo.
 
-## Descarga
+## Descarga de todas las fuentes desde su origen
 [D15] uniendo 3 partes de snapshots/partes/
 fallos: 0
 descargar exit: 0, minutos: 11.5
 
-## Construccion y verificacion
-clon en: 22dc1e8 Warn about long Windows paths when reproducing the ETL
+## Construccion y verificacion del almacen, el mapa y el grafo
+Con el codigo final se reutilizaron esas descargas, verificadas otra vez por hash.
+clon en: 58da0bf Extend the knowledge graph to the metropolitan area
 almacen original listo: True (70886 filas)
-ejecutar exit: 0, minutos: 2
+descargar exit: 0
+ejecutar exit: 0, minutos: 2.5
 verificaciones fallidas: 0
 verificar_ampliado exit: 0
-[OK ] 13 consultas, las mismas del manifiesto
-[OK ] 01_fuentes_cargadas: 93 filas, sha256 0846a632e532515b
-[OK ] 02_tablas_del_almacen: 43 filas, sha256 e294c6d0a715b79e
+[OK ] 15 consultas, las mismas del manifiesto
+[OK ] 01_fuentes_cargadas: 97 filas, sha256 dd1f613521434722
+[OK ] 02_tablas_del_almacen: 45 filas, sha256 aa57bf33c7e57b44
 [OK ] 03_municipios_zm: 63 filas, sha256 3b54880dbbfbd5dd
 [OK ] 04_colonias_zm: 5,830 filas, sha256 26fc327d74f60367
 [OK ] 05_acuiferos_zm: 10 filas, sha256 10f8fd584b62170d
@@ -27,7 +29,36 @@ verificar_ampliado exit: 0
 [OK ] 11_cruces_colonia: 8 filas, sha256 3f168f9eab9b576d
 [OK ] 12_geometrias: 5,903 filas, sha256 5cfde44bee55bfec
 [OK ] 13_sin_agua_zm: 3 filas, sha256 2c831dfab5482b0c
+[OK ] 14_vecinos_municipio: 326 filas, sha256 8bcb2f5c94cfcfbd
+[OK ] 15_frontera_cdmx: 8 filas, sha256 763b01c64836ea97
 verificaciones fallidas: 0
 verificar_mapa exit: 0
+[OK ] tripletas publicadas: 82,393
+[OK ] sha256 de las tripletas 9a267d255cfb5c8f
+[OK ] materializar de nuevo desde el almacen da el mismo grafo
+[OK ] agua:Municipality: 63 instancias, igual que la base
+[OK ] agua:Aquifer: 10 instancias, igual que la base
+[OK ] agua:Neighbourhood: 5,830 instancias, igual que la base
+[OK ] sharesBoundaryWith: 326 tripletas, igual que puente_municipio_vecino
+[OK ] sharesBoundaryWith es simetrica
+[OK ] geosparql#sfTouches: 31,020 tripletas, igual que puente_colonia_vecina
+[OK ] geosparql#sfTouches es simetrica
+[OK ] literales nulos convertidos en dato: 0
+[OK ] enlaces a recursos nulos: 0
+[OK ] municipios con volumen: 39 de 63; el resto no tiene la propiedad
+[OK ] 01_frontera_cdmx: 18 filas
+[OK ] 02_sin_volumen_sobreexplotado: 27 filas
+[OK ] 03_colonias_frontera: 11 filas
+[OK ] 04_hundimiento_frontera: 5 filas
+[OK ] 05_acuiferos_municipios: 10 filas
+[OK ] 06_pozos_hundimiento: 3 filas
+[OK ] 07_enlace_icokg: 16 filas
+[OK ] 08_composicion: 11 filas
+[OK ] la frontera de la CDMX coincide en SPARQL y SQL: 18 pares
+[OK ] touchesAcrossCityLimit es igual al recorrido completo de sfTouches: 169 pares
+[OK ] colonias del grafo original enlazadas: 1,532
+verificaciones fallidas: 0
+verificar_grafo exit: 0
 
-Los sha256 son los de ijcopi/datos/manifiesto.json: el almacen reconstruido devuelve lo mismo, byte por byte.
+Los sha256 son los de ijcopi/datos/manifiesto.json y ijcopi/datos/grafo.json: el almacen
+reconstruido devuelve las mismas consultas, byte por byte, y el mismo grafo.
