@@ -52,6 +52,7 @@ i18n = poner(i18n, "titulo.panel", f"Panel CDMX — {MARCA_ES}", f"CDMX dashboar
 i18n = poner(i18n, "titulo.mapa", f"Mapa CDMX — {MARCA_ES}", f"CDMX map — {MARCA_EN}")
 i18n = poner(i18n, "titulo.grafo", f"Grafo CDMX — {MARCA_ES}", f"CDMX graph — {MARCA_EN}")
 i18n = poner(i18n, "titulo.vecindad", f"Vecindad CDMX — {MARCA_ES}", f"CDMX adjacency — {MARCA_EN}")
+i18n = poner(i18n, "tema.guinda", "Guinda", "Maroon")
 i18n = poner(i18n, "nav.index", "Panel CDMX", "CDMX dashboard")
 i18n = poner(i18n, "nav.mapa", "Mapa CDMX", "CDMX map")
 i18n = poner(i18n, "nav.grafo", "Grafo CDMX", "CDMX graph")

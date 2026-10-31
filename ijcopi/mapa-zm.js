@@ -24,6 +24,9 @@
       'o.texto': 'Resultado de {sql}: {filas} filas, exportadas el {fecha}. SHA-256 {hash}…',
       'o.cmd': 'Para ver lo mismo en la base de datos:',
       'z.cdmx': 'Ciudad de México ({n} alcaldías)', 'z.zm': 'Agregado: Edomex e Hidalgo ({n} municipios)',
+      'nota.color': 'Un color más intenso solo indica un valor más alto entre los datos disponibles; no prueba que ahí se consuma más agua.',
+      'nota.cobertura': 'Con dato: {n} de {total}.',
+      'nota.fuentes': 'La CDMX y los demás municipios se miden con fuentes distintas, así que sus colores no se comparan entre sí.',
       cargando: 'Cargando datos del almacén…', error: 'No se pudieron cargar los datos: {msg}',
       sindato: 'Sin dato', atipico: 'Valor atípico', 'ley.acu': 'Acuíferos: extracción / recarga',
       'ley.pozos': 'Pozos: cambio de nivel 2010-2019', 'ley.presas': 'Presas', 'ley.calidad': 'Calidad del agua',
@@ -55,6 +58,9 @@
       'o.texto': 'Result of {sql}: {filas} rows, exported on {fecha}. SHA-256 {hash}…',
       'o.cmd': 'To see the same result in the database:',
       'z.cdmx': 'Mexico City ({n} boroughs)', 'z.zm': 'Added: State of Mexico and Hidalgo ({n} municipalities)',
+      'nota.color': 'A stronger colour only marks a higher value among the available data; it does not prove that more water is used there.',
+      'nota.cobertura': 'With data: {n} of {total}.',
+      'nota.fuentes': 'Mexico City and the other municipalities are measured with different sources, so their colours cannot be compared.',
       cargando: 'Loading warehouse data…', error: 'The data could not be loaded: {msg}',
       sindato: 'No data', atipico: 'Atypical value', 'ley.acu': 'Aquifers: extraction / recharge',
       'ley.pozos': 'Wells: level change 2010-2019', 'ley.presas': 'Dams', 'ley.calidad': 'Water quality',
@@ -332,6 +338,12 @@
     }
     if (ind.calidad) h += `<div class="zm-ley"><i class="atipico"></i>${esc(t('atipico'))}</div>`;
     if (!ind.categorias || ind.capa === 'colonia') h += fila('#c9ced3', t('sindato'));
+    if (!ind.sequia) {
+      const n = datos.filter(r => r[ind.campo] != null).length;
+      let nota = `${t('nota.color')} ${t('nota.cobertura', { n: fmt(n, 0), total: fmt(datos.length, 0) })}`;
+      if (ind.calidad) nota += ` ${t('nota.fuentes')}`;
+      h += `<p class="zm-ley-nota">${esc(nota)}</p>`;
+    }
     if (estado.capas.has('acuiferos')) {
       h += `<p class="zm-ley-sub">${esc(t('ley.acu'))}</p>` + fila('#b71c1c', t('acu.alto'), 'linea') + fila('#ef6c00', t('acu.medio'), 'linea') + fila('#1565c0', t('acu.bajo'), 'linea');
     }

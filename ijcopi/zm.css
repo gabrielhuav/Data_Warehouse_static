@@ -28,6 +28,7 @@
 .zm-ley i{width:16px; height:14px; flex:none; border:1px solid rgba(0,0,0,.25); border-radius:2px}
 .zm-ley .par{display:inline-flex; gap:2px; flex:none}
 .zm-ley-sep{height:.45rem}
+.zm-ley-nota{margin:.6rem 0 0; padding:.5rem .6rem; border-left:3px solid var(--acento-500); background:var(--superficie-2); color:var(--texto-2); font-size:.76rem; line-height:1.35}
 .zm-ley i.punto{width:11px; height:11px; border-radius:50%}
 .zm-ley i.linea{height:0; border:0; border-top:3px solid}
 .zm-ley i.atipico{background:#fff; border:2px dashed #c0392b}
@@ -56,7 +57,7 @@ pre.zm-pre,.zm-origen pre,.zm-card pre,.zm-sql pre{background:var(--superficie-2
 .zm-etiqueta{background:transparent; border:0; box-shadow:none; color:#123; font-size:11px; font-weight:700; text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff}
 
 /* Vista limpia para las figuras del articulo: ?vista=figura */
-html.figura .barra,html.figura .pie,html.figura .zm-cabecera,html.figura .zm-control,html.figura .zm-origen,html.figura #detalle,html.figura .status,html.figura .mapa-teselas,html.figura .leaflet-control-zoom{display:none !important}
+html.figura .barra,html.figura .pie,html.figura .zm-cabecera,html.figura .zm-control,html.figura .zm-origen,html.figura #detalle,html.figura .status,html.figura .mapa-teselas,html.figura .leaflet-control-zoom,html.figura .zm-ley-nota{display:none !important}
 html.figura .leaflet-tile-pane{opacity:.6}
 html.figura .app-container{max-width:none; padding:0}
 html.figura .zm-rejilla{display:block}
