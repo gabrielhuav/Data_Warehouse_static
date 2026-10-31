@@ -1,7 +1,7 @@
-Evidencia del mapa, generada 2026-10-31 19:43 UTC
-Exportacion comprobada: 2026-10-31 19:43 UTC
+Evidencia del mapa, generada 2026-10-31 19:48 UTC
+Exportacion comprobada: 2026-10-31 19:48 UTC
 
-[OK ] 12 consultas, las mismas del manifiesto
+[OK ] 13 consultas, las mismas del manifiesto
 [OK ] 01_fuentes_cargadas: 93 filas, sha256 0846a632e532515b
 [OK ] 02_tablas_del_almacen: 43 filas, sha256 e294c6d0a715b79e
 [OK ] 03_municipios_zm: 63 filas, sha256 3b54880dbbfbd5dd
@@ -14,5 +14,6 @@ Exportacion comprobada: 2026-10-31 19:43 UTC
 [OK ] 10_calidad_zm: 133 filas, sha256 cd8bd2d499c77d68
 [OK ] 11_cruces_colonia: 8 filas, sha256 3f168f9eab9b576d
 [OK ] 12_geometrias: 5,903 filas, sha256 5cfde44bee55bfec
+[OK ] 13_sin_agua_zm: 3 filas, sha256 2c831dfab5482b0c
 
 verificaciones fallidas: 0

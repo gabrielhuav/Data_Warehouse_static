@@ -1,5 +1,5 @@
 {
- "generado_en": "2026-10-31 19:43 UTC",
+ "generado_en": "2026-10-31 19:48 UTC",
  "consultas": [
   {
    "consulta": "01_fuentes_cargadas.sql",
@@ -203,6 +203,21 @@
    ],
    "sha256_consulta": "52fc3c8e2c8c0101a9b2a964b71ad08b66525847a2237547318ce83f973ac1ae",
    "sha256_datos": "5cfde44bee55bfec5b959400353ee4c4aad0b3ce7d11261ad139f29425c32695"
+  },
+  {
+   "consulta": "13_sin_agua_zm.sql",
+   "datos": "13_sin_agua_zm.json",
+   "filas": 3,
+   "columnas": [
+    "nom_ent",
+    "colonias",
+    "poblacion",
+    "personas_sin_agua",
+    "colonias_mas_de_5_pct",
+    "poblacion_mas_de_5_pct"
+   ],
+   "sha256_consulta": "2fa2c2f1ff109811060e10a46f420443322c05f524395b1153688ca776663883",
+   "sha256_datos": "2c831dfab5482b0cf2c9cf3eb5a7a6e5ba7c05e9daa68fe5c9e779cd3ad94055"
   }
  ]
 }

@@ -54,7 +54,8 @@ pre.zm-pre,.zm-origen pre,.zm-card pre,.zm-sql pre{background:var(--superficie-2
 .zm-etiqueta{background:transparent; border:0; box-shadow:none; color:#123; font-size:11px; font-weight:700; text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff}
 
 /* Vista limpia para las figuras del articulo: ?vista=figura */
-html.figura .barra,html.figura .pie,html.figura .zm-cabecera,html.figura .zm-control,html.figura .zm-origen,html.figura #detalle,html.figura .status,html.figura .mt-control{display:none !important}
+html.figura .barra,html.figura .pie,html.figura .zm-cabecera,html.figura .zm-control,html.figura .zm-origen,html.figura #detalle,html.figura .status,html.figura .mapa-teselas,html.figura .leaflet-control-zoom{display:none !important}
+html.figura .leaflet-tile-pane{opacity:.6}
 html.figura .app-container{max-width:none; padding:0}
 html.figura .zm-rejilla{display:block}
 html.figura .map-wrap{border:0; border-radius:0; min-height:0}

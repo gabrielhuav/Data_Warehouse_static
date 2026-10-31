@@ -215,11 +215,12 @@ línea; revísalas si ese número cambia.
 
 **Pedido de Gabriel del 31 oct, en curso en la rama `ijcopi-zmvm`:**
 
-1. [ ] ETL completo y reproducible: subir `colonias_imc2020_shp.zip` dividido en partes y
-   probarlo desde un clon limpio.
-2. [ ] Consultas SQL reales al almacén, con los comandos para verlas en la base de datos.
-3. [ ] Mapa nuevo en una ruta nueva, alimentado por esas mismas consultas, con una comprobación
-   de que lo que muestra es igual a lo que devuelve la base de datos.
+1. [ ] ETL completo y reproducible: `colonias_imc2020_shp.zip` ya está en
+   `warehouse_ampliado/snapshots/partes/` y `descargar.py` lo reconstruye. Falta terminar la
+   prueba desde un clon limpio (hay uno bajando datos en el scratchpad de la sesión).
+2. [x] Consultas SQL reales al almacén en `warehouse_ampliado/consultas/`, con su `README.md`.
+3. [x] Mapa nuevo en `ijcopi/mapa-zm.html` y consultas en `ijcopi/consultas.html`, alimentados
+   por `etl/exportar_mapa.py`. `verificacion/verificar_mapa.py` repite cada consulta y compara.
 4. [ ] Artículo actualizado con capturas del mapa nuevo, todo lo agregado en amarillo y un título
    que deje ver la extensión. Máximo 15 páginas. Cada referencia nueva debe salir de
    `control_ingesta_fuentes`.
