@@ -44,8 +44,9 @@ almacén de datos y un grafo RDF sobre el consumo de agua de SACMEX en la CDMX,
 primer semestre de 2019. Es el trabajo **ID 38**. Autores: Eduardo Uriel Velázquez
 Arrieta, Omar Fernando Pulido Morales, Emilio García López, Clara Aide Hernández
 Martínez y Gabriel Hurtado Avilés (autor de correspondencia), todos de ESCOM-IPN. En la versión
-de IJCOPI, por decisión de Gabriel, él firma primero y sigue como autor de correspondencia. El
-orden de Springer no cambia.
+de IJCOPI, por decisión de Gabriel, él firma primero y sigue como autor de correspondencia; el
+segundo es el Dr. Roberto Eswart Zagal Flores (ESCOM-IPN, `rzagalf@ipn.mx`, ORCID
+0000-0001-5649-6189), y después los demás. El orden de Springer no cambia.
 
 Se invitó una versión extendida al número especial de IJCOPI (ISSN 2007-1558). La
 participación de los trabajos 37 y 38 ya se confirmó por correo el 13 de octubre.
@@ -107,7 +108,7 @@ py -3 verificar_amarillo.py dw_agua_IJCOPI_v0_base.docx dw_agua_IJCOPI_v3_grafo.
 
 Si alguien edita el `.docx` a mano, esa edición se pierde al regenerar. Mientras el
 texto siga cambiando, edita el `.tex`; pasa al Word solo en el ajuste final. Las
-diferencias "sin amarillo" que quedan (61 palabras) son renumeración, cortes de línea y el
+diferencias "sin amarillo" que quedan (62 palabras) son renumeración, cortes de línea y el
 reordenamiento de autores; revísalas si ese número cambia. La v3 ocupa las 15 páginas: cualquier
 figura nueva debe sustituir a otra. Una imagen no admite resaltado: las figuras nuevas
 llevan un marco amarillo, que pone `recuadro()` en el conversor.
@@ -248,7 +249,7 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
   carga los bloques A, B y C1. La sección 0 del informe lista los errores que se corrigieron de
   su primera versión.
 - **Hecho (31 oct, rama `ijcopi-zmvm`):** ETL completo desde un clon, 15 consultas SQL, mapa y grafo
-  nuevos, y v3 del artículo: 9,347 palabras (+66 % sobre la base de 5,615), 15 páginas, resumen de
+  nuevos, y v3 del artículo: 9,352 palabras (+67 % sobre la base de 5,615), 15 páginas, resumen de
   144 palabras, secciones 5.7 y 5.8 y Fig. 3 con el mapa y el grafo. El almacén tiene 2,794,184
   filas en 45 tablas y el grafo 82,393 tripletas. Gabriel aprobó el título nuevo.
   En el mapa, la CDMX va en verde, el color del mapa original, y lo agregado en morado.
@@ -294,11 +295,13 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
    mapa en la sección 5.7 y el repositorio en el Data Availability Statement.
 6. [ ] Antes del 9 de noviembre: revisión humana del texto nuevo, incluida la sección 5.8 y la
    sustitución del panel de colonias por el grafo en la Fig. 3, y acuerdo de los coautores con
-   el orden de autores. Si Gabriel agrega un autor, confirmarlo antes con los editores.
+   el orden de autores. Falta el aval por escrito de todos, incluido el Dr. Zagal, y confirmar su inclusión con los
+   editores. Revisar si deben citarse sus trabajos sobre agua en la CDMX (DOI
+   `10.1007/978-3-032-01723-9_9` y `10.1007/978-3-032-42081-7_6`): aún no se han leído.
 7. [ ] Cuando el texto quede aprobado: release `v2.0-ijcopi`, poner ese enlace en el artículo y
    regenerar la v2. Cada push al repositorio de trabajo necesita antes la autorización de
    Gabriel por el 403 de la ADIP (regla 2).
-8. [ ] Gabriel sube la rama por su cuenta a `origin/ijcopi-zmvm`; hazlo tú solo si lo autoriza.
+8. [ ] Cada push a `origin/ijcopi-zmvm` necesita la autorización de Gabriel, o que él lo haga.
    `Data_Warehouse_ZMVM` se actualiza con `ijcopi/publicar.ps1`: ese push no toca enlaces de Springer.
 
 **El cubo de datos sigue pospuesto.** Gabriel debe revisar la sección 0 del informe: varias
@@ -348,3 +351,4 @@ retomar el cubo, sigue la sección 4.4 del informe.
   declaración de IA más breve. El título quedó aprobado. Luego aclaró en el mapa qué significa el
   color, tradujo "Guinda" y expandió el grafo a la zona metropolitana con vecindad real por
   polígonos, mapeo R2RML y página propia, verificado contra la base y repetido desde un clon.
+  Agregó al Dr. Zagal como segundo autor, con ORCID y adscripción comprobados en ORCID y Crossref.

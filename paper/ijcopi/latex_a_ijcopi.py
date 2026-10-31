@@ -931,6 +931,9 @@ autores = [
 ]
 for a in autores:
     assert a in tex, a
+# Autor nuevo de la version extendida: la base de Springer no lo lleva.
+if "Roberto Eswart Zagal Flores" in tex:
+    autores.append("Roberto Eswart Zagal Flores")
 # El orden de firma lo fija \author de cada .tex: la base conserva el de Springer.
 autores.sort(key=tex.index)
 ORDEN_NUEVO = autores[0] == "Gabriel Hurtado Avilés"
@@ -952,7 +955,7 @@ for k, a in enumerate(autores):
     nombre = p_autores.add_run(a)
     indice = p_autores.add_run("1")
     indice.font.superscript = True
-    if ORDEN_NUEVO and k == 0:
+    if ORDEN_NUEVO and k < 2:
         nombre.font.highlight_color = WD_COLOR_INDEX.YELLOW
         indice.font.highlight_color = WD_COLOR_INDEX.YELLOW
 
@@ -973,7 +976,7 @@ lineas_correo = [
 ]
 if ORDEN_NUEVO:
     lineas_correo = [
-        [("ghurtadoa@ipn.mx", True)],
+        [("ghurtadoa@ipn.mx, rzagalf@ipn.mx", True)],
         [(INSTITUCIONALES, False)],
         [("gabrielhuav@gmail.com, ", True), (PERSONALES, False)],
         [("egarlo@hotmail.com, claraahm11@gmail.com", False)],
