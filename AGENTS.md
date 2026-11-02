@@ -200,6 +200,13 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
 - **Facturar poco no significa demandar poco.** Las 435 colonias bajo 10 l/hab/día reportan 4.15
   faltas de agua por mil habitantes, contra 4.93 del resto; Spearman de volumen contra reportes
   0.18 (`11_cruces_colonia.sql`, confirmado con scipy).
+- **Trabajos del grupo del Dr. Zagal, leídos solo en resumen (el texto completo es de pago).**
+  Hernández-Vázquez et al. (W2GIS 2025, LNCS 15946) funde SACMEX, INEGI y DENUE en un SIG con una
+  arquitectura por capas. Daowz Laguna et al. (W2GIS 2026, LNCS 17231, en línea el 18 oct) analiza
+  fugas de 2018 a 2024 con LLM y fuentes web. Su autor es Erwin Enrique Daowz Laguna según su
+  ORCID; Springer lo publicó invertido ("Enrique, D. L. E."), y aquí se cita con el nombre correcto.
+  Ese resumen habla de fugas desde 2018, pero los CSV públicos no traen ninguna en 2018-2020: la
+  primera es del 1 de enero de 2021 (recalculado el 1 nov). No se sabe cómo lo resuelve ese trabajo.
 
 ## Avisos técnicos
 
@@ -219,6 +226,9 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
 - En el navegador, Comunica se vuelve lento al unir predicados con miles de tripletas. Para eso están
   `agua:touchesAcrossCityLimit` y `agua:inMunicipality`. Mide cada `.rq` nuevo en `grafo-zm.html`.
 - Si `paper/ijcopi/` tiene un archivo `~$...`, Word tiene ese `.docx` abierto: no lo sobrescribas.
+- Recortar texto antes de una figura puede no liberar nada: Word deja el espacio como hueco al pie
+  de la página anterior. Mide dónde termina cada página antes de cortar; mover una figura un
+  párrafo puede ahorrar más que quitar texto.
 - Clona en una ruta corta: con una ruta muy larga, como el scratchpad de una sesión, las DLL de
   `shapely` no cargan en Windows.
 - `docker cp warehouse_ampliado/consultas/. data_warehouse_cdmx:/consultas` lleva `/.` a propósito:
@@ -249,12 +259,12 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
   carga los bloques A, B y C1. La sección 0 del informe lista los errores que se corrigieron de
   su primera versión.
 - **Hecho (31 oct, rama `ijcopi-zmvm`):** ETL completo desde un clon, 15 consultas SQL, mapa y grafo
-  nuevos, y v3 del artículo: 9,352 palabras (+67 % sobre la base de 5,615), 15 páginas, resumen de
+  nuevos, y v3 del artículo: 9,387 palabras (+67 % sobre la base de 5,615), 15 páginas, resumen de
   144 palabras, secciones 5.7 y 5.8 y Fig. 3 con el mapa y el grafo. El almacén tiene 2,794,184
   filas en 45 tablas y el grafo 82,393 tripletas. Gabriel aprobó el título nuevo.
   En el mapa, la CDMX va en verde, el color del mapa original, y lo agregado en morado.
-- **Trabajo 37:** tiene su base en Word en `PublicMunicipalWorks_DWH/paper/ijcopi/`;
-  falta extenderlo.
+- **Trabajo 37:** tiene su base en Word en `PublicMunicipalWorks_DWH/paper/ijcopi/` (11 páginas,
+  6,844 palabras); falta extenderlo, y el 1 nov Gabriel pidió un prompt para hacerlo en otra sesión.
 - **Sin revisar por humanos:** el texto nuevo de la v1 y de la v2, los informes de datos, el
   almacén ampliado y el mapa. La declaración de IA de la v2 dice que los autores revisaron y
   aprobaron el texto: debe ser cierto antes de enviar.
@@ -295,9 +305,10 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
    mapa en la sección 5.7 y el repositorio en el Data Availability Statement.
 6. [ ] Antes del 9 de noviembre: revisión humana del texto nuevo, incluida la sección 5.8 y la
    sustitución del panel de colonias por el grafo en la Fig. 3, y acuerdo de los coautores con
-   el orden de autores. Falta el aval por escrito de todos, incluido el Dr. Zagal, y confirmar su inclusión con los
-   editores. Revisar si deben citarse sus trabajos sobre agua en la CDMX (DOI
-   `10.1007/978-3-032-01723-9_9` y `10.1007/978-3-032-42081-7_6`): aún no se han leído.
+   el orden de autores. Falta el aval por escrito de todos, incluido el Dr. Zagal, y confirmar su
+   inclusión con los editores. Sus dos trabajos sobre agua ya se citan en la sección 2.3, a partir
+   de los resúmenes. Él debe confirmar esa descripción, que ninguno sea un almacén reproducible
+   sobre datos de SACMEX (la sección 2.8 afirma que no existe) y qué fuente da fugas antes de 2021.
 7. [ ] Cuando el texto quede aprobado: release `v2.0-ijcopi`, poner ese enlace en el artículo y
    regenerar la v2. Cada push al repositorio de trabajo necesita antes la autorización de
    Gabriel por el 403 de la ADIP (regla 2).
@@ -352,3 +363,6 @@ retomar el cubo, sigue la sección 4.4 del informe.
   color, tradujo "Guinda" y expandió el grafo a la zona metropolitana con vecindad real por
   polígonos, mapeo R2RML y página propia, verificado contra la base y repetido desde un clon.
   Agregó al Dr. Zagal como segundo autor, con ORCID y adscripción comprobados en ORCID y Crossref.
+- 2026-11-01, Claude (Claude Code, Opus 5.5): citó en la sección 2.3 los dos trabajos del Dr. Zagal
+  sobre agua, leídos en resumen, y comprobó en los CSV que no hay fugas antes de 2021. Para seguir
+  en 15 páginas movió la Fig. 2 un párrafo y condensó texto nuevo, sin quitar resultados.

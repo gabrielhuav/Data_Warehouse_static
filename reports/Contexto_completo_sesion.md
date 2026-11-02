@@ -73,8 +73,9 @@ También cambió lo siguiente:
   razonable, no exhaustiva.
 - **`medina2025`.** Se publicó en línea en 2024; se cita 2025 por el volumen 22(1).
 - **Referencia de ICOKG.** Está "in press", sin serie, volumen ni páginas.
-- **W2GIS 2025.** Hernández-Vázquez et al. es el competidor más cercano y aún no se cita; no se
-  pudo leer su resumen.
+- **W2GIS 2025 y 2026.** Hernández-Vázquez et al. y Daowz Laguna et al. ya se citan en la sección
+  2.3, solo a partir de sus resúmenes, porque el texto completo es de pago. El Dr. Zagal, coautor
+  de ambos, puede confirmar si alguno contradice lo que dice la sección 2.8 sobre almacenes previos.
 - **Data Availability Statement.** Apunta a `v1.5-icokg2026`, que no contiene los análisis
   nuevos. Hace falta un release nuevo; el v1.5 no se toca.
 

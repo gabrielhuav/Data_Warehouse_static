@@ -116,18 +116,15 @@ The contribution of this work is \icokg{threefold}: (i) a reproducible ETL proce
 The analysis of the 70,886 consolidated records reveals that the boroughs of Cuauht\'emoc and Miguel Hidalgo lead the total consumption (Table~\ref{tab:top5_alcaldias}), and that consumption varies across the available bimesters without a direct causal relationship with dry or rainy periods. \icokg{The system serves citizens querying their own neighbourhood, public servants diagnosing territorial demand, researchers, journalists and civil organisations monitoring water management.}
 
 \begin{nuevobloque}
-This article extends the version presented at ICOKG 2026~\cite{velazquez2026icokg}. It adds five
-elements. The first is an account of what a consumption value in the source actually is, taken from
-the publisher's clarifying note (Section~\ref{sec:grain}). The second measures, against the 2020
-Census, how much of the city's consumption the billed volumes in the export represent and how the
-borough ranking changes per inhabitant (Section~\ref{sec:percapita}). The third is a sensitivity analysis of the
-atypical-consumption module over the prevalence, composition and magnitude of the anomalies, which
-shows that the deployed statistic is structurally blind to consumption drops
-(Section~\ref{sec:sens}). The fourth is a diagnosis of the same statistic on the real data, with a
-log-scale variant and the evidence that each scale is biased in one direction
-(Section~\ref{sec:real}). The fifth extends the warehouse from the city to its metropolitan area
-and publishes the result in a map whose layers are verified SQL queries and in a knowledge graph
-that crosses the city boundary (Sections~\ref{sec:metro} and~\ref{sec:kgmetro}).
+This article extends the version presented at ICOKG 2026~\cite{velazquez2026icokg}. It adds an
+account of what a consumption value in the source actually is (Section~\ref{sec:grain}); a measure,
+against the 2020 Census, of how much of the city's consumption the billed volumes represent and of
+how the borough ranking changes per inhabitant (Section~\ref{sec:percapita}); a sensitivity analysis
+showing that the deployed atypical-consumption statistic is structurally blind to drops
+(Section~\ref{sec:sens}), with a diagnosis on the real data (Section~\ref{sec:real}); and the
+extension of the warehouse to the metropolitan area, published in a map whose layers are verified
+SQL queries and in a knowledge graph that crosses the city boundary (Sections~\ref{sec:metro}
+and~\ref{sec:kgmetro}).
 \end{nuevobloque}
 
 Section~\ref{sec:edo} reviews related work, Section~\ref{sec:met} describes the methodology, Section~\ref{sec:res} presents the results and Section~\ref{sec:con} the conclusions.
@@ -163,7 +160,13 @@ questions with data a reader cannot obtain from the portal. The present one
 addresses the complementary problem of making the open export itself queryable
 and verifiable, and what it finds about the billing basis and about colonias
 without billed volume (Sections~\ref{sec:grain} and~\ref{sec:real}) is consistent
-with the exclusions those studies apply.
+with the exclusions those studies apply. Closer in method, Hern\'andez-V\'azquez et
+al.~\cite{hernandez2026} fuse SACMEX, INEGI and DENUE data in a GIS, with a layered
+architecture for historic data, and cluster consumption from boroughs to
+neighbourhoods, and Daowz Laguna et al.~\cite{daowz2027} use large language models
+to turn citizen reports from social media and the web into features for analysing
+leak incidents. Both aim at spatial analysis; this work aims at a dimensional
+warehouse and a knowledge graph over the open sources.
 \end{nuevobloque}
 
 \subsection{The Gap: ETL over Heterogeneous Open Data and Data Quality}
@@ -582,9 +585,8 @@ by rota (\emph{tandeo}). That explanation
 is plausible but cannot be confirmed from the export alone. Either way, the open
 export is a faithful image of volumetric billing rather than of consumption, and
 Table~\ref{tab:top5_alcaldias} ranks billing coverage as much as demand. This is
-a question of validity rather than of completeness in the sense of open-data
-quality~\cite{vetro2016}: every record may be present and the measure still
-answer a different question from the one its title suggests. The table is
+a question of validity rather than of completeness~\cite{vetro2016}: every record
+may be present and the measure still answer a different question. The table is
 reproducible with \texttt{scripts/per\_capita\_alcaldia.py}.
 
 \begin{table}[tbp]
@@ -701,15 +703,6 @@ of spikes found weighted by the share of spikes injected, and it falls to 0.12
 when nine anomalies in ten are drops (Fig.~\ref{fig:sens}b and
 Table~\ref{tab:sens}).
 
-\begin{figure}[tbp]
-\centering
-\includegraphics[width=\textwidth]{figura_anomalias.png}
-\caption{Recall on injected spikes and drops under the published setting (a),
-and precision at the equalised operating point as the share of spikes varies (b).
-Mean over 20 seeds; bars and bands show one standard deviation.}
-\label{fig:sens}
-\end{figure}
-
 On a logarithmic scale a multiplicative drop and a multiplicative spike lie at
 symmetric distances from the mean, and log-$A_g$ removes the blindness: under
 the published setting it finds 71\,\% of spikes and 92\,\% of drops, raising
@@ -722,6 +715,15 @@ magnitude of the departure rather than the scale of the score. The comparison is
 not neutral, however: the synthetic consumption is log-normal by construction,
 which makes log-$A_g$ the matched statistic, so its synthetic margin is an upper
 bound. Section~\ref{sec:real} confronts both scores with the real distribution.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\textwidth]{figura_anomalias.png}
+\caption{Recall on injected spikes and drops under the published setting (a),
+and precision at the equalised operating point as the share of spikes varies (b).
+Mean over 20 seeds; bars and bands show one standard deviation.}
+\label{fig:sens}
+\end{figure}
 
 \begin{table}[tbp]
 \centering
@@ -804,8 +806,8 @@ Section~\ref{sec:percapita}. So does access: about 238,000 people in the metropo
 dwellings without piped water, and in Mexico City the five boroughs with the
 largest share of them are among the six with the lowest billed volume. Groundwater gives the
 physical context. The four aquifers beneath the urban area extract between 1.49 and 1.96 times
-their recharge, in wells read in both years the mean water table fell between 6.0 and 18.7 metres
-from 2010 to 2019, and mean land motion reaches $-$23.5~cm per year in Nezahualc\'oyotl.
+their recharge, and in wells read in both years the mean water table fell between 6.0 and 18.7
+metres from 2010 to 2019.
 
 \begin{figure}[tbp]
 \centering
@@ -929,8 +931,7 @@ against 20.3\,\% in Gustavo A. Madero, twelve points apart between boroughs whos
 totals differ by barely a third. Total consumption is therefore not a per-capita
 indicator and should not be used as one for allocating supply interventions; the
 per-account average, also stored, is the appropriate measure. \nuevo{The
-per-inhabitant figures of Section~\ref{sec:percapita} confirm the reordering and
-reveal, in addition, how unevenly volumetric billing covers the city.}
+per-inhabitant figures of Section~\ref{sec:percapita} confirm the reordering.}
 \end{icokgblock}
 
 \section{Conclusions and Future Work}
@@ -942,7 +943,7 @@ A data warehouse was presented for the territorial information retrieval of wate
 
 The findings reveal that water consumption in Mexico City is concentrated in the boroughs of Cuauht\'emoc and Miguel Hidalgo (Table~\ref{tab:top5_alcaldias})\nuevo{ in billed totals, although Benito Ju\'arez leads per inhabitant and volumetric billing captures little of the consumption of the eastern and southern periphery (Table~\ref{tab:percapita})}, and that it varies across the available bimesters without establishing in this work a causal relationship with dry or rainy periods.
 
-\icokg{The three central contributions ---the consolidation ETL, the validated graph layer derived from it, and the always-accessible demo methodology--- constitute} a replicable method for bringing heterogeneous official open data to queryable and verifiable territorial information. \nuevo{The extension adds a negative result with a practical consequence: as deployed, the atypical-consumption module can only report excess consumption; a log-scale score removes that blindness in synthetic tests, but on the real data it must be presented as separate lists for excess and deficit. Extending the warehouse to the 63 municipalities of the metropolitan area shows that municipal volumes need a quality filter before any comparison, and that low billing cannot be read as low demand.}
+\icokg{The three central contributions ---the consolidation ETL, the validated graph layer derived from it, and the always-accessible demo methodology--- constitute} a replicable method for bringing heterogeneous official open data to queryable and verifiable territorial information. \nuevo{The extension adds a negative result: as deployed, the atypical-consumption module can only report excess consumption, and on the real data a log-scale score must be presented as separate lists for excess and deficit. Extending the warehouse to the 63 municipalities of the metropolitan area shows that municipal volumes need a quality filter before any comparison, and that low billing cannot be read as low demand.}
 
 \begin{icokgblock}
 \subsection{Threats to Validity and Limitations}
@@ -954,20 +955,17 @@ three aggregated points, enough to describe a direction but not to estimate one.
 The second concerns the anomaly module, whose evaluation uses synthetic
 perturbations aligned with the detectors; its figures are an upper bound and say
 nothing about real leaks. \nuevo{The sensitivity analysis widens the injection model
-but not its family: anomalies remain multiplicative over a log-normal baseline,
-which favours the log-scale score.} The third is geometric: neighbourhoods are represented
+but not its log-normal family.} The third is geometric: neighbourhoods are represented
 by centroids rather than polygons, so the adjacency projected as
 \icokg{\texttt{agua:nearbyWithin1500m}} is proximity within 1.5~km and not shared boundaries. The
 fourth is descriptive: the association between development index and consumption
 is an observation over the warehouse, and attributing it to a socioeconomic
 mechanism would require an external source the warehouse does not
 integrate. \nuevo{The fifth is the billing basis and its coverage: values mix
-metered and averaged billing in a proportion the export does not disclose, and
-although they appear to cover nearly all volumetric billing, they add up to about
+metered and averaged billing in an undisclosed proportion and add up to about
 38\,\% of published per-capita consumption, with the gap concentrated in the
 periphery. Territorial contrasts and atypicality scores therefore describe billing,
-and coincide with physical use only where intakes are metered and billed by
-volume. The sixth concerns the metropolitan layers: they combine reference years from 2018 to 2020,
+and match physical use only where intakes are metered. The sixth concerns the metropolitan layers: they combine reference years from 2018 to 2020,
 the neighbourhood polygons are CONAPO's rather than the utility's, several joins rest on spatial
 proximity, and reports count what citizens file, not what is missing.}
 
@@ -976,8 +974,7 @@ proximity, and reports count what citizens file, not what is missing.}
 The most immediate line is to materialise the knowledge graph into a persistent
 triple store with a public SPARQL endpoint, and to replace the centroid-based
 adjacency with official neighbourhood polygons, which would make the topological
-predicates exact\nuevo{; the metropolitan graph does so with CONAPO's polygons, while the
-utility's own remain inaccessible}. Aligning the territorial identifiers with external authorities
+predicates exact\nuevo{; the metropolitan graph already does so with CONAPO's polygons}. Aligning the territorial identifiers with external authorities
 would let the resource be joined with other municipal datasets without prior
 schema agreement, which is the interoperability argument that motivates the graph
 layer. The anomaly module should be re-evaluated when labelled leak data exist\nuevo{,
@@ -1032,6 +1029,10 @@ The authors declare that they have no conflicts of interest relevant to the cont
 \bibitem{ramosbueno2021} Ramos-Bueno, A., Perevochtchikova, M., Chang, H.: Socio-spatial analysis of residential water demand in Mexico City. Tecnolog\'ia y Ciencias del Agua \textbf{12}(2), 59--110 (2021). \url{https://doi.org/10.24850/j-tyca-2021-02-02}
 
 \bibitem{ramosbueno2024} Ramos-Bueno, A., Galeana-Pizaña, J.M., Perevochtchikova, M.: Urban water consumption analysis through a spatial panel modeling approach: a case study of Mexico City, 2004--2022. Water Supply \textbf{24}(9), 3179--3195 (2024). \url{https://doi.org/10.2166/ws.2024.191}
+
+\bibitem{hernandez2026} Hern\'andez-V\'azquez, I., Luna-S\'anchez, A.J., Hurtado-Perez, A.B., Claramunt, C., Zagal-Flores, R., Mata, F.: Analyzing Water Consumption Patterns in Mexico City: A GIS and Data Science Approach. In: Mata-Rivera, M.F., Zagal-Flores, R., Siabato, W. (eds.) Web and Wireless Geographical Information Systems. W2GIS 2025. LNCS, vol. 15946, pp. 123--137. Springer, Cham (2026). \url{https://doi.org/10.1007/978-3-032-01723-9_9}
+
+\bibitem{daowz2027} Daowz Laguna, E.E., Mata-Rivera, M.F., Zagal, R., Claramunt, C., Hern\'andez-Nava, C.: Enhancing Spatio-Temporal Analysis of Urban Water Leak Reports Through LLM-Based Semantic Enrichment and Open Data: A Case Study of Mexico City. In: Peng, P., Jin, M. (eds.) Web and Wireless Geographical Information Systems. W2GIS 2026. LNCS, vol. 17231, pp. 62--76. Springer, Cham (2027). \url{https://doi.org/10.1007/978-3-032-42081-7_6}
 
 \bibitem{lippolis2025} Lippolis, A.S., Lodi, G., Nuzzolese, A.G.: The Water Health Open Knowledge Graph. Scientific Data \textbf{12}, 274 (2025). \url{https://doi.org/10.1038/s41597-025-04537-4}
 

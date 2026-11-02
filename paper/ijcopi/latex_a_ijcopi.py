@@ -63,6 +63,8 @@ CITAS = {
     "medina2025": (["Medina-Rivas", "Morales-Novelo", "Rodríguez-Tapia", "Revollo-Fernández"], "2025"),
     "ramosbueno2021": (["Ramos-Bueno", "Perevochtchikova", "Chang"], "2021"),
     "ramosbueno2024": (["Ramos-Bueno", "Galeana-Pizaña", "Perevochtchikova"], "2024"),
+    "hernandez2026": (["Hernández-Vázquez", "Luna-Sánchez", "Hurtado-Perez", "Claramunt", "Zagal-Flores", "Mata"], "2026"),
+    "daowz2027": (["Daowz Laguna", "Mata-Rivera", "Zagal", "Claramunt", "Hernández-Nava"], "2027"),
     "lippolis2025": (["Lippolis", "Lodi", "Nuzzolese"], "2025"),
     "inegi2021": (["Instituto Nacional de Estadística y Geografía"], "2021"),
     "infocdmx2022": (["INFO CDMX"], "2022"),
@@ -91,9 +93,9 @@ REFERENCIAS = {
         "International Conference on Ontologies and Knowledge Graphs (ICOKG 2026)*. Springer."
     ),
     "sacmex2026": (
-        "!SACMEX. (2026, August 28). *Consumo de agua: Consumo Agua (1° Semestre 2019)* [Data set, CSV, with data "
-        "dictionary and clarifying note]. Portal de Datos Abiertos de la Ciudad de México, Agencia Digital de "
-        "Innovación Pública. Retrieved October 18, 2026, from https://datos.cdmx.gob.mx/dataset/consumo-agua"
+        "!SACMEX. (2026, August 28). *Consumo de agua: Consumo Agua (1° Semestre 2019)* [Data set with data "
+        "dictionary and clarifying note]. Portal de Datos Abiertos de la Ciudad de México. Retrieved October 18, "
+        "2026, from https://datos.cdmx.gob.mx/dataset/consumo-agua"
     ),
     "liu2008": (
         "!Liu, F. T., Ting, K. M., & Zhou, Z.-H. (2008). Isolation forest. In *2008 Eighth IEEE International "
@@ -124,6 +126,19 @@ REFERENCIAS = {
         "through a spatial panel modeling approach: A case study of Mexico City, 2004–2022. *Water Supply, 24*(9), "
         "3179–3195. https://doi.org/10.2166/ws.2024.191"
     ),
+    "hernandez2026": (
+        "!Hernández-Vázquez, I., Luna-Sánchez, A. J., Hurtado-Perez, A. B., Claramunt, C., Zagal-Flores, R., & Mata, F. "
+        "(2026). Analyzing water consumption patterns in Mexico City: A GIS and data science approach. In M. F. "
+        "Mata-Rivera, R. Zagal-Flores, & W. Siabato (Eds.), *Web and wireless geographical information systems* "
+        "(LNCS, Vol. 15946, pp. 123–137). Springer. https://doi.org/10.1007/978-3-032-01723-9_9"
+    ),
+    # El nombre sale del ORCID 0009-0007-2619-8077; Springer lo publico invertido ("Enrique, D. L. E.").
+    "daowz2027": (
+        "!Daowz Laguna, E. E., Mata-Rivera, M. F., Zagal, R., Claramunt, C., & Hernández-Nava, C. (2027). Enhancing "
+        "spatio-temporal analysis of urban water leak reports through LLM-based semantic enrichment and open data: A "
+        "case study of Mexico City. In P. Peng & M. Jin (Eds.), *Web and wireless geographical information systems* "
+        "(LNCS, Vol. 17231, pp. 62–76). Springer. https://doi.org/10.1007/978-3-032-42081-7_6"
+    ),
     "inegi2021": (
         "!Instituto Nacional de Estadística y Geografía. (2021). *Censo de Población y Vivienda 2020: Principales "
         "resultados por localidad (ITER), Ciudad de México* [Data set, CSV]. INEGI. "
@@ -132,7 +147,7 @@ REFERENCIAS = {
     "infocdmx2022": (
         "!INFO CDMX [Instituto de Transparencia, Acceso a la Información Pública, Protección de Datos Personales y "
         "Rendición de Cuentas de la Ciudad de México]. (2022). *Resolución del recurso de revisión "
-        "INFOCDMX/RR.IP.0679/2022* (Sujeto obligado: Sistema de Aguas de la Ciudad de México). "
+        "INFOCDMX/RR.IP.0679/2022*. "
         "https://documentosobligaciones.infocdmx.org.mx/ST/LTAIPRC-2016-OT/Art133/Fr01/2022/T02-INFOCDMX.RR.IP.0679.2022.pdf"
     ),
     "lippolis2025": (
