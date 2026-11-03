@@ -89,6 +89,7 @@ participación de los trabajos 37 y 38 ya se confirmó por correo el 13 de octub
 | `reports/Datos abiertos de agua CDMX.md` | Informe de fuentes de datos, con plan ordenado por valor y esfuerzo |
 | `reports/Deep_Research_Ampliacion_DWH_IJCOPI.md` | Fuentes verificadas de la ampliación, correcciones a su primera versión, descartes y modelo implementado |
 | `reports/Contexto_completo_sesion.md` | Decisiones de Gabriel, contenido de la v1, afirmaciones por revisar y estado de correos y push |
+| `reports/Prompts_otras_sesiones.md` | Prompts listos para el trabajo 37 y para el artículo de sismos, que se trabajan en otros repositorios |
 | `research_notes/` | Notas detalladas de esa investigación |
 | `warehouse/` | Almacén original, componente importado. No se edita, y un push ahí regenera `consumo.json` |
 | `warehouse_ampliado/` | **Almacén ampliado**: `fuentes.json` (manifiesto con hashes), `ddl/`, `etl/`, `snapshots/` y `verificacion/`. Su `README.md` explica cómo reproducirlo |
@@ -264,7 +265,17 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
   filas en 45 tablas y el grafo 82,393 tripletas. Gabriel aprobó el título nuevo.
   En el mapa, la CDMX va en verde, el color del mapa original, y lo agregado en morado.
 - **Trabajo 37:** tiene su base en Word en `PublicMunicipalWorks_DWH/paper/ijcopi/` (11 páginas,
-  6,844 palabras); falta extenderlo, y el 1 nov Gabriel pidió un prompt para hacerlo en otra sesión.
+  6,844 palabras); falta extenderlo. Su prompt está en `reports/Prompts_otras_sesiones.md`, sin
+  ejecutar. `Actronix09/fuentes-alternas` (`obra-publica-srft`) ya trae datos del SRFT de la SHCP
+  para Temascaltepec, sin verificar contra la fuente.
+- **Artículo de sismos (proyecto aparte, `DWSismos`):** Gabriel quiere enviarlo a Computers and
+  Geotechnics. Su prompt también está en ese archivo. Riesgo: la revista exige un problema
+  geotécnico y el trabajo no lo tiene; el prompt pide decidirlo antes de implementar. Crossref
+  registra mal al primer autor del artículo de AZCATL (`10.24275/AZC2026E1004`); la página del
+  artículo y la referencia `villa2026` están bien.
+- **Cambio de PC (3 nov):** la PC nueva necesita Docker con el volumen del almacén reconstruido
+  (ver `warehouse_ampliado/README.md`, unos 2 GB de descarga), Word para el conversor y comprobar
+  de nuevo si el portal de la ADIP sigue respondiendo 403.
 - **Sin revisar por humanos:** el texto nuevo de la v1 y de la v2, los informes de datos, el
   almacén ampliado y el mapa. La declaración de IA de la v2 dice que los autores revisaron y
   aprobaron el texto: debe ser cierto antes de enviar.
@@ -366,3 +377,5 @@ retomar el cubo, sigue la sección 4.4 del informe.
 - 2026-11-01, Claude (Claude Code, Opus 5.5): citó en la sección 2.3 los dos trabajos del Dr. Zagal
   sobre agua, leídos en resumen, y comprobó en los CSV que no hay fugas antes de 2021. Para seguir
   en 15 páginas movió la Fig. 2 un párrafo y condensó texto nuevo, sin quitar resultados.
+- 2026-11-03, Claude (Claude Code, Opus 5.5): guardó en `reports/Prompts_otras_sesiones.md` los
+  prompts del trabajo 37 y del artículo de sismos, y anotó el contexto para cambiar de PC.
