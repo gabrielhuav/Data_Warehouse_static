@@ -1,14 +1,15 @@
-# es: Sin volumen, sobre un acuífero sobreexplotado | El grafo da contexto donde la facturación no reporta nada
-# en: No volume, over an overdrawn aquifer | The graph gives context where billing reports nothing
+# es: Sin volumen, sobre un acuífero sobreexplotado | Cada fila es un par municipio-acuífero; un municipio puede aparecer varias veces. Sin dato no significa volumen cero.
+# en: No volume, over an overdrawn aquifer | Each row is a municipality-aquifer pair; a municipality may occur more than once. Missing data do not mean zero volume.
 PREFIX agua: <https://w3id.org/cdmx/agua/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?municipio ?acuifero ?extraccionEntreRecarga WHERE {
+SELECT ?municipio ?claveMunicipal ?acuifero ?extraccionEntreRecarga WHERE {
   ?m a agua:Municipality ;
      rdfs:label ?municipio ;
      agua:volumeQuality "sin dato" ;
      agua:overliesAquifer ?a .
   ?a rdfs:label ?acuifero ;
      agua:extractionRechargeRatio ?extraccionEntreRecarga .
+  BIND(STRAFTER(STR(?m), "/municipio/") AS ?claveMunicipal)
   FILTER(?extraccionEntreRecarga > 1.5)
 } ORDER BY DESC(?extraccionEntreRecarga) ?municipio

@@ -10,6 +10,7 @@ import pandas as pd
 
 from comun import abrir_csv_zip, copiar, normalizar, registrar, verificar
 import geo
+from enlace_conapo import elegir_por_puntos
 
 ANIOS = range(1990, 2041)
 RUIDO = re.compile(r"\b(U HAB|UNIDAD HABITACIONAL|FRACC|FRACCIONAMIENTO|PBLO|PUEBLO|BARR|BARRIO|BO|COL|COLONIA|"
@@ -198,8 +199,9 @@ def cargar_colonias(cur, cache) -> None:
             filas.append((int(col), i))
     por_nombre = {i: c for c, i in filas}
 
-    # El enlace principal es por poligono: la colonia CONAPO que contiene la mayoria de los
-    # puntos de SACMEX de cada colonia. El de nombre queda para las que no alcanzan mayoria.
+    # El enlace principal elige el poligono con mas puntos, si alcanza al menos 50 %.
+    # En un empate 50/50 gana la menor cve_col (regla reproducible, no mayoria geografica).
+    # El nombre queda como respaldo si ningun poligono alcanza la mitad de los puntos.
     p, _ = verificar("D15", cache)
     g = gpd.read_file(f"zip://{p.as_posix()}!colonias_imc2020.shp", where="CVE_ENT = '09'", columns=["CVE_COL", "CVE_ENT"])
     if g.empty:
@@ -208,10 +210,9 @@ def cargar_colonias(cur, cache) -> None:
     sac = geo.puntos_sacmex(cur)
     pts = gpd.GeoDataFrame(sac[["id_ubicacion"]], geometry=gpd.points_from_xy(sac.lon, sac.lat), crs=g.crs)
     j = gpd.sjoin(pts, g[["cve_col", "geometry"]], how="inner", predicate="intersects")
-    c = j.groupby(["id_ubicacion", "cve_col"]).size().rename("n").reset_index().sort_values("n", ascending=False)
+    c = j.groupby(["id_ubicacion", "cve_col"]).size().rename("n").reset_index()
     total = sac.groupby("id_ubicacion").size()
-    top = c.drop_duplicates("id_ubicacion")
-    top = top[top.n / top.id_ubicacion.map(total) >= 0.5]
+    top = elegir_por_puntos(c, total)
     por_poligono = dict(zip(top.id_ubicacion, top.cve_col))
     ambos = [i for i in por_nombre if i in por_poligono]
     iguales = sum(por_nombre[i] == por_poligono[i] for i in ambos)

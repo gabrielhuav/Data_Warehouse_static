@@ -1,4 +1,4 @@
-Evidencia del almacen ampliado, generada 2026-10-31 22:04 UTC
+Evidencia del almacen ampliado, generada 2026-11-09 18:57 UTC
 
 ## 1. El almacen original sigue intacto
 [OK ] fact_consumo_agua: 70,886 filas
@@ -16,6 +16,7 @@ Evidencia del almacen ampliado, generada 2026-10-31 22:04 UTC
 ## 3. Integridad de las llaves nuevas
 [OK ] las 1,553 colonias tienen clave INEGI
 [OK ] 16 alcaldias enlazadas
+[OK ] tasas proxy CONAPO explicitas y sin denominadores parciales: 0 excepciones
 [OK ] dim_tiempo sin duplicados
 [OK ] dim_tiempo consistente
 

@@ -20,6 +20,18 @@ resultado en `ijcopi/datos/` y el mapa dibuja ese resultado. No hay otra fuente 
 | `14_vecinos_municipio.sql` | Municipios que comparten frontera, con su longitud | Consultas |
 | `15_frontera_cdmx.sql` | Lo que cruza el límite de la CDMX | Artículo |
 
+En `04_colonias_zm.sql`, `pob_total` es población del polígono CONAPO y `pob_sacmex` es la
+población urbana asignada a las unidades SACMEX enlazadas. Las tasas son proxies sobre el segundo
+soporte: no se reparten los registros según los límites del polígono. Se exponen volumen,
+conteos y número de unidades con población/subtotal doméstico disponible; las tasas se omiten
+si falta su denominador en alguna unidad. Disponer de subtotal por unidad no acredita cobertura
+completa de cuentas o bimestres.
+
+En `03_municipios_zm.sql` el volumen SACMEX de 2019 S1 se anualiza ×2 y divide entre 365 días
+y población CONAPO de mitad de 2019. La Tabla 4 usa OCUPVIVPAR 2020 y 181 días; la capa de
+colonias usa población urbana asignada y 181 días. Se mantienen esas bases explícitas, sin
+interpretarlas como una sola tasa de consumo medido.
+
 ## Verlas en la base de datos
 
 Desde la raíz del repositorio. Estos comandos funcionan igual en PowerShell y en Git Bash.

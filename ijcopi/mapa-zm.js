@@ -13,6 +13,12 @@
 
   const TXT = {
     es: {
+      'pob.mun': 'Población a mitad de 2019 (CONAPO)', 'pob.col': 'Población del polígono 2020 (CONAPO)', 'ui.reintentar': 'Volver a intentar',
+      'pob.proxy': 'Población asignada a unidades SACMEX (Censo 2020)',
+      'pob.cobertura': 'Unidades SACMEX con población válida / enlazadas',
+      'dom.cobertura': 'Unidades SACMEX con subtotal doméstico / enlazadas',
+      'dom.volumen': 'Volumen doméstico facturado, ene-jun 2019 (m³)',
+      'nota.proxy': 'Las tasas son proxies de unidades SACMEX enlazadas completas, con población urbana asignada a sus puntos a un máximo de 750 m dentro de la alcaldía. Los volúmenes y reportes no se recortan al polígono CONAPO: su población se muestra como contexto y no es el denominador. Se omiten tasas si falta población en alguna unidad; la tasa doméstica exige además un subtotal disponible en cada unidad. Los subtotales suman valores conocidos y no convierten faltantes en cero.',
       titulo: 'Agua en la Zona Metropolitana de Ciudad de México',
       lema: 'Ampliación del almacén de datos: cada capa es el resultado de una consulta SQL al almacén real, no una copia aparte.',
       'nav.mapa': 'Mapa', 'nav.grafo': 'Grafo', 'nav.consultas': 'Consultas al almacén',
@@ -47,6 +53,12 @@
       'gm.Muy bajo': 'Muy bajo', 'gm.Bajo': 'Bajo', 'gm.Medio': 'Medio', 'gm.Alto': 'Alto', 'gm.Muy alto': 'Muy alto',
     },
     en: {
+      'pob.mun': 'Mid-2019 population (CONAPO)', 'pob.col': '2020 polygon population (CONAPO)', 'ui.reintentar': 'Try again',
+      'pob.proxy': 'Population assigned to SACMEX units (2020 Census)',
+      'pob.cobertura': 'SACMEX units with valid population / linked units',
+      'dom.cobertura': 'SACMEX units with a domestic subtotal / linked units',
+      'dom.volumen': 'Domestic billed volume, Jan-Jun 2019 (m³)',
+      'nota.proxy': 'Rates are proxies for whole linked SACMEX units, using urban population assigned to their points within 750 m and the same borough. Volumes and reports are not clipped to the CONAPO polygon: its population is shown as context and is not the denominator. Rates are omitted if any linked unit lacks population; the domestic rate also requires an available subtotal in every unit. Subtotals sum known values without replacing missing values with zero.',
       titulo: 'Water in the Mexico City Metropolitan Area',
       lema: 'Extension of the data warehouse: every layer is the result of a SQL query to the real warehouse, not a separate copy.',
       'nav.mapa': 'Map', 'nav.grafo': 'Graph', 'nav.consultas': 'Warehouse queries',
@@ -118,14 +130,14 @@
       es: 'Grado de marginación urbana', en: 'Urban marginalisation level',
       nes: 'CONAPO 2020. Cubre toda la ZM.', nen: 'CONAPO 2020. Covers the whole metropolitan area.' },
     { id: 'c_falta', capa: 'colonia', campo: 'falta_por_mil_hab', consulta: '04_colonias_zm',
-      es: 'Reportes de falta de agua por mil habitantes, ene-jun 2019', en: 'Water shortage reports per thousand inhabitants, Jan-Jun 2019',
-      nes: 'Solo CDMX. Agua potable. Mide lo que se reporta, no lo que falta.', nen: 'Mexico City only. Drinking water. It measures what is reported, not what is missing.' },
+      es: 'Falta de agua por mil habitantes asignados, ene-jun 2019 (proxy)', en: 'Shortage reports per thousand assigned inhabitants, Jan-Jun 2019 (proxy)',
+      nes: 'Solo CDMX, agua potable. Contexto de unidades SACMEX enlazadas, no eventos recortados al polígono CONAPO. Divide por población urbana asignada por proximidad (750 m); se omite si la cobertura es parcial. Mide reportes, no carencia real.', nen: 'Mexico City only, drinking water. Context from linked SACMEX units, not events clipped to CONAPO polygons. Divided by urban population assigned by proximity (750 m); omitted for partial coverage. Measures reporting, not actual shortage.' },
     { id: 'c_fugas', capa: 'colonia', campo: 'fugas_por_mil_hab', consulta: '04_colonias_zm',
-      es: 'Reportes de fuga por mil habitantes, 2021-2024', en: 'Leak reports per thousand inhabitants, 2021-2024',
-      nes: 'Solo CDMX. La fuente no registra fugas antes de 2021.', nen: 'Mexico City only. The source records no leaks before 2021.' },
+      es: 'Fugas por mil habitantes asignados, 2021-2024 (proxy)', en: 'Leak reports per thousand assigned inhabitants, 2021-2024 (proxy)',
+      nes: 'Solo CDMX. Contexto de unidades SACMEX enlazadas, con población asignada por proximidad (750 m), no tasas del polígono CONAPO. Se omite si la cobertura es parcial. La fuente no registra fugas antes de 2021.', nen: 'Mexico City only. Context from linked SACMEX units, with population assigned by proximity (750 m), not CONAPO polygon rates. Omitted for partial coverage. The source records no leaks before 2021.' },
     { id: 'c_litros', capa: 'colonia', campo: 'litros_hab_dia_dom', consulta: '04_colonias_zm',
-      es: 'Litros facturados por habitante al día', en: 'Billed litres per inhabitant per day',
-      nes: 'Solo CDMX, enero-junio de 2019. Es facturación, no consumo.', nen: 'Mexico City only, January-June 2019. This is billing, not use.' },
+      es: 'Litros facturados por habitante asignado al día (proxy)', en: 'Billed litres per assigned inhabitant per day (proxy)',
+      nes: 'Solo CDMX, enero-junio de 2019: volumen doméstico de unidades SACMEX enlazadas /181 días /población asignada por proximidad (750 m). No es una tasa del polígono CONAPO. Se omite si falta población o subtotal doméstico. Es facturación, no consumo.', nen: 'Mexico City only, January-June 2019: domestic volume from linked SACMEX units /181 days /population assigned by proximity (750 m). Not a CONAPO polygon rate. Omitted if population or domestic subtotals are missing. Billing, not use.' },
     { id: 'c_vlm', capa: 'colonia', campo: 'vlm_cm_anio', invertir: true,cortes: [-15, -5, -1, 1], consulta: '04_colonias_zm',
       es: 'Movimiento vertical del terreno (cm/año)', en: 'Vertical land motion (cm/year)',
       nes: 'Solo CDMX. InSAR 2014-2020. Negativo: el terreno se hunde.', nen: 'Mexico City only. InSAR 2014-2020. Negative: the ground is sinking.' },
@@ -380,15 +392,20 @@
   }
 
   function detalleColonia(r) {
-    panel(r.colonia, r.cve_mun, [
-      [t('pob'), fmt(r.pob_total, 0)],
+    const m = D.municipios.find(m => m.cve_mun === r.cve_mun);
+    panel(r.colonia, m ? `${m.nom_mun}, ${m.nom_ent}` : r.cve_mun, [
+      [t('pob.col'), fmt(r.pob_total, 0)],
+      [t('pob.proxy'), r.colonias_sacmex == null ? null : fmt(r.pob_sacmex, 0)],
+      [t('pob.cobertura'), r.colonias_sacmex == null ? null : `${fmt(r.colonias_con_pob, 0)} / ${fmt(r.colonias_sacmex, 0)}`],
+      [t('dom.cobertura'), r.colonias_sacmex == null ? null : `${fmt(r.colonias_con_dom, 0)} / ${fmt(r.colonias_sacmex, 0)}`],
+      [t('dom.volumen'), r.colonias_sacmex == null ? null : fmt(r.consumo_dom_m3, 2)],
       [nombre('c_sinagua'), fmt(r.pct_sin_agua, 2)],
       [nombre('c_gm'), r.gm_2020 ? t('gm.' + r.gm_2020) : null],
       [nombre('c_litros'), r.litros_hab_dia_dom == null ? null : fmt(r.litros_hab_dia_dom, 1)],
       [nombre('c_falta'), r.falta_por_mil_hab == null ? null : `${fmt(r.falta_por_mil_hab, 2)} (${fmt(r.falta_agua_2019_s1, 0)})`],
       [nombre('c_fugas'), r.fugas_por_mil_hab == null ? null : `${fmt(r.fugas_por_mil_hab, 2)} (${fmt(r.fugas_2021_2024, 0)})`],
       [nombre('c_vlm'), r.vlm_cm_anio == null ? null : fmt(r.vlm_cm_anio, 2)],
-    ], `SELECT colonia, pob_total, pct_ocup_sin_agua, gm_2020 FROM dim_colonia_conapo WHERE cve_col = ${r.cve_col}`);
+    ], `SELECT * FROM v_colonia_conapo_contexto WHERE cve_col = ${r.cve_col}`, r.colonias_sacmex == null ? '' : `<p class="zm-nota" role="note">${esc(t('nota.proxy'))}</p>`);
   }
 
   function detalleAcuifero(r) {
@@ -442,7 +459,7 @@
     document.getElementById('origenComando').textContent = `${t('o.cmd')}\n\ndocker cp warehouse_ampliado/consultas/. data_warehouse_cdmx:/consultas\n${BD} -f /consultas/${m.consulta}`;
     const pre = document.getElementById('origenSql');
     pre.textContent = '';
-    fetch('warehouse_ampliado/consultas/' + m.consulta).then(r => (r.ok ? r.text() : '')).then(s => { pre.textContent = s; }).catch(() => {});
+    fetch('warehouse_ampliado/consultas/' + m.consulta, { cache: 'no-cache' }).then(r => (r.ok ? r.text() : '')).then(s => { pre.textContent = s; }).catch(() => {});
   }
 
   function traducir() {
@@ -491,7 +508,7 @@
   }
 
   async function cargar() {
-    const pedir = n => fetch(DATOS + n + '.json').then(r => {
+    const pedir = n => fetch(DATOS + n + '.json', { cache: 'no-cache' }).then(r => {
       if (!r.ok) throw new Error(`${n}: HTTP ${r.status}`);
       return r.json();
     });

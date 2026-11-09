@@ -56,7 +56,7 @@ def main() -> int:
 
     lineas += ["", f"verificaciones fallidas: {fallos}"]
     print(lineas[-1])
-    EVIDENCIA.write_text("\n".join(lineas) + "\n", encoding="utf-8")
+    EVIDENCIA.write_text("\n".join(lineas) + "\n", encoding="utf-8", newline="\n")
     return 1 if fallos else 0
 
 

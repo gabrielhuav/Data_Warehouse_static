@@ -266,12 +266,12 @@ extraction published once, without versioning, which is the problem this article
 studies. Against the source becoming unavailable, both files the ETL consumes are
 redistributed with the archived release and the portal page is preserved in the
 Internet Archive. \emph{Grain}: one fact row is one \emph{manzana} (city block)
-for one billing period, and the export carries 22,930 distinct coordinate-bearing
-units over 1,553 borough--neighbourhood pairs, so the location dimension is
+for one billing \nuevo{period. The raw export contains 22,930 distinct coordinate pairs;
+loaded records retain 22,858 across 1,553 borough--neighbourhood pairs. The} location dimension is
 coarser than the grain and every aggregate is a roll-up. \emph{Scale}: the
 development index has four ordinal levels ---\textsc{alto}, \textsc{medio},
 \textsc{bajo} and \textsc{popular}--- published with the dataset rather than
-derived here.
+derived here. \nuevo{Numeric \texttt{NA} subtotals are loaded as SQL \texttt{NULL}, not zero.}
 
 \begin{nuevobloque}
 \emph{Billing basis}: a consumption value is a billed volume, not a meter reading.
@@ -453,12 +453,11 @@ Two properties of the geospatial layer bound what the traversal can claim. The
 warehouse stores \emph{points}, not polygons: each neighbourhood is the centroid
 of its readings, recovered from coordinates present in the source export but
 dropped by the original loading schema. The substitution is defensible at
-this scale ---the 22,930 distinct coordinates are never shared between two
+this scale ---the \nuevo{22,858 valid coordinate pairs} are never shared between two
 neighbourhoods and the median neighbourhood diameter is 0.63~km--- though coarse
-for the ten neighbourhoods above three kilometres. \icokg{Because centroids are points, no Simple Features boundary relation applies:
-\texttt{geo:sfTouches} is undefined for point/point geometries, and relabelling a
-distance threshold as a standardised topological predicate would misstate what
-the data support. The mapping therefore declares its own
+for the ten neighbourhoods above three kilometres. \icokg{\nuevo{Point centroids cannot establish
+shared territorial boundaries; relabelling a distance threshold as a standardised
+topological predicate would misstate what the data support.} The mapping therefore declares its own
 \texttt{agua:nearbyWithin1500m}, documented in \texttt{schema.ttl} as centroid
 proximity below 1.5~km. Official polygons would allow \texttt{geo:sfTouches} in
 the strict sense; that is a substitution in the source data, and we leave it as
@@ -777,16 +776,45 @@ reproduces \texttt{evaluacion-ml/ranking\_real.py}. Neither ranking diagnoses le
 \subsection{From the City to the Metropolitan Area}
 \label{sec:metro}
 
-The open export stops at the city boundary, but the water system does not. We therefore extended
-the warehouse additively to the official metropolitan delimitation of 2020~\cite{conapo2025b}: 63
-municipalities, of which 16 are boroughs, 45 lie in the State of Mexico and two in Hidalgo. Sixty-two
-files, each checked against a manifest of sizes and hashes before loading, now feed 2.79 million
-rows in 45 tables, joined to the original location dimension through a conformed municipal
-dimension; the original fact tables are untouched. The new facts cover municipal services and
+The warehouse now covers the official metropolitan delimitation of 2020~\cite{conapo2025b}: 63
+municipalities (16 boroughs, 45 in the State of Mexico and two in Hidalgo). Sixty-two
+manifest-verified files have 97 table-level ingestion entries; the 45-table warehouse
+holds 2.79 million rows, linked through a conformed municipal dimension without altering
+the original facts. Sources cover municipal services and
 billing~\cite{inegicngmd}, water revenue~\cite{shcp2026}, aquifers and wells~\cite{conagua2026a},
 dams~\cite{conagua2026b}, drought~\cite{smn2026}, water quality~\cite{conaguacalidad},
-marginalisation~\cite{conapo2025a}, land motion~\cite{khorrami2023} and 555,752 citizen
-reports~\cite{sacmexreportes}.
+marginalisation~\cite{conapo2025a}, land motion~\cite{khorrami2023}, gridded climate~\cite{carrera2025},
+historical vulnerability~\cite{huerta2022}, streamflow~\cite{hidromx2026} and 555,752 citizen
+reports~\cite{sacmexreportes}. The manifest fixes reference periods and download versions.
+
+Municipal rates annualise volumes over 365 days using CONAPO mid-2019 population
+(the SACMEX semester is doubled); Table~\ref{tab:percapita} uses 181 days and 2020
+private-dwelling residents. Neighbourhood rates use census population assigned within
+750~m to SACMEX points, aggregated as \texttt{pob\_sacmex}, not the displayed CONAPO
+polygon population (\texttt{pob\_total}). Units link to the polygon with their largest
+point share (at least 50\,\%); ties use the smallest numeric \texttt{cve\_col}, with
+unique-name matching as fallback. Volumes and reports follow linked units without
+polygon clipping. Rates require positive assigned population in each linked unit;
+domestic rates also require an available domestic subtotal per unit. These checks
+ensure neither complete spatial nor temporal coverage.
+
+\begin{figure}[tbp]
+\centering
+\begin{subfigure}[t]{0.485\textwidth}
+  \centering
+  \includegraphics[width=\linewidth,keepaspectratio]{figura_zm_volumen.png}
+  \caption{Billed litres per inhabitant per day.}
+  \label{fig:zm-a}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.485\textwidth}
+  \centering
+  \includegraphics[width=\linewidth,keepaspectratio]{figura_zm_grafo.png}
+  \caption{The graph: municipalities and shared boundaries.}
+  \label{fig:zm-b}
+\end{subfigure}
+\caption{The metropolitan map and graph: Mexico City in green, the added municipalities in purple. In (a), stronger colour marks a higher available value, not higher use, and a dashed border marks values outside the 10--400 litre band, which in Mexico City are the billing of Tl\'ahuac and Milpa Alta (Table~\ref{tab:percapita}); in (b), orange edges cross the city limit. Base map \copyright{} OpenStreetMap contributors (ODbL).}
+\label{fig:zm}
+\end{figure}
 
 Integration exposes what no single source shows. Municipal volumes cannot be compared without a
 filter: of the 47 municipalities outside Mexico City, 24 report no volume, 7 fall outside a
@@ -807,48 +835,27 @@ physical context. The four aquifers beneath the urban area extract between 1.49 
 their recharge, and in wells read in both years the mean water table fell between 6.0 and 18.7
 metres from 2010 to 2019.
 
-\begin{figure}[tbp]
-\centering
-\begin{subfigure}[t]{0.485\textwidth}
-  \centering
-  \includegraphics[width=\linewidth,keepaspectratio]{figura_zm_volumen.png}
-  \caption{Billed litres per inhabitant per day.}
-  \label{fig:zm-a}
-\end{subfigure}\hfill
-\begin{subfigure}[t]{0.485\textwidth}
-  \centering
-  \includegraphics[width=\linewidth,keepaspectratio]{figura_zm_grafo.png}
-  \caption{The graph: municipalities and shared boundaries.}
-  \label{fig:zm-b}
-\end{subfigure}
-\caption{The metropolitan map and graph: Mexico City in green, the added municipalities in purple. In (a), stronger colour marks a higher available value, not higher use, and a dashed border marks values outside the 10--400 litre band, which in Mexico City are the billing of Tl\'ahuac and Milpa Alta (Table~\ref{tab:percapita}); in (b), orange edges cross the city limit. Base map \copyright{} OpenStreetMap contributors (ODbL).}
-\label{fig:zm}
-\end{figure}
-
 The static deployment follows the warehouse without a server. Each layer of the map
 (\url{https://gabrielhuav.github.io/Data_Warehouse_IJCOPI/ijcopi/mapa-zm.html}) is the literal
 result of one of fifteen SQL queries distributed in the repository, exported to \texttt{JSON} with
 its hash, and \texttt{verificar\_mapa.py} repeats every query and compares the result byte by byte
-with the published files. A warehouse rebuilt from a clean clone returned the same bytes for all
-fifteen queries.
+with the published files. An earlier clean-clone rebuild reproduced all fifteen results;
+current exports are rechecked against PostgreSQL.
 
 \subsection{A Metropolitan Knowledge Graph}
 \label{sec:kgmetro}
 
-The graph of Section~\ref{sec:kg} stops at the city boundary and joins neighbourhoods by centroid
-proximity, because the warehouse held only points. Official polygons lift both limits. A second
-R2RML mapping materialises the extended warehouse into 82,393 triples, linked to the boroughs and
-neighbourhoods of the first graph so that the two can be merged. Its 5,830 neighbourhoods carry
-15,510 pairs of strict \texttt{geo:sfTouches}. Municipalities required more care: the official
-polygons overlap by up to 0.49~m$^2$, so the strict relation fails for pairs that do adjoin, and
-rather than misuse the standard predicate the graph declares \texttt{agua:sharesBoundaryWith} for
-the 163 pairs sharing at least 50~m of boundary (Fig.~\ref{fig:zm-b}). A value the sources do not
-report is not materialised as a triple; omission does not assert absence. Traversal then crosses what the sources keep
-apart: 18 municipal boundaries and 169 neighbourhood adjacencies cross the Mexico City limit;
-subsidence does not stop there, with Nezahualc\'oyotl sinking 23.5~cm per year next to Venustiano
-Carranza at 16.5~cm; and 21 municipalities that report no volume overlie an aquifer extracting more
-than 1.5 times its recharge, context the billing data cannot give. Every relation matches its
-warehouse table, and the example queries run in the browser against the published graph
+Official polygons extend the city graph (Section~\ref{sec:kg}) beyond centroid proximity
+and the city boundary. A second R2RML mapping materialises 91,230 triples linked to the
+first graph's boroughs and neighbourhoods. Its 5,830 neighbourhoods have 15,510 strict
+\texttt{geo:sfTouches} pairs. Municipal polygons overlap by up to 0.49~m$^2$, breaking
+the strict relation for adjoining pairs; \texttt{agua:sharesBoundaryWith} instead records
+163 pairs sharing at least 50~m of boundary (Fig.~\ref{fig:zm-b}). Unreported values
+generate no triples; omission does not assert absence. Across the city limit, 18 municipal
+boundaries and 169 neighbourhood adjacencies link territories: Nezahualc\'oyotl sinks
+23.5~cm per year beside Venustiano Carranza at 16.5~cm, and 21 municipalities without
+reported volume form 27 municipality--aquifer pairs above an extraction-to-recharge
+ratio of 1.5. Every relation matches its warehouse table; browser queries run against the graph
 (\url{https://gabrielhuav.github.io/Data_Warehouse_IJCOPI/ijcopi/grafo-zm.html}).
 \end{nuevobloque}
 
@@ -911,26 +918,21 @@ Top-10 neighbourhoods with ordering        &  23.1 &  23.6 & 200 \\
 \label{sec:disc}
 
 \begin{nuevobloque}
-Reproducibility includes interpreting what a measure records. The reordered borough
-ranking (Table~\ref{tab:percapita}), mixed fiscal categories within neighbourhoods
+The reordered borough ranking (Table~\ref{tab:percapita}), mixed fiscal categories
 (Section~\ref{sec:res}) and weak association with shortage reports
-(Section~\ref{sec:metro}) argue against treating billed volume as demand. Per-account
-averages also require metering and supply context. Fiscal classes support a billing
-comparison, not an inference about every resident of a neighbourhood; proximity joins
-and mixed reference years further limit causal interpretation.
+(Section~\ref{sec:metro}) caution against reading billed volume as demand. Reported
+averages require metering and supply context; fiscal classes do not characterise every
+resident. Proximity joins and mixed reference years further limit causal interpretation.
 
-The anomaly experiments sharpen this distinction. Paired comparisons favour Isolation
-Forest under the published injection model, while log-$A_g$ benefits from a log-normal
-generator. Neither result validates leak detection. Separating excess, deficit and zero
-totals makes the observed billing distribution inspectable without treating a low value
-as a diagnosis. The interface exposes this distinction and reproduces the ranking checks.
+Isolation Forest wins under the published injection model; log-$A_g$ benefits from the
+log-normal generator. Neither result validates leak detection. Separating excess,
+deficit and zero totals makes billing inspectable without diagnosing low values.
 
-Relative to operational water warehouses~\cite{soares2019,abecker2014}, the contribution
-is provenance and preservation rather than scale: consolidation rules, source hashes,
-verified query exports and declarative mappings accompany public data whose reporting
-context constrains reuse. Static publication preserves an inspectable artefact without
-a database backend~\cite{sandve2013,hill2023}; it does not guarantee continuing availability
-of external sources or turn reproducible billing into measured physical use.
+Compared with operational water warehouses~\cite{soares2019,abecker2014}, the contribution
+is reproducible provenance and preservation: consolidation rules, hashes, verified
+exports and declarative mappings. Static publication preserves an inspectable artefact
+without a database backend~\cite{sandve2013,hill2023}, but cannot ensure external-source
+availability or establish physical use.
 \end{nuevobloque}
 \end{icokgblock}
 
@@ -940,33 +942,27 @@ of external sources or turn reproducible billing into measured physical use.
 \subsection{Conclusions}
 
 \begin{nuevobloque}
-The ETL consolidated 70,886 billing records and 1,553 locations across the 16 boroughs
-into a PostgreSQL star schema, with a validated RDF projection and a static demonstration.
-Cuauht\'emoc and Miguel Hidalgo lead billed totals (Table~\ref{tab:top5_alcaldias}), while
-Benito Ju\'arez leads per inhabitant (Table~\ref{tab:percapita}); the contrasts and bimester
-variation establish neither measured demand nor climatic causation.
+The ETL consolidates 70,886 billing records and 1,553 locations across 16 boroughs in a
+PostgreSQL star schema, validated RDF projection and static demonstration. Cuauht\'emoc
+and Miguel Hidalgo lead billed totals (Table~\ref{tab:top5_alcaldias}), Benito Ju\'arez
+per inhabitant (Table~\ref{tab:percapita}); neither contrasts nor bimester changes
+establish measured demand or climatic causation.
 
-The extension to 63 municipalities adds a quality-filtered metropolitan context.
-Its evaluated global $A_g$ shortlists contain only above-mean billed totals; separating
-excess, deficit and zero totals makes both directions inspectable. The reproducible
-warehouse, graph and interface therefore support territorial retrieval with explicit
-limits: low billing cannot be read as low demand, especially in the eastern and southern
-periphery, and municipal volumes require a quality filter before comparison.
+The 63-municipality extension adds quality-filtered context. Evaluated global $A_g$
+shortlists contain only above-mean totals; separate excess, deficit and zero lists
+expose both directions. Territorial retrieval remains subject to billing coverage,
+especially in the eastern and southern periphery, and municipal quality filters.
 \end{nuevobloque}
 
 \begin{icokgblock}
 \subsection{Threats to Validity and Limitations}
 
-\nuevo{Six} limitations bound what may be concluded. The temporal extent is the first:
-the source publishes three bimesters of a single year, so the seasonal variation
-observed is a within-semester comparison and \nuevo{any comparison with the integrated climate series} rests on
-three aggregated points, enough to describe a direction but not to estimate one.
-The second concerns the anomaly module, whose evaluation uses synthetic
-perturbations aligned with the detectors; \nuevo{its figures measure sensitivity to injected deviations, not accuracy on real leaks.} \nuevo{The sensitivity analysis widens the injection model
-but not its log-normal family.} The third \nuevo{concerns the original graph}: neighbourhoods are represented
-by centroids rather than polygons, so the adjacency projected as
-\icokg{\texttt{agua:nearbyWithin1500m}} is proximity within 1.5~km and not shared boundaries. The
-fourth \nuevo{concerns the fiscal index: record-level categories coexist within neighbourhoods;
+\nuevo{Six limitations bound interpretation. First, three bimesters describe one semester,
+with only three aggregated points for any climate comparison. Second, synthetic
+injections measure sensitivity, not detection of real leaks; the sensitivity analysis
+retains a log-normal family. Third, the original graph uses centroids:
+\texttt{agua:nearbyWithin1500m} represents proximity within 1.5~km, not shared boundaries.
+The fourth concerns the fiscal index: record-level categories coexist within neighbourhoods;
 their billing averages do not establish a socioeconomic mechanism.} \nuevo{The fifth is the billing basis and its coverage: values mix
 metered and averaged billing in an undisclosed proportion and add up to about
 38\,\% of published per-capita consumption, with the gap concentrated in the
@@ -979,11 +975,8 @@ proximity, and reports count what citizens file, not what is missing.}
 
 \nuevo{Future work is to provide a persistent SPARQL endpoint, register dereferenceable
 territorial identifiers and integrate official utility polygons; the metropolitan graph
-already uses CONAPO polygons. The three-list interface of Section~\ref{sec:real} is
-implemented, while validation against labelled incidents and metering coverage remains
-outstanding. A data cube over the extended warehouse would support further metropolitan
-analysis. Applying the pipeline to mobility, air quality or seismic risk would require
-the same explicit treatment of source grain, reporting gaps and provenance.}
+already uses CONAPO polygons. Validation against labelled incidents and metering coverage
+remains outstanding. A data cube would support further metropolitan analysis.}
 \end{icokgblock}
 
 \begin{icokgblock}
@@ -1041,6 +1034,12 @@ The authors declare that they have no conflicts of interest relevant to the cont
 \bibitem{infocdmx2022} Instituto de Transparencia, Acceso a la Informaci\'on P\'ublica, Protecci\'on de Datos Personales y Rendici\'on de Cuentas de la Ciudad de M\'exico: Resoluci\'on del recurso de revisi\'on INFOCDMX/RR.IP.0679/2022 (sujeto obligado: Sistema de Aguas de la Ciudad de M\'exico) (2022). \url{https://documentosobligaciones.infocdmx.org.mx/ST/LTAIPRC-2016-OT/Art133/Fr01/2022/T02-INFOCDMX.RR.IP.0679.2022.pdf}
 
 \bibitem{gcdmx2019} Gobierno de la Ciudad de M\'exico: Gaceta Oficial de la Ciudad de M\'exico, n\'um. 62, pp. 39--40 (1 April 2019). \url{https://data.consejeria.cdmx.gob.mx/portal_old/uploads/gacetas/989c31738f67577540092747c82e52f7.pdf}
+
+\bibitem{carrera2025} Carrera-Hern\'andez, J.J.: Mexico's High Resolution Climate Database (MexHiResClimDB): a new daily high-resolution gridded climate dataset for Mexico covering 1951--2020. Earth System Science Data \textbf{17}, 6911--6941 (2025). \url{https://doi.org/10.5194/essd-17-6911-2025}
+
+\bibitem{huerta2022} Huerta-Vergara, A.R., Arciniega-Esparza, S., Pedrozo-Acu\~na, A., Matus-Kramer, A., Vega-L\'opez, E.: Assessment of vulnerability to water shortage in the municipalities of Mexico City. Bolet\'in de la Sociedad Geol\'ogica Mexicana \textbf{74}(1), A071021 (2022). \url{https://doi.org/10.18268/BSGM2022v74n1a071021}
+
+\bibitem{hidromx2026} S\'anchez-Ruiz, D., Ramos Aguilar, E., Ramos-Aguilar, R., Reyes-Pe\~na, C., Reyes-Cocoletzi, L., Garc\'ia-Ram\'irez, J.: Hidro-MX v2026.10: a reproducible hydroclimatic dataset for Mexican pilot basins (CONAGUA-SIH and INEGI). Zenodo (2026). \url{https://doi.org/10.5281/zenodo.23150556}
 
 \bibitem{liu2008} Liu, F.T., Ting, K.M., Zhou, Z.-H.: Isolation Forest. In: 2008 Eighth IEEE International Conference on Data Mining, pp. 413--422. IEEE (2008). \url{https://doi.org/10.1109/ICDM.2008.17}
 

@@ -1,6 +1,7 @@
 @prefix agua:    <https://w3id.org/cdmx/agua/> .
 @prefix geo:     <http://www.opengis.net/ont/geosparql#> .
 @prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
@@ -14,9 +15,11 @@ agua:grafoMetropolitano a prov:Entity ;
   prov:wasDerivedFrom agua:consumoCDMX .
 
 agua:Municipality a rdfs:Class ; rdfs:subClassOf geo:Feature ;
-  rdfs:label "Municipality or borough of the metropolitan area"@en .
+  rdfs:label "Municipality or borough of the metropolitan area"@en ;
+  rdfs:comment "agua:population is CONAPO projected mid-year population for 2019. Municipal volume indicators use this denominator, not the 2020 census household-occupant denominator of the manuscript benchmark."@en .
 agua:Neighbourhood a rdfs:Class ; rdfs:subClassOf geo:Feature ;
-  rdfs:label "Neighbourhood of the CONAPO 2020 urban marginalisation index"@en .
+  rdfs:label "Neighbourhood of the CONAPO 2020 urban marginalisation index"@en ;
+  rdfs:comment "agua:population is the official 2020 population of the CONAPO polygon. Matched SACMEX proxy rates use agua:ratePopulationProxy instead, with different spatial support."@en .
 agua:Aquifer a rdfs:Class ; rdfs:subClassOf geo:Feature ; rdfs:label "Official aquifer"@en .
 agua:Well a rdfs:Class ; rdfs:subClassOf geo:Feature ;
   rdfs:label "Well of the piezometric network with readings in 2010 and 2019"@en .
@@ -24,12 +27,12 @@ agua:Dam a rdfs:Class ; rdfs:subClassOf geo:Feature ; rdfs:label "Dam with a dai
 agua:QualitySite a rdfs:Class ; rdfs:subClassOf geo:Feature ;
   rdfs:label "Site of the national water quality network"@en .
 
-agua:sharesBoundaryWith a rdf:Property, rdf:SymmetricProperty ;
+agua:sharesBoundaryWith a rdf:Property, owl:SymmetricProperty ;
   rdfs:domain agua:Municipality ; rdfs:range agua:Municipality ;
   rdfs:label "shares a boundary with"@en ;
   rdfs:comment "Two municipalities whose official polygons intersect and share at least 50 m of boundary, measured with a 2 m tolerance. It is not geo:sfTouches: the official polygons overlap by up to 0.49 square metres, so the strict relation fails for pairs that do adjoin."@en .
 
-agua:touchesAcrossCityLimit a rdf:Property, rdf:SymmetricProperty ;
+agua:touchesAcrossCityLimit a rdf:Property, owl:SymmetricProperty ;
   rdfs:subPropertyOf geo:sfTouches ;
   rdfs:domain agua:Neighbourhood ; rdfs:range agua:Neighbourhood ;
   rdfs:comment "geo:sfTouches between a neighbourhood of Mexico City and one of another state."@en .
@@ -41,10 +44,10 @@ agua:locatedIn a rdf:Property ; rdfs:range agua:Municipality ;
   rdfs:comment "Municipality of a point feature: a well, a dam or a quality site."@en .
 agua:inMunicipality a rdf:Property ; rdfs:domain agua:Neighbourhood ; rdfs:range agua:Municipality .
 agua:withinNeighbourhood a rdf:Property ; rdfs:range agua:Neighbourhood ;
-  rdfs:comment "Links a neighbourhood of the conference graph, which is a utility label, to the CONAPO polygon that holds most of its points."@en .
+  rdfs:comment "Legacy link from a SACMEX utility label to its matched CONAPO polygon: at least half of its points lie in the polygon, or a normalised name matches within the municipality. This is a correspondence, not geometric containment of the utility unit or of every report assigned to it."@en .
 
 agua:billedLitresPerDay a rdf:Property ; rdfs:range xsd:decimal ;
-  rdfs:comment "Billed domestic volume per inhabitant per day. It is billing, not use, and its source differs across the Mexico City boundary. Absent where the source reports no volume."@en .
+  rdfs:comment "Legacy municipal indicator: SACMEX domestic billed volume for January-June 2019 multiplied by 2/365 in Mexico City, and CNGMD reported municipal supply volume for 2018 divided by 365 outside it, both times 1000 / CONAPO mid-year population for 2019. These measurement regimes are not equivalent; the property does not imply measured demand or that every source is billing. Absent where the source reports no volume."@en .
 agua:volumeQuality a rdf:Property ;
   rdfs:comment "Plausible, atypical (outside 10 to 400 litres) or no data."@en .
 agua:verticalLandMotion a rdf:Property ; rdfs:range xsd:decimal ;
@@ -63,3 +66,25 @@ agua:shortageReportsPerThousand a rdf:Property ; rdfs:range xsd:decimal ;
   rdfs:comment "Water shortage reports per thousand inhabitants, January to June 2019. Mexico City only."@en .
 agua:leakReportsPerThousand a rdf:Property ; rdfs:range xsd:decimal ;
   rdfs:comment "Leak reports per thousand inhabitants, 2021 to 2024. Mexico City only; the source records none earlier."@en .
+
+# Las tasas de las colonias usan el soporte SACMEX enlazado, no el poligono CONAPO.
+agua:ratePopulationProxy a rdf:Property ; rdfs:domain agua:Neighbourhood ; rdfs:range xsd:integer ;
+  rdfs:comment "2020 Census population assigned to the matched SACMEX units by nearest-centroid proximity within 750 m. It is the denominator of the proxy rates, not the official population of the CONAPO polygon (agua:population)."@en .
+agua:matchedUtilityNeighbourhoods a rdf:Property ; rdfs:range xsd:integer ;
+  rdfs:comment "Number of SACMEX units matched to this CONAPO neighbourhood."@en .
+agua:utilityNeighbourhoodsWithPopulation a rdf:Property ; rdfs:range xsd:integer ;
+  rdfs:comment "Matched SACMEX units with a positive assigned census population."@en .
+agua:utilityNeighbourhoodsWithDomesticVolume a rdf:Property ; rdfs:range xsd:integer ;
+  rdfs:comment "Matched SACMEX units with a reported domestic billed subtotal; a missing subtotal is not zero."@en .
+agua:billedDomesticVolumeM3 a rdf:Property ; rdfs:range xsd:decimal ;
+  rdfs:comment "Sum of reported domestic billed volume in matched SACMEX units, January-June 2019. It is not a polygon-level spatial allocation."@en .
+agua:shortageReportCount a rdf:Property ; rdfs:range xsd:integer ;
+  rdfs:comment "Water shortage reports assigned to matched SACMEX units, January-June 2019."@en .
+agua:leakReportCount a rdf:Property ; rdfs:range xsd:integer ;
+  rdfs:comment "Potable-water leak reports assigned to matched SACMEX units, 2021-2024; none are recorded before 2021."@en .
+agua:proxyBilledLitresPerDay a rdf:Property ; rdfs:range xsd:decimal ;
+  rdfs:comment "Matched SACMEX domestic billed volume times 1000 / (181 days times agua:ratePopulationProxy). Omitted if any matched unit lacks a positive population or a domestic subtotal. It is a proxy, not a CONAPO polygon rate or measured demand."@en .
+agua:proxyShortageReportsPerThousand a rdf:Property ; rdfs:range xsd:decimal ;
+  rdfs:comment "Matched SACMEX shortage reports times 1000 / agua:ratePopulationProxy. Omitted if any matched unit lacks a positive population; not a CONAPO polygon rate."@en .
+agua:proxyLeakReportsPerThousand a rdf:Property ; rdfs:range xsd:decimal ;
+  rdfs:comment "Matched SACMEX leak reports times 1000 / agua:ratePopulationProxy. Omitted if any matched unit lacks a positive population; not a CONAPO polygon rate."@en .

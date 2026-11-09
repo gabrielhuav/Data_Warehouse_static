@@ -1,6 +1,6 @@
 {
- "tripletas": 82393,
- "sha256": "9a267d255cfb5c8f19ebc6bb74604b0aa88f8f00b3e7acb302025b5e305b84b4",
+ "tripletas": 91230,
+ "sha256": "bc5a56c1eb9c38047051367e9e9816837a31c7fda3b14f73921c75cd862a9fa9",
  "consultas": [
   "01_frontera_cdmx.rq",
   "02_sin_volumen_sobreexplotado.rq",

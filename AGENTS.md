@@ -248,6 +248,33 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
 
 ## Estado actual
 
+- Revisión posterior al informe independiente del 9 nov: corregidos los hallazgos
+  contrastados con fuentes y datos; descartadas cifras y autorías ajenas a esta versión.
+  Word/PDF regenerados desde fuente: 15 páginas, 9,029 palabras, v0 5,615 (+60.8014 %),
+  resumen 144 y seis keywords. Las quince páginas se inspeccionaron a 150 dpi; cero
+  palabras nuevas sin amarillo frente al respaldo de 9,116 palabras. Título, autores,
+  declaración académica de IA, figuras, plantilla y v0 preservados.
+  Word SHA-256 d38e1e48c1741dcf80f3f58f8d62828bfed7089a2a581d4b345f6eeb93ff771e;
+  PDF SHA-256 416f39d6b1ab0240d34f93d5fc6543c677d1ebdff405c40180a7ea570ae91c59.
+- Datos: vista común de colonias expone población CONAPO, población asignada SACMEX,
+  volumen y cobertura. Tasas etiquetadas como proxies, sin dividir por población de
+  otro soporte; se omiten denominadores parciales. Desempate espacial determinista
+  por menor clave numérica: reconciliados 22 enlaces sin resembrar ni tocar hechos.
+  Reconstrucción cruda y JSON coinciden en diez campos; población unidad por unidad
+  coincide con PostgreSQL. Quince consultas verificadas, 0 fallos.
+- RDF: 91,230 triples; clase simétrica OWL correcta, población/cobertura proxy
+  explícitas, huella decimal estable tras serializar y validación SQL/RDF sin fallos.
+  Consulta 02: 27 pares de 21 municipios; interfaz muestra ambas cantidades ES/EN.
+  Añadidos créditos bibliográficos de clima, vulnerabilidad e Hidro-MX con metadatos
+  primarios; corregida atribución de Huerta en el informe ya versionado.
+- Web: fichas muestran ambos soportes y cobertura, notas ES/EN, fuentes metropolitanas
+  en el pie y vocabulario descargable; datos se revalidan para evitar caché antigua.
+  QA real de mapa/grafo en escritorio y 375 px, catálogo y conteo SPARQL correctos.
+- Gabriel autorizó un commit y push por repositorio para estas correcciones, con
+  identidad Git humana y sin firmas/trailers/atribuciones de asistentes. No autoriza
+  release, DOI, correo ni envío editorial. Cada push exige ejecutar el verificador
+  original intacto: cero fallos o nueva excepción expresa de esa ejecución.
+
 - **Corrección final autorizada 9 nov 2026:** Gabriel pidió corregir todo, commit y push
   con identidad Git humana, sin atribuciones/firmas de asistentes. Un cierre por repositorio;
   ningún permiso para release/DOI, correo o envío editorial. Word/PDF: 15 páginas, 9,116 palabras
@@ -352,6 +379,14 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
 
 ## Siguiente paso
 
+Cerrar los dos commits autorizados (original ijcopi-zmvm y distribución main),
+verificar identidad humana y repetir el verificador antes de cada push. Si falla,
+obtener una excepción nueva y específica; no reutilizar las del cierre anterior.
+Comprobar remotos y Pages. Después Gabriel y coautores revisan la v3 de 9,029
+palabras para su aval; metadatos editoriales e ICOKG final siguen pendientes.
+Los permisos usados no autorizan acciones posteriores. No crear release/DOI ni
+enviar correo o manuscrito sin otra autorización.
+
 **9 nov, tras corrección:** Gabriel y coautores revisan la v3 final de 9,116 palabras.
 Faltan aval humano y metadatos editoriales/referencia final de ICOKG; no inventarlos.
 Confirmar cierre con Git/remoto y Pages del repo IJCOPI; no ejecutar publicadores históricos.
@@ -392,6 +427,11 @@ cifras de su primera versión eran falsas, sobre todo lo de fugas en 2019. Cuand
 retomar el cubo, sigue la sección 4.4 del informe.
 
 ## Bitácora
+
+- 2026-11-09: corregida revisión independiente tras contrastar hallazgos; SQL y RDF
+  reproducibles, 22 enlaces deterministas, población/cobertura explícitas y créditos
+  científicos verificados. Word final 15 páginas/9,029 palabras, amarillo e identidad
+  académica preservados. Cierre Git autorizado, sujeto al verificador por push.
 
 - 2026-11-09: corregidos hallazgos científicos, estadística, referencia fiscal y Discusión;
   regenerada v3 en 15 páginas/9,116 palabras, amarillo e identidad académica preservados.

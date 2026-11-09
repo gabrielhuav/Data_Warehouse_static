@@ -1,0 +1,526 @@
+{
+  "versions": {
+    "python": "3.10.11",
+    "pandas": "2.3.3",
+    "geopandas": "1.1.4"
+  },
+  "source_sha256": {
+    "B1": "1f5f123b8e9a50991d1847271b5a2bf321e813e924e5bcf958cab612311c765a",
+    "B3": "685b912f5458138a70726cff41aff828473e14264c43289d3b21f86a9df00320",
+    "D12": "8cb5cf6fdc9ec1d62ab4b0cbf649924ebd2fd1dbba051495b7ac6deed78623dd",
+    "D13": "64903f768b4bed43672131f8179e14b6ce3b8d7a1671c51de7872a51ad26341e",
+    "D15": "a4d56719c10c447ea5094ff1c35564b76d47705c35ad5c559d7ee589e94f06e2",
+    "C1h": "2b9fb9d2022adf76d1fd5100944357c7896b4e97ad80591691913f09292994c9",
+    "C1i": "b4598427aa4669259678428946a84d94341d2372d312f9c5fcc79ea35be6d809"
+  },
+  "source_records": {
+    "raw": 71102,
+    "valid": 70886,
+    "territories": 1553,
+    "coordinates_raw": 22930,
+    "coordinates_valid": 22858,
+    "coordinate_pairs_shared_by_territories": 0,
+    "dom_null": 4801,
+    "mixed_null": 8292
+  },
+  "census_support": {
+    "units_with_population": 1550,
+    "population": 9027619.0,
+    "blocks_assigned": 65533,
+    "assignment_sha256": "54be9c71f9559a6402081001a75044199b29cf9913aa4c6b38c4a05136fa38c3"
+  },
+  "conapo_support": {
+    "linked_units": 1532,
+    "linked_polygons": 1261,
+    "link_methods": {
+      "poligono": 1524,
+      "nombre": 8
+    },
+    "export_count_differences": {
+      "colonias_sacmex": 0,
+      "colonias_con_pob": 0,
+      "colonias_con_dom": 0,
+      "pob_sacmex": 0,
+      "consumo_dom_m3": 0,
+      "falta_agua_2019_s1": 0,
+      "fugas_2021_2024": 0,
+      "litros_hab_dia_dom": 0,
+      "falta_por_mil_hab": 0,
+      "fugas_por_mil_hab": 0
+    },
+    "partial_population_groups": 3,
+    "groups_missing_unit_dom_subtotal": 1,
+    "units_with_multiple_half_vote_candidates": 26,
+    "half_vote_candidates": [
+      {
+        "id_ubicacion": 31,
+        "cve_col": 90100083,
+        "n": 1,
+        "alcaldia": "ALVARO OBREGON",
+        "colonia": "BOSQUES DE TARANGO"
+      },
+      {
+        "id_ubicacion": 31,
+        "cve_col": 90100275,
+        "n": 1,
+        "alcaldia": "ALVARO OBREGON",
+        "colonia": "BOSQUES DE TARANGO"
+      },
+      {
+        "id_ubicacion": 33,
+        "cve_col": 90100047,
+        "n": 3,
+        "alcaldia": "ALVARO OBREGON",
+        "colonia": "CANUTILLO 3RA SECCION"
+      },
+      {
+        "id_ubicacion": 33,
+        "cve_col": 90100105,
+        "n": 3,
+        "alcaldia": "ALVARO OBREGON",
+        "colonia": "CANUTILLO 3RA SECCION"
+      },
+      {
+        "id_ubicacion": 36,
+        "cve_col": 90100056,
+        "n": 1,
+        "alcaldia": "ALVARO OBREGON",
+        "colonia": "COLINAS DE TARANGO"
+      },
+      {
+        "id_ubicacion": 36,
+        "cve_col": 90100065,
+        "n": 1,
+        "alcaldia": "ALVARO OBREGON",
+        "colonia": "COLINAS DE TARANGO"
+      },
+      {
+        "id_ubicacion": 59,
+        "cve_col": 90100091,
+        "n": 1,
+        "alcaldia": "ALVARO OBREGON",
+        "colonia": "GARCIMARRERO"
+      },
+      {
+        "id_ubicacion": 59,
+        "cve_col": 90100099,
+        "n": 1,
+        "alcaldia": "ALVARO OBREGON",
+        "colonia": "GARCIMARRERO"
+      },
+      {
+        "id_ubicacion": 292,
+        "cve_col": 90020046,
+        "n": 1,
+        "alcaldia": "AZCAPOTZALCO",
+        "colonia": "TLATILCO (U HAB)"
+      },
+      {
+        "id_ubicacion": 292,
+        "cve_col": 90020095,
+        "n": 1,
+        "alcaldia": "AZCAPOTZALCO",
+        "colonia": "TLATILCO (U HAB)"
+      },
+      {
+        "id_ubicacion": 384,
+        "cve_col": 90030037,
+        "n": 1,
+        "alcaldia": "COYOACAN",
+        "colonia": "CHIMALISTAC"
+      },
+      {
+        "id_ubicacion": 384,
+        "cve_col": 90030066,
+        "n": 1,
+        "alcaldia": "COYOACAN",
+        "colonia": "CHIMALISTAC"
+      },
+      {
+        "id_ubicacion": 422,
+        "cve_col": 90030069,
+        "n": 1,
+        "alcaldia": "COYOACAN",
+        "colonia": "IMAN"
+      },
+      {
+        "id_ubicacion": 422,
+        "cve_col": 90030116,
+        "n": 1,
+        "alcaldia": "COYOACAN",
+        "colonia": "IMAN"
+      },
+      {
+        "id_ubicacion": 432,
+        "cve_col": 90030090,
+        "n": 1,
+        "alcaldia": "COYOACAN",
+        "colonia": "LA CANTERA (U HAB)"
+      },
+      {
+        "id_ubicacion": 432,
+        "cve_col": 90030111,
+        "n": 1,
+        "alcaldia": "COYOACAN",
+        "colonia": "LA CANTERA (U HAB)"
+      },
+      {
+        "id_ubicacion": 447,
+        "cve_col": 90030023,
+        "n": 1,
+        "alcaldia": "COYOACAN",
+        "colonia": "NUEVA DIAZ ORDAZ"
+      },
+      {
+        "id_ubicacion": 447,
+        "cve_col": 90030063,
+        "n": 1,
+        "alcaldia": "COYOACAN",
+        "colonia": "NUEVA DIAZ ORDAZ"
+      },
+      {
+        "id_ubicacion": 505,
+        "cve_col": 90040014,
+        "n": 1,
+        "alcaldia": "CUAJIMALPA DE MORELOS",
+        "colonia": "EL MOLINITO"
+      },
+      {
+        "id_ubicacion": 505,
+        "cve_col": 90040017,
+        "n": 1,
+        "alcaldia": "CUAJIMALPA DE MORELOS",
+        "colonia": "EL MOLINITO"
+      },
+      {
+        "id_ubicacion": 513,
+        "cve_col": 90040024,
+        "n": 3,
+        "alcaldia": "CUAJIMALPA DE MORELOS",
+        "colonia": "LAS TINAJAS"
+      },
+      {
+        "id_ubicacion": 513,
+        "cve_col": 90040026,
+        "n": 3,
+        "alcaldia": "CUAJIMALPA DE MORELOS",
+        "colonia": "LAS TINAJAS"
+      },
+      {
+        "id_ubicacion": 519,
+        "cve_col": 90040017,
+        "n": 1,
+        "alcaldia": "CUAJIMALPA DE MORELOS",
+        "colonia": "MEMETLA"
+      },
+      {
+        "id_ubicacion": 519,
+        "cve_col": 90040035,
+        "n": 1,
+        "alcaldia": "CUAJIMALPA DE MORELOS",
+        "colonia": "MEMETLA"
+      },
+      {
+        "id_ubicacion": 743,
+        "cve_col": 90050156,
+        "n": 1,
+        "alcaldia": "GUSTAVO A. MADERO",
+        "colonia": "SAN JOSE TICOMAN"
+      },
+      {
+        "id_ubicacion": 743,
+        "cve_col": 90050263,
+        "n": 1,
+        "alcaldia": "GUSTAVO A. MADERO",
+        "colonia": "SAN JOSE TICOMAN"
+      },
+      {
+        "id_ubicacion": 760,
+        "cve_col": 90050167,
+        "n": 1,
+        "alcaldia": "GUSTAVO A. MADERO",
+        "colonia": "SAN MIGUEL-LA ESCALERA (BARR)"
+      },
+      {
+        "id_ubicacion": 760,
+        "cve_col": 90050168,
+        "n": 1,
+        "alcaldia": "GUSTAVO A. MADERO",
+        "colonia": "SAN MIGUEL-LA ESCALERA (BARR)"
+      },
+      {
+        "id_ubicacion": 924,
+        "cve_col": 90070040,
+        "n": 1,
+        "alcaldia": "IZTAPALAPA",
+        "colonia": "FUERTE DE LORETO - LA ANTENA (U HAB)"
+      },
+      {
+        "id_ubicacion": 924,
+        "cve_col": 90070266,
+        "n": 1,
+        "alcaldia": "IZTAPALAPA",
+        "colonia": "FUERTE DE LORETO - LA ANTENA (U HAB)"
+      },
+      {
+        "id_ubicacion": 956,
+        "cve_col": 90070032,
+        "n": 1,
+        "alcaldia": "IZTAPALAPA",
+        "colonia": "LA REGADERA"
+      },
+      {
+        "id_ubicacion": 956,
+        "cve_col": 90070100,
+        "n": 1,
+        "alcaldia": "IZTAPALAPA",
+        "colonia": "LA REGADERA"
+      },
+      {
+        "id_ubicacion": 974,
+        "cve_col": 90070118,
+        "n": 8,
+        "alcaldia": "IZTAPALAPA",
+        "colonia": "LOS CIPRESES"
+      },
+      {
+        "id_ubicacion": 974,
+        "cve_col": 90070207,
+        "n": 8,
+        "alcaldia": "IZTAPALAPA",
+        "colonia": "LOS CIPRESES"
+      },
+      {
+        "id_ubicacion": 978,
+        "cve_col": 90070074,
+        "n": 1,
+        "alcaldia": "IZTAPALAPA",
+        "colonia": "M MAZA DE JUAREZ (U HAB)"
+      },
+      {
+        "id_ubicacion": 978,
+        "cve_col": 90070122,
+        "n": 1,
+        "alcaldia": "IZTAPALAPA",
+        "colonia": "M MAZA DE JUAREZ (U HAB)"
+      },
+      {
+        "id_ubicacion": 1241,
+        "cve_col": 90110052,
+        "n": 1,
+        "alcaldia": "TLAHUAC",
+        "colonia": "JARDINES DEL LLANO-U.H. VILLA TLATEMPA"
+      },
+      {
+        "id_ubicacion": 1241,
+        "cve_col": 90110183,
+        "n": 1,
+        "alcaldia": "TLAHUAC",
+        "colonia": "JARDINES DEL LLANO-U.H. VILLA TLATEMPA"
+      },
+      {
+        "id_ubicacion": 1255,
+        "cve_col": 90110026,
+        "n": 1,
+        "alcaldia": "TLAHUAC",
+        "colonia": "PEA ALTA"
+      },
+      {
+        "id_ubicacion": 1255,
+        "cve_col": 90110068,
+        "n": 1,
+        "alcaldia": "TLAHUAC",
+        "colonia": "PEA ALTA"
+      },
+      {
+        "id_ubicacion": 1311,
+        "cve_col": 90120056,
+        "n": 1,
+        "alcaldia": "TLALPAN",
+        "colonia": "FUENTES Y PEDREGAL DE TEPEPAN"
+      },
+      {
+        "id_ubicacion": 1311,
+        "cve_col": 90120128,
+        "n": 1,
+        "alcaldia": "TLALPAN",
+        "colonia": "FUENTES Y PEDREGAL DE TEPEPAN"
+      },
+      {
+        "id_ubicacion": 1386,
+        "cve_col": 90120055,
+        "n": 1,
+        "alcaldia": "TLALPAN",
+        "colonia": "SN JUAN TEPEXIMILPA"
+      },
+      {
+        "id_ubicacion": 1386,
+        "cve_col": 90120160,
+        "n": 1,
+        "alcaldia": "TLALPAN",
+        "colonia": "SN JUAN TEPEXIMILPA"
+      },
+      {
+        "id_ubicacion": 1490,
+        "cve_col": 90130025,
+        "n": 1,
+        "alcaldia": "XOCHIMILCO",
+        "colonia": "CERRO GRANDE"
+      },
+      {
+        "id_ubicacion": 1490,
+        "cve_col": 90130107,
+        "n": 1,
+        "alcaldia": "XOCHIMILCO",
+        "colonia": "CERRO GRANDE"
+      },
+      {
+        "id_ubicacion": 1504,
+        "cve_col": 90130055,
+        "n": 1,
+        "alcaldia": "XOCHIMILCO",
+        "colonia": "LA NORIA"
+      },
+      {
+        "id_ubicacion": 1504,
+        "cve_col": 90130166,
+        "n": 1,
+        "alcaldia": "XOCHIMILCO",
+        "colonia": "LA NORIA"
+      },
+      {
+        "id_ubicacion": 1507,
+        "cve_col": 90130064,
+        "n": 1,
+        "alcaldia": "XOCHIMILCO",
+        "colonia": "LOS CERRILLOS II"
+      },
+      {
+        "id_ubicacion": 1507,
+        "cve_col": 90130065,
+        "n": 1,
+        "alcaldia": "XOCHIMILCO",
+        "colonia": "LOS CERRILLOS II"
+      },
+      {
+        "id_ubicacion": 1542,
+        "cve_col": 90130107,
+        "n": 1,
+        "alcaldia": "XOCHIMILCO",
+        "colonia": "SANTA CRUZ CHAVARRIETA"
+      },
+      {
+        "id_ubicacion": 1542,
+        "cve_col": 90130112,
+        "n": 1,
+        "alcaldia": "XOCHIMILCO",
+        "colonia": "SANTA CRUZ CHAVARRIETA"
+      }
+    ],
+    "positive_population_pairs": 1259,
+    "population_difference_over20pct": 701,
+    "population_difference_over50pct": 354,
+    "examples": [
+      {
+        "cve_col": 90050007,
+        "colonia": "Acueducto de Guadalupe",
+        "pob_total": 10039,
+        "pob_sacmex": 1476.0,
+        "colonias_sacmex": 1,
+        "colonias_con_pob": 1,
+        "colonias_con_dom": 1,
+        "consumo_dom_m3": 334783.89,
+        "litros_hab_dia_dom": 1253.1400754615,
+        "falta_agua_2019_s1": 34.0,
+        "falta_por_mil_hab": 23.0352303523,
+        "fugas_2021_2024": 42.0,
+        "fugas_por_mil_hab": 28.4552845528
+      },
+      {
+        "cve_col": 90050008,
+        "colonia": "Acueducto de Guadalupe",
+        "pob_total": 5147,
+        "pob_sacmex": 10228.0,
+        "colonias_sacmex": 1,
+        "colonias_con_pob": 1,
+        "colonias_con_dom": 1,
+        "consumo_dom_m3": 77090.89,
+        "litros_hab_dia_dom": 41.6422095558,
+        "falta_agua_2019_s1": 9.0,
+        "falta_por_mil_hab": 0.8799374267,
+        "fugas_2021_2024": 254.0,
+        "fugas_por_mil_hab": 24.8337895972
+      },
+      {
+        "cve_col": 90100215,
+        "colonia": "Real del Monte",
+        "pob_total": 1888,
+        "pob_sacmex": 83.0,
+        "colonias_sacmex": 1,
+        "colonias_con_pob": 1,
+        "colonias_con_dom": 1,
+        "consumo_dom_m3": 0.0,
+        "litros_hab_dia_dom": 0.0,
+        "falta_agua_2019_s1": 3.0,
+        "falta_por_mil_hab": 36.1445783133,
+        "fugas_2021_2024": 92.0,
+        "fugas_por_mil_hab": 1108.4337349398
+      },
+      {
+        "cve_col": 90120045,
+        "colonia": "El Divisadero",
+        "pob_total": 165,
+        "pob_sacmex": 6869.0,
+        "colonias_sacmex": 1,
+        "colonias_con_pob": 1,
+        "colonias_con_dom": 1,
+        "consumo_dom_m3": 0.0,
+        "litros_hab_dia_dom": 0.0,
+        "falta_agua_2019_s1": 22.0,
+        "falta_por_mil_hab": 3.2027951667,
+        "fugas_2021_2024": 60.0,
+        "fugas_por_mil_hab": 8.7348959092
+      },
+      {
+        "cve_col": 90120154,
+        "colonia": "San Andres Totoltepec",
+        "pob_total": 27756,
+        "pob_sacmex": 24723.0,
+        "colonias_sacmex": 1,
+        "colonias_con_pob": 1,
+        "colonias_con_dom": 1,
+        "consumo_dom_m3": 0.0,
+        "litros_hab_dia_dom": 0.0,
+        "falta_agua_2019_s1": 228.0,
+        "falta_por_mil_hab": 9.2221817741,
+        "fugas_2021_2024": 599.0,
+        "fugas_por_mil_hab": 24.2284512397
+      },
+      {
+        "cve_col": 90120164,
+        "colonia": "San Miguel Topilejo",
+        "pob_total": 24616,
+        "pob_sacmex": 33277.0,
+        "colonias_sacmex": 2,
+        "colonias_con_pob": 2,
+        "colonias_con_dom": 2,
+        "consumo_dom_m3": 0.0,
+        "litros_hab_dia_dom": 0.0,
+        "falta_agua_2019_s1": 107.0,
+        "falta_por_mil_hab": 3.2154340836,
+        "fugas_2021_2024": 109.0,
+        "fugas_por_mil_hab": 3.2755356553
+      }
+    ]
+  },
+  "per_capita_bases": {
+    "dom_m3_s1": 78453897.94104001,
+    "census_2020_occupants_private_dwellings": 9159392,
+    "census_181_days_lpcd": 47.322677089319605,
+    "conapo_2019_population_16": 9343071,
+    "conapo_x2_365_lpcd_16": 46.011035587728195,
+    "plausible_boroughs": 14,
+    "conapo_2019_population_plausible": 8794653,
+    "conapo_x2_365_lpcd_plausible": 48.4738809757957
+  }
+}

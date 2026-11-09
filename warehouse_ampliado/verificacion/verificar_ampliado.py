@@ -78,6 +78,17 @@ def main() -> int:
     decir("\n## 3. Integridad de las llaves nuevas")
     ok("las 1,553 colonias tienen clave INEGI", uno(cur, "SELECT count(*) FROM dim_ubicacion WHERE cve_mun IS NULL") == 0)
     ok("16 alcaldias enlazadas", uno(cur, "SELECT count(DISTINCT cve_mun) FROM dim_ubicacion") == 16)
+    bad = uno(cur, """SELECT count(*) FROM v_colonia_conapo_contexto
+                      WHERE (colonias_con_pob < colonias_sacmex AND
+                             (litros_hab_dia_dom IS NOT NULL OR falta_por_mil_hab IS NOT NULL OR fugas_por_mil_hab IS NOT NULL))
+                         OR (colonias_con_dom < colonias_sacmex AND litros_hab_dia_dom IS NOT NULL)
+                         OR (litros_hab_dia_dom IS NOT NULL AND
+                             litros_hab_dia_dom IS DISTINCT FROM round(consumo_dom_m3 * 1000.0 / NULLIF(pob_sacmex * 181,0),1))
+                         OR (falta_por_mil_hab IS NOT NULL AND
+                             falta_por_mil_hab IS DISTINCT FROM round(falta_agua_2019_s1 * 1000.0 / NULLIF(pob_sacmex,0),2))
+                         OR (fugas_por_mil_hab IS NOT NULL AND
+                             fugas_por_mil_hab IS DISTINCT FROM round(fugas_2021_2024 * 1000.0 / NULLIF(pob_sacmex,0),2))""")
+    ok("tasas proxy CONAPO explicitas y sin denominadores parciales", bad == 0, f"{bad} excepciones")
     cur.execute("""SELECT count(*) FROM (
                      SELECT t.id_tiempo FROM dim_tiempo t GROUP BY t.id_tiempo HAVING count(*) > 1) x""")
     ok("dim_tiempo sin duplicados", cur.fetchone()[0] == 0)
@@ -331,7 +342,7 @@ def main() -> int:
     conn.close()
 
     decir(f"\nverificaciones fallidas: {fallos}")
-    SALIDA.write_text("\n".join(lineas) + "\n", encoding="utf-8")
+    SALIDA.write_text("\n".join(lineas) + "\n", encoding="utf-8", newline="\n")
     return 1 if fallos else 0
 
 

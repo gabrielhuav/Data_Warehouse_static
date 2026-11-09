@@ -172,26 +172,15 @@
   rr:predicateObjectMap [ rr:predicate agua:aboveLimit ; rr:objectMap [ rr:column "contaminantes" ] ] .
 
 # ---------------------------------------------------------------------
-# Colonias de CONAPO. Consumo y reportes solo existen en la CDMX.
+# Colonias de CONAPO. La poblacion oficial y las tasas proxy SACMEX tienen soportes distintos.
 # ---------------------------------------------------------------------
 <#Colonia> a rr:TriplesMap ;
   rr:logicalTable [ rr:sqlQuery """
-    SELECT c.cve_col, c.cve_mun, c.colonia, ROUND(c.pob_total) AS pob_total,
-           ROUND(c.pct_ocup_sin_agua, 2) AS pct_sin_agua, c.gm_2020,
-           ROUND(s.consumo_dom_m3 * 1000 / NULLIF(s.pob_sacmex * 181, 0), 1) AS litros_hab_dia_dom,
-           ROUND(s.falta * 1000.0 / NULLIF(s.pob_sacmex, 0), 2) AS falta_por_mil_hab,
-           ROUND(s.fugas * 1000.0 / NULLIF(s.pob_sacmex, 0), 2) AS fugas_por_mil_hab,
-           ROUND(s.vlm, 2) AS vlm_cm_anio
-    FROM   dim_colonia_conapo c
-    JOIN   dim_municipio m USING (cve_mun)
-    LEFT   JOIN (SELECT u.cve_col_conapo AS cve_col, SUM(v.consumo_dom_m3) AS consumo_dom_m3,
-                        SUM(v.pob_censo_2020) AS pob_sacmex, SUM(v.falta_agua_2019_s1) AS falta,
-                        SUM(v.fugas_2021_2024) AS fugas, AVG(v.vlm_media_cm_anio) AS vlm
-                 FROM   v_consumo_colonia_integrado v
-                 JOIN   dim_ubicacion u USING (id_ubicacion)
-                 WHERE  u.cve_col_conapo IS NOT NULL
-                 GROUP  BY u.cve_col_conapo) s USING (cve_col)
-    WHERE  m.en_zm_ciudad_mexico
+    SELECT cve_col, cve_mun, colonia, ROUND(pob_total) AS pob_total,
+           pct_sin_agua, gm_2020, pob_sacmex, colonias_sacmex, colonias_con_pob,
+           colonias_con_dom, consumo_dom_m3, falta_agua_2019_s1, fugas_2021_2024,
+           litros_hab_dia_dom, falta_por_mil_hab, fugas_por_mil_hab, vlm_cm_anio
+    FROM   v_colonia_conapo_contexto
   """ ] ;
   rr:subjectMap [ rr:template "https://w3id.org/cdmx/agua/coloniaConapo/{cve_col}" ;
                   rr:class agua:Neighbourhood, geo:Feature ] ;
@@ -204,11 +193,25 @@
   rr:predicateObjectMap [ rr:predicate agua:occupantsWithoutWaterPct ;
                           rr:objectMap [ rr:column "pct_sin_agua" ; rr:datatype xsd:decimal ] ] ;
   rr:predicateObjectMap [ rr:predicate agua:marginalisationLevel ; rr:objectMap [ rr:column "gm_2020" ] ] ;
-  rr:predicateObjectMap [ rr:predicate agua:billedLitresPerDay ;
+  rr:predicateObjectMap [ rr:predicate agua:ratePopulationProxy ;
+                          rr:objectMap [ rr:column "pob_sacmex" ; rr:datatype xsd:integer ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:matchedUtilityNeighbourhoods ;
+                          rr:objectMap [ rr:column "colonias_sacmex" ; rr:datatype xsd:integer ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:utilityNeighbourhoodsWithPopulation ;
+                          rr:objectMap [ rr:column "colonias_con_pob" ; rr:datatype xsd:integer ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:utilityNeighbourhoodsWithDomesticVolume ;
+                          rr:objectMap [ rr:column "colonias_con_dom" ; rr:datatype xsd:integer ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:billedDomesticVolumeM3 ;
+                          rr:objectMap [ rr:column "consumo_dom_m3" ; rr:datatype xsd:decimal ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:shortageReportCount ;
+                          rr:objectMap [ rr:column "falta_agua_2019_s1" ; rr:datatype xsd:integer ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:leakReportCount ;
+                          rr:objectMap [ rr:column "fugas_2021_2024" ; rr:datatype xsd:integer ] ] ;
+  rr:predicateObjectMap [ rr:predicate agua:proxyBilledLitresPerDay ;
                           rr:objectMap [ rr:column "litros_hab_dia_dom" ; rr:datatype xsd:decimal ] ] ;
-  rr:predicateObjectMap [ rr:predicate agua:shortageReportsPerThousand ;
+  rr:predicateObjectMap [ rr:predicate agua:proxyShortageReportsPerThousand ;
                           rr:objectMap [ rr:column "falta_por_mil_hab" ; rr:datatype xsd:decimal ] ] ;
-  rr:predicateObjectMap [ rr:predicate agua:leakReportsPerThousand ;
+  rr:predicateObjectMap [ rr:predicate agua:proxyLeakReportsPerThousand ;
                           rr:objectMap [ rr:column "fugas_por_mil_hab" ; rr:datatype xsd:decimal ] ] ;
   rr:predicateObjectMap [ rr:predicate agua:verticalLandMotion ;
                           rr:objectMap [ rr:column "vlm_cm_anio" ; rr:datatype xsd:decimal ] ] .
@@ -233,7 +236,7 @@
   rr:predicateObjectMap [ rr:predicate agua:touchesAcrossCityLimit ;
                           rr:objectMap [ rr:template "https://w3id.org/cdmx/agua/coloniaConapo/{cve_vecina}" ] ] .
 
-# Enlace con el grafo original: cada colonia de SACMEX queda dentro de una colonia de CONAPO
+# Correspondencia con el grafo original; no implica contencion de toda la unidad SACMEX.
 <#ColoniaOriginal> a rr:TriplesMap ;
   rr:logicalTable [ rr:sqlQuery """
     SELECT id_ubicacion, cve_col_conapo FROM dim_ubicacion WHERE cve_col_conapo IS NOT NULL

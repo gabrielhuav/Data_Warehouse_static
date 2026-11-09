@@ -1,5 +1,8 @@
 -- Los 63 municipios de la ZM de Ciudad de Mexico. El volumen viene de SACMEX en las alcaldias y
 -- del CNGMD en los demas; calidad_volumen dice cuales son utilizables.
+-- litros_hab_dia_dom usa CONAPO mitad de 2019 y volumen anualizado /365:
+-- SACMEX S1 x2 (equivale a 182.5 dias); CNGMD referencia 2018 anual. No es
+-- la tasa de la Tabla 4 con OCUPVIVPAR 2020 y los 181 dias observados de S1.
 WITH acuifero AS (
     SELECT DISTINCT ON (x.cve_mun) x.cve_mun, a.nom_acui, ROUND(x.pct_municipio, 1) AS pct_acuifero
     FROM   puente_municipio_acuifero x

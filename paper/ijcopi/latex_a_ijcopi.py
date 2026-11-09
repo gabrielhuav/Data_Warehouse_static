@@ -69,6 +69,9 @@ CITAS = {
     "inegi2021": (["Instituto Nacional de Estadística y Geografía"], "2021"),
     "infocdmx2022": (["INFO CDMX"], "2022"),
     "gcdmx2019": (["Gobierno de la Ciudad de México"], "2019"),
+    "carrera2025": (["Carrera-Hernández"], "2025"),
+    "huerta2022": (["Huerta-Vergara", "Arciniega-Esparza", "Pedrozo-Acuña", "Matus-Kramer", "Vega-López"], "2022"),
+    "hidromx2026": (["Sánchez-Ruiz", "Ramos Aguilar", "Ramos-Aguilar", "Reyes-Peña", "Reyes-Cocoletzi", "García-Ramírez"], "2026"),
     # Ampliacion a la zona metropolitana. Cada una alimenta una tabla: ver control_ingesta_fuentes.
     "conapo2025a": (["CONAPO"], "2025a"),
     "conapo2025b": (["CONAPO"], "2025b"),
@@ -155,6 +158,22 @@ REFERENCIAS = {
         "!Gobierno de la Ciudad de México. (2019, April 1). *Gaceta Oficial de la Ciudad de México* "
         "(No. 62, pp. 39–40). "
         "https://data.consejeria.cdmx.gob.mx/portal_old/uploads/gacetas/989c31738f67577540092747c82e52f7.pdf"
+    ),
+    "carrera2025": (
+        "!Carrera-Hernández, J. J. (2025). Mexico's High Resolution Climate Database (MexHiResClimDB): "
+        "A new daily high-resolution gridded climate dataset for Mexico covering 1951–2020. "
+        "*Earth System Science Data, 17*, 6911–6941. https://doi.org/10.5194/essd-17-6911-2025"
+    ),
+    "huerta2022": (
+        "!Huerta-Vergara, A. R., Arciniega-Esparza, S., Pedrozo-Acuña, A., Matus-Kramer, A., & Vega-López, E. "
+        "(2022). Assessment of vulnerability to water shortage in the municipalities of Mexico City. "
+        "*Boletín de la Sociedad Geológica Mexicana, 74*(1), A071021. "
+        "https://doi.org/10.18268/BSGM2022v74n1a071021"
+    ),
+    "hidromx2026": (
+        "!Sánchez-Ruiz, D., Ramos Aguilar, E., Ramos-Aguilar, R., Reyes-Peña, C., Reyes-Cocoletzi, L., & "
+        "García-Ramírez, J. (2026). *Hidro-MX v2026.10: A reproducible hydroclimatic dataset for Mexican "
+        "pilot basins (CONAGUA-SIH and INEGI)* [Data set]. Zenodo. https://doi.org/10.5281/zenodo.23150556"
     ),
     "lippolis2025": (
         "!Lippolis, A. S., Lodi, G., & Nuzzolese, A. G. (2025). The Water Health Open Knowledge Graph. *Scientific "

@@ -1,5 +1,5 @@
 {
- "generado_en": "2026-10-31 22:04 UTC",
+ "generado_en": "2026-11-09 19:06 UTC",
  "consultas": [
   {
    "consulta": "01_fuentes_cargadas.sql",
@@ -55,7 +55,7 @@
     "acuifero_principal",
     "pct_acuifero"
    ],
-   "sha256_consulta": "cefc8d8a4c3056365875c15a474ff35990f1f2209bc391a30396cbadf735760f",
+   "sha256_consulta": "3ce28a14b9467ede92c6b08b34fcf0ea09d841353c1695d46fb5328046f25442",
    "sha256_datos": "3b54880dbbfbd5ddb4ed41a2ca92e1356410e666b6c8cb598f5a4f8f1c9c2483"
   },
   {
@@ -72,6 +72,10 @@
     "im_2020",
     "gm_2020",
     "colonias_sacmex",
+    "colonias_con_pob",
+    "colonias_con_dom",
+    "pob_sacmex",
+    "consumo_dom_m3",
     "litros_hab_dia_dom",
     "falta_agua_2019_s1",
     "falta_por_mil_hab",
@@ -79,8 +83,8 @@
     "fugas_por_mil_hab",
     "vlm_cm_anio"
    ],
-   "sha256_consulta": "f397b69a63f606f7706452fefb910edd0d8217c5bc137edb8a9d6a1c18d33f35",
-   "sha256_datos": "26fc327d74f603678eb3c3643c4e499831c85b40aa0ca1ebb709cb7e178e72c6"
+   "sha256_consulta": "e9c3fdad6d439370abdaf4d83d7d882ebbb44cc4a5e5dcfa674cc45f49b5e3e3",
+   "sha256_datos": "4094b5db05ad4b97c4541a301c030c00855abad7389a317622a776ea9fb3841b"
   },
   {
    "consulta": "05_acuiferos_zm.sql",

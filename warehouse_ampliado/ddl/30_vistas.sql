@@ -4,7 +4,7 @@
 -- No son el cubo de datos: solo muestran que los hechos nuevos y los originales se
 -- cruzan por llaves reales.
 
-DROP VIEW IF EXISTS v_zm_indicadores_agua, v_consumo_colonia_integrado, v_acuiferos_zmvm CASCADE;
+DROP VIEW IF EXISTS v_colonia_conapo_contexto, v_zm_indicadores_agua, v_consumo_colonia_integrado, v_acuiferos_zmvm CASCADE;
 
 -- Consumo facturado por colonia, primer semestre de 2019, con el contexto de otras fuentes
 CREATE VIEW v_consumo_colonia_integrado AS
@@ -52,6 +52,59 @@ LEFT   JOIN clima cl   USING (id_ubicacion)
 LEFT   JOIN fact_subsidencia_colonia s USING (id_ubicacion)
 LEFT   JOIN dim_colonia_conapo cc ON cc.cve_col = u.cve_col_conapo;
 
+-- Contexto SACMEX mostrado sobre los poligonos CONAPO de la ZM. NO es una
+-- desagregacion espacial de volumen o reportes al poligono: cada unidad SACMEX
+-- se enlaza entera al poligono con mas puntos (>=50 %; empate: menor clave
+-- numerica CONAPO) o por nombre de respaldo.
+-- pob_total es la poblacion CONAPO del poligono; pob_sacmex es la suma de las
+-- poblaciones urbanas asignadas a puntos SACMEX a <=750 m dentro de la alcaldia.
+-- Las tasas son proxies sobre ese segundo soporte, no tasas reales del poligono.
+-- Los reportes se asignan por nombre o punto cercano (<=1 km): tampoco son un
+-- conteo de eventos recortado al poligono CONAPO. No dividir por pob_total.
+-- Una poblacion parcial no puede normalizar un numerador del conjunto completo;
+-- la tasa domestica requiere ademas un subtotal domestico disponible en cada unidad.
+-- Eso no garantiza cobertura completa de sus registros, cuentas o bimestres.
+CREATE VIEW v_colonia_conapo_contexto AS
+WITH sacmex AS (
+    SELECT u.cve_col_conapo AS cve_col,
+           COUNT(*) AS colonias_sacmex,
+           COUNT(*) FILTER (WHERE v.pob_censo_2020 > 0) AS colonias_con_pob,
+           COUNT(v.consumo_dom_m3) AS colonias_con_dom,
+           SUM(v.consumo_dom_m3) AS consumo_dom_m3,
+           SUM(v.pob_censo_2020) FILTER (WHERE v.pob_censo_2020 > 0) AS pob_sacmex,
+           SUM(v.falta_agua_2019_s1) AS falta_agua_2019_s1,
+           SUM(v.fugas_2021_2024) AS fugas_2021_2024,
+           AVG(v.vlm_media_cm_anio) AS vlm_media_cm_anio
+    FROM   v_consumo_colonia_integrado v
+    JOIN   dim_ubicacion u USING (id_ubicacion)
+    WHERE  u.cve_col_conapo IS NOT NULL
+    GROUP  BY u.cve_col_conapo
+)
+SELECT c.cve_col, c.cve_mun, c.colonia,
+       ROUND(c.pob_total) AS pob_total,
+       ROUND(c.pct_ocup_sin_agua, 2) AS pct_sin_agua,
+       ROUND(c.pct_ocup_sin_drenaje, 2) AS pct_sin_drenaje,
+       ROUND(c.im_2020, 2) AS im_2020, c.gm_2020,
+       s.colonias_sacmex, s.colonias_con_pob, s.colonias_con_dom,
+       s.pob_sacmex, s.consumo_dom_m3,
+       CASE WHEN s.colonias_con_pob = s.colonias_sacmex
+                  AND s.colonias_con_dom = s.colonias_sacmex
+            THEN ROUND(s.consumo_dom_m3 * 1000.0 / NULLIF(s.pob_sacmex * 181, 0), 1)
+            END AS litros_hab_dia_dom,
+       s.falta_agua_2019_s1,
+       CASE WHEN s.colonias_con_pob = s.colonias_sacmex
+            THEN ROUND(s.falta_agua_2019_s1 * 1000.0 / NULLIF(s.pob_sacmex, 0), 2)
+            END AS falta_por_mil_hab,
+       s.fugas_2021_2024,
+       CASE WHEN s.colonias_con_pob = s.colonias_sacmex
+            THEN ROUND(s.fugas_2021_2024 * 1000.0 / NULLIF(s.pob_sacmex, 0), 2)
+            END AS fugas_por_mil_hab,
+       ROUND(s.vlm_media_cm_anio, 2) AS vlm_cm_anio
+FROM   dim_colonia_conapo c
+JOIN   dim_municipio m USING (cve_mun)
+LEFT   JOIN sacmex s USING (cve_col)
+WHERE  m.en_zm_ciudad_mexico;
+
 -- Indicadores por municipio de la ZM de Ciudad de Mexico. En las alcaldias el volumen
 -- viene de SACMEX y en los municipios del Estado de Mexico del CNGMD (referencia 2018).
 --
@@ -60,6 +113,10 @@ LEFT   JOIN dim_colonia_conapo cc ON cc.cve_col = u.cve_col_conapo;
 -- 1,000 l/hab/dia. Los datos crudos no se tocan: calidad_volumen los clasifica. La banda de 10 a
 -- 400 l/hab/dia es una decision del analisis para separar lo evidentemente mal reportado, no
 -- una medida de consumo real. Lo mismo vale para razon_ingreso_shcp fuera de 0.1 a 10.
+-- Normalizacion municipal: volumen anualizado /365 y poblacion CONAPO de mitad
+-- de 2019. En SACMEX S1 se conserva x2/365 (equivalente a 182.5 dias), no el
+-- promedio del semestre /181 con OCUPVIVPAR 2020 de la Tabla 4. Son bases distintas;
+-- tampoco son el soporte censal urbano por proximidad de la vista de colonias.
 CREATE VIEW v_zm_indicadores_agua AS
 WITH sacmex AS (
     SELECT u.cve_mun, SUM(f.consumo_total_dom) * 2 AS vol_dom_anualizado_m3

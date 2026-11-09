@@ -135,8 +135,51 @@ las colonias de CONAPO no son las de SACMEX. Por eso cada manzana censal, establ
 DENUE y píxel de InSAR se asigna al punto de consumo de SACMEX más cercano dentro de la misma
 alcaldía, con distancia máxima. Es una aproximación, no una intersección de polígonos.
 
-**Colonias CONAPO.** `dim_ubicacion.cve_col_conapo` es la colonia que contiene la mayoría de los
-puntos de SACMEX de cada colonia; `enlace_conapo` dice si salió de eso o, en 8 casos, del nombre.
+**Colonias CONAPO.** `dim_ubicacion.cve_col_conapo` elige el polígono con más puntos de cada
+unidad SACMEX, si alcanza al menos la mitad. Un empate de votos se resuelve con la menor clave
+numérica CONAPO; es una regla reproducible para un enlace aproximado, no una mayoría geográfica.
+`enlace_conapo` distingue ese enlace del respaldo por nombre único. Los totales de cada unidad
+SACMEX se enlazan enteros: no se recortan ni reparten sus registros según el polígono.
+
+**Dos poblaciones en la capa CONAPO.** `v_colonia_conapo_contexto`, fuente común de SQL y RDF,
+expone `pob_total` del polígono y `pob_sacmex`, la suma de población urbana asignada por proximidad
+a sus unidades SACMEX enlazadas. Las tasas usan este segundo denominador y son proxies; no son
+tasas de residentes del polígono. Los reportes se ubican por nombre o punto a menos de 1 km,
+mientras que el censo usa puntos a 750 m dentro de la misma alcaldía. Cambiar el divisor a
+`pob_total` no alinearía por sí solo esos soportes. `colonias_con_pob` y `colonias_con_dom` se
+comparan con `colonias_sacmex`: si falta población positiva en alguna unidad, no se emiten tasas;
+la tasa doméstica exige además un subtotal disponible por unidad. Esto no acredita cobertura
+completa de cuentas, registros o bimestres. Un subtotal NULL se mantiene NULL y un cero conocido
+se conserva como cero.
+
+**Bases per cápita distintas.** La Tabla 4 usa volumen doméstico SACMEX de 2019 S1, los 181 días
+observados y OCUPVIVPAR del Censo 2020. La vista municipal conserva su normalización anualizada
+S1×2/365 y población CONAPO a mitad de 2019 (o volumen anual CNGMD de referencia 2018). La capa
+de colonias usa 181 días y el soporte censal urbano aproximado descrito arriba. Cambian período,
+población y grano; esos valores no son una única estimación intercambiable de consumo medido.
+
+**Verificación de soportes.** `verificacion/test_soporte_colonias.py` ejecuta el fragmento SQL con
+casos controlados de NULL, cobertura y empates. `verificacion/verificar_soporte_colonias.py` lee
+PostgreSQL sin modificarlo y recalcula conteos y tasas en Python Decimal. El auditor
+`verificacion/auditar_denominadores.py` reconstruye los cruces desde archivos crudos verificados,
+sin base de datos; acepta `--datos-crudos` y una salida explícita. Para una base anterior al
+desempate determinista, `etl/reconciliar_empates_conapo.py` muestra el plan en modo de lectura;
+`--aplicar` actualiza en una transacción solo las claves CONAPO de las unidades empatadas. No
+resembrar el almacén para esa corrección. Después deben regenerarse y comprobarse SQL/JSON y RDF.
+
+```bash
+warehouse_ampliado/.venv/Scripts/python -m unittest discover -s warehouse_ampliado/verificacion -p test_soporte_colonias.py
+warehouse_ampliado/.venv/Scripts/python -I warehouse_ampliado/verificacion/verificar_soporte_colonias.py --salida warehouse_ampliado/verificacion/evidencia_soporte_colonias.json
+warehouse_ampliado/.venv/Scripts/python -I warehouse_ampliado/verificacion/auditar_denominadores.py --salida warehouse_ampliado/verificacion/evidencia_denominadores.json
+```
+
+El auditor escribe también un CSV de unidades junto a la salida explícita; sirve para diagnóstico
+y no es una entrada del almacén. El código de salida es 1 si el JSON publicado no coincide con la
+reconstrucción. Las evidencias incluidas cotejan diez campos y comparten la huella canónica de
+asignación poblacional `54be9c71f9559a6402081001a75044199b29cf9913aa4c6b38c4a05136fa38c3`:
+JSON UTF-8 compacto de las filas `[alcaldia,colonia,poblacion_o_null]`, ordenadas por las etiquetas.
+Esa huella compara población unidad por unidad entre los crudos y PostgreSQL, con independencia de
+los identificadores internos o finales de línea. No es el SHA del archivo fuente ni de su exportación.
 
 **Puente municipio-acuífero.** Es la intersección de los polígonos de INEGI y CONAGUA en la CDMX,
 el Estado de México e Hidalgo. `pct_municipio` suma 100 % en los 225 municipios. Los polígonos de

@@ -4,7 +4,7 @@
 -- Solo quita lo que agrega warehouse_ampliado. Las fechas nuevas se identifican porque
 -- ningun hecho original las usa: fact_clima referencia los 181 dias de dim_tiempo.
 
-DROP VIEW IF EXISTS v_zm_indicadores_agua, v_consumo_colonia_integrado, v_acuiferos_zmvm CASCADE;
+DROP VIEW IF EXISTS v_colonia_conapo_contexto, v_zm_indicadores_agua, v_consumo_colonia_integrado, v_acuiferos_zmvm CASCADE;
 
 DROP TABLE IF EXISTS
     fact_vulnerabilidad_alcaldia, fact_subsidencia_municipio, fact_subsidencia_colonia,
