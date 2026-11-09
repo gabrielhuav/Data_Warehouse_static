@@ -248,6 +248,54 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
 
 ## Estado actual
 
+- **Corrección final autorizada 9 nov 2026:** Gabriel pidió corregir todo, commit y push
+  con identidad Git humana, sin atribuciones/firmas de asistentes. Un cierre por repositorio;
+  ningún permiso para release/DOI, correo o envío editorial. Word/PDF: 15 páginas, 9,116 palabras
+  (+62.350846 % frente a 5,615), resumen 144 y seis keywords. Word d33e5f09cc6dc1d64546f8a5ff8b01de579085d1ed9e7d1dff20cda338ebd85f;
+  PDF 36029cb2d1460aaa0c204ed8f8bdf7ab880cf166c5b72af6813cd530a821673f. Título, autores,
+  declaración IA, imágenes, plantilla y v0 intactos. Quince páginas inspeccionadas y cero
+  tokens nuevos sin amarillo vs respaldo de 9,431 palabras; contador histórico v0 83.
+  Corregidos grano fiscal con cifras por registro/script, AP, tres listas implementadas,
+  Discusión y cita fiscal oficial de Consejería (HTTP 200). Prueba exacta con empates/ceros
+  sin SciPy, seis tests pasan en ambos repositorios. Web corregida solo en IJCOPI, sin tocar
+  CSV base, SQL, TTL ni sitios históricos. Evidencia en IJCOPI/tmp/correccion_2026-11-09/.
+  Comprobar Git y remoto para confirmar ejecución del cierre; permisos consumidos no se heredan.
+- **Auditoría de lectura 9 nov 2026:** confirmados con Word 15 páginas, 9,431 palabras,
+  base 5,615 (+67.960819 %), resumen 144 y seis keywords. PDF inspeccionado completo;
+  original/copia Word idénticos; v0, título, autores, declaración de IA e imágenes intactos.
+  Los conteos 79/67 del verificador amarillo son falsos positivos de alineación/tokenización,
+  no nuevos añadidos sin amarillo, según comparación de párrafos y runs. Recalculados 10
+  escenarios distintos, IF 19/20 y AP 20/20, 89 municipios, 1,508 colonias y 12 conteos web.
+  Pendientes: índice fiscal de 5.2 atribuido a colonias cuando el grano es manzana/registro
+  (1,200 de 1,553 mezclan categorías); tres listas todavía como trabajo futuro, aunque la
+  nueva web ya las implementa. La web descarta error de captura sin confirmación y generaliza
+  A_g solo-excesos más allá del top global observado; filtro de alcaldía vuelve al cambiar
+  idioma y límite de filas no afecta ceros. Nuevo script pareado anuncia Wilcoxon exacto sin
+  fijar método/versión: p depende de SciPy aunque el p exacto de la evidencia sí se reproduce
+  por permutación. Localizada fuente fiscal SACMEX: Gaceta núm. 62, 1 abril 2019, pp. 39–40,
+  https://www.sacmex.cdmx.gob.mx/storage/app/media/tandeo/Tandeo_2019_GOCDMX.pdf
+  Acredita régimen fiscal, no la causa de cada valor del dataset. Evidencia en el repo
+  Data_Warehouse_IJCOPI/tmp/auditoria_2026-11-09/ y tmp/auditoria_paper_2026-11-09/.
+  Sin cambios a fuentes, Word/PDF, web o datos; solo continuidad local, sin commit/push.
+- **Revisión local 8–9 nov 2026 (autorizada; sin commit ni push):** se corrigieron en
+  dw_agua_ijcopi.tex hoja de ruta (secciones 4 y 6), «points», tabla 3 (m³, comas, «billed volume»),
+  título del recurso «1° Semestre», correlación climática no reportada, 10 escenarios de sensibilidad,
+  precisiones de 5.7 y pie de Fig. 3 (Tláhuac y Milpa Alta fuera de la banda). Nueva comparación
+  pareada en 5.4 (19 de 20 semillas; PR-AUC 20 de 20): evaluacion-ml/comparacion_pareada.py y su
+  evidencia. latex_a_ijcopi.py: «Mexico City», n.d. antes que fechadas, signo menos, párrafos con URL
+  largo a la izquierda y rutas amarillas partibles tras «/». v3 y PDF regenerados: 15 páginas,
+  9,431 palabras (+67.96 %), resumen 144; 0 palabras nuevas sin amarillo frente a la v3 previa
+  (verificar_amarillo frente a v0: 79, solo cortes de token). Respaldo previo en
+  Data_Warehouse_IJCOPI/tmp/revision_2026-11-08/antes/. Copia Word sincronizada en el repo IJCOPI.
+- **Revisión local 5 nov 2026:** Gabriel pidió mejorar Word y web. Se revisaron
+  dw_agua_ijcopi.tex y latex_a_ijcopi.py, se regeneró dw_agua_IJCOPI_v3_grafo.docx
+  con la plantilla y se actualizó su PDF. Copia Word sincronizada en Data_Warehouse_IJCOPI.
+  Word: 15 páginas, 9,318 palabras; base 5,615 (+65.95 %), resumen 144 palabras.
+  Título, autores, tablas, figuras y v0 intactos; texto nuevo marcado en amarillo.
+  Enlaces metropolitanos actualizados al repo independiente, sitios históricos intactos.
+  Los cambios web están solo en Data_Warehouse_IJCOPI. No hubo commit ni push.
+  No se recalcularon resultados científicos en esta revisión editorial y funcional.
+
 - **Hecho:** v0 base y v1 extendida (8,311 palabras contra 5,615, +48 %; 14 páginas;
   resumen de 149 palabras; 6 palabras clave). Informe de datos. Presentaciones con logos.
 - **Hecho (31 oct):** Deep research y auditoría completa de fuentes candidatas (lista de
@@ -304,6 +352,19 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
 
 ## Siguiente paso
 
+**9 nov, tras corrección:** Gabriel y coautores revisan la v3 final de 9,116 palabras.
+Faltan aval humano y metadatos editoriales/referencia final de ICOKG; no inventarlos.
+Confirmar cierre con Git/remoto y Pages del repo IJCOPI; no ejecutar publicadores históricos.
+El permiso actual cubre solo este commit/push en ijcopi-zmvm, siempre sujeto al verificador
+original y excepción expresa si falla. Cualquier acción posterior requiere autorización nueva.
+
+**5 nov:** Gabriel revisa la v3 regenerada y los cambios web del repo independiente.
+Confirmar aprobación humana de todos los autores, referencia final de ICOKG y metadatos
+editoriales de la plantilla antes del envío. Estos cambios siguen locales: cada commit
+y push requiere autorización expresa nueva, identidad humana y verificador Springer.
+Los pendientes del 31 oct que aparecen abajo son antecedentes; la v3 local ya tiene
+los enlaces nuevos de Data_Warehouse_IJCOPI. No ejecutar el publicador histórico sin tarea.
+
 **Pedido de Gabriel del 31 oct, en curso en la rama `ijcopi-zmvm`:**
 
 1. [x] ETL completo y reproducible: `colonias_imc2020_shp.zip` va en
@@ -331,6 +392,20 @@ cifras de su primera versión eran falsas, sobre todo lo de fugas en 2019. Cuand
 retomar el cubo, sigue la sección 4.4 del informe.
 
 ## Bitácora
+
+- 2026-11-09: corregidos hallazgos científicos, estadística, referencia fiscal y Discusión;
+  regenerada v3 en 15 páginas/9,116 palabras, amarillo e identidad académica preservados.
+  Pruebas y QA correctos; preparado cierre Git autorizado con identidad humana, sujeto al verificador.
+- 2026-11-09: auditoría independiente en lectura del informe de revisión; verificadas
+  métricas, amarillo y datos, hallados pendientes científicos/UI y de reproducibilidad.
+  Fuente fiscal primaria localizada; productos intactos, solo continuidad, sin commit/push.
+- 2026-11-09: revisión autorizada del paper: fuente y conversor corregidos, script de comparación
+  pareada, v3 y PDF regenerados en 15 páginas con amarillo comprobado. Todo local; sin commit/push.
+
+- 2026-11-05: revisión autorizada del paper desde fuente; regeneración y medición con Word,
+  inspección visual de las 15 páginas y comprobación de cambios amarillos. Se precisaron
+  facturación/demanda, limitaciones del detector y RDF, declaración académica de IA y enlaces.
+  Fuente, conversor, Word v3 y PDF quedan modificados localmente en ijcopi-zmvm; sin commit/push.
 
 - 2026-10-31, Claude (Claude Code): creó esta memoria y preparó la v1, los análisis,
   el informe y las plantillas, pero no hizo commit ni push. Gabriel los subió a

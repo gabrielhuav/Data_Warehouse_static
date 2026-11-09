@@ -68,6 +68,7 @@ CITAS = {
     "lippolis2025": (["Lippolis", "Lodi", "Nuzzolese"], "2025"),
     "inegi2021": (["Instituto Nacional de Estadística y Geografía"], "2021"),
     "infocdmx2022": (["INFO CDMX"], "2022"),
+    "gcdmx2019": (["Gobierno de la Ciudad de México"], "2019"),
     # Ampliacion a la zona metropolitana. Cada una alimenta una tabla: ver control_ingesta_fuentes.
     "conapo2025a": (["CONAPO"], "2025a"),
     "conapo2025b": (["CONAPO"], "2025b"),
@@ -108,12 +109,12 @@ REFERENCIAS = {
     ),
     "medina2022": (
         "!Medina-Rivas, C. M., Rodríguez-Tapia, L., Morales-Novelo, J. A., & Revollo-Fernández, D. A. (2022). "
-        "Spatial inequality of domestic water consumption in Mexico city. *Water Resources and Economics, 40*, "
+        "Spatial inequality of domestic water consumption in Mexico City. *Water Resources and Economics, 40*, "
         "100210. https://doi.org/10.1016/j.wre.2022.100210"
     ),
     "medina2025": (
         "!Medina-Rivas, C. M., Morales-Novelo, J. A., Rodríguez-Tapia, L., & Revollo-Fernández, D. A. (2025). "
-        "Mexico city's decline in per capita domestic water use: A comprehensive spatial-temporal study. *Urban "
+        "Mexico City's decline in per capita domestic water use: A comprehensive spatial-temporal study. *Urban "
         "Water Journal, 22*(1), 1–15. https://doi.org/10.1080/1573062X.2024.2423400"
     ),
     "ramosbueno2021": (
@@ -149,6 +150,11 @@ REFERENCIAS = {
         "Rendición de Cuentas de la Ciudad de México]. (2022). *Resolución del recurso de revisión "
         "INFOCDMX/RR.IP.0679/2022*. "
         "https://documentosobligaciones.infocdmx.org.mx/ST/LTAIPRC-2016-OT/Art133/Fr01/2022/T02-INFOCDMX.RR.IP.0679.2022.pdf"
+    ),
+    "gcdmx2019": (
+        "!Gobierno de la Ciudad de México. (2019, April 1). *Gaceta Oficial de la Ciudad de México* "
+        "(No. 62, pp. 39–40). "
+        "https://data.consejeria.cdmx.gob.mx/portal_old/uploads/gacetas/989c31738f67577540092747c82e52f7.pdf"
     ),
     "lippolis2025": (
         "!Lippolis, A. S., Lodi, G., & Nuzzolese, A. G. (2025). The Water Health Open Knowledge Graph. *Scientific "
@@ -422,6 +428,9 @@ def matematicas(s, fmt):
             continue
         if c.isalpha():
             out.append(dict(fmt, text=c, i=True))
+        elif c == "-":
+            # En matematicas el guion es un signo menos (U+2212), como en LaTeX.
+            out.append(dict(fmt, text="−"))
         elif c != " ":
             out.append(dict(fmt, text=c))
         i += 1
@@ -711,7 +720,13 @@ def escribir(par, runs):
             par._p.append(h)
             h.append(run._r)
         else:
-            formato_run(par.add_run(r["text"]), r)
+            texto = r["text"]
+            # Una ruta de codigo larga no se parte y deja huecos en la linea justificada anterior.
+            # En el texto nuevo (amarillo) se permite cortarla tras "/" con un espacio de ancho cero;
+            # el texto de ICOKG no se toca para que la comparacion con la v0 no cambie.
+            if r.get("tt") and r.get("hl") and par.alignment == WD_ALIGN_PARAGRAPH.JUSTIFY:
+                texto = texto.replace("/", "/​")
+            formato_run(par.add_run(texto), r)
 
 
 def nota(par, runs):
@@ -1046,7 +1061,12 @@ for b in bloques:
         if prefijo_runin:
             p.add_run(prefijo_runin + " ").bold = True
             prefijo_runin = None
-        escribir(p, parrafo_latex(b[1]))
+        runs_p = parrafo_latex(b[1])
+        escribir(p, runs_p)
+        # Un URL largo no se parte y, justificado, Word estira la linea anterior hasta dejar
+        # huecos enormes; esos parrafos van alineados a la izquierda (el corte de linea es el mismo).
+        if any(r.get("link") and len(r.get("text", "")) >= 40 for r in runs_p):
+            p.alignment = WD_ALIGN_PARAGRAPH.LEFT
         # Un parrafo que presenta lo siguiente (ecuacion, lista) no se separa de ello.
         p.paragraph_format.keep_with_next = p.text.rstrip().endswith(":")
     elif tipo == "table":
@@ -1068,7 +1088,12 @@ assert not RESALTAR[0], "nuevobloque sin cerrar"
 # ---- referencias
 p = doc.add_paragraph(style="Heading 1")
 p.add_run("References").font.name = "Times New Roman"
-for ref in sorted((REFERENCIAS[k] for k in claves_bib), key=lambda t: unicodedata.normalize("NFD", t.lstrip("!")).lower()):
+# APA 7: con el mismo autor, las obras sin fecha (n.d.) van antes que las fechadas.
+def orden_referencia(t):
+    return unicodedata.normalize("NFD", t.lstrip("!").replace("(n.d.)", "(0000)")).lower()
+
+
+for ref in sorted((REFERENCIAS[k] for k in claves_bib), key=orden_referencia):
     nueva = ref.startswith("!")
     p = doc.add_paragraph()
     pf = p.paragraph_format
@@ -1104,7 +1129,7 @@ def declaracion(etiqueta, runs):
 URL_RELEASE = "https://github.com/gabrielhuav/Data_Warehouse_static/releases/tag/v1.5-icokg2026"
 assert URL_RELEASE in tex
 # La version extendida se publica en su propio repositorio; los enlaces de ICOKG no cambian.
-URL_REPO = "https://github.com/gabrielhuav/Data_Warehouse_ZMVM"
+URL_REPO = "https://github.com/gabrielhuav/Data_Warehouse_IJCOPI"
 disponibilidad = [
     {"text": "The source files, the warehouse, the R2RML mapping, the scripts and the static demonstration are "
              "distributed in the archived release "},
@@ -1112,7 +1137,7 @@ disponibilidad = [
 if URL_REPO.rsplit("/", 1)[1] in tex:
     disponibilidad += [
         {"text": " The extended warehouse, its verified manifest of sources, the SQL queries and the metropolitan map "
-                 "are in the repository ", "hl": True},
+                 "and graph are in the repository ", "hl": True},
         {"text": URL_REPO, "link": URL_REPO, "hl": True}, {"text": ".", "hl": True}]
 declaracion("Data Availability Statement:", disponibilidad)
 declaracion("Declaration on the Use of Generative AI:", parrafo_latex(decl_ia))

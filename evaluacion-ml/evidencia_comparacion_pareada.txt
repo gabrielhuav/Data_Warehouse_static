@@ -1,0 +1,17 @@
+Input: sensibilidad_anomalias.csv, 960 rows; difference = Isolation Forest minus A_g (deployed ranking).
+Input SHA-256: d3bb364d7f80c8ad47bed17bdbef6d87ae5d49531044059975e7458cb6bbac1c
+Runtime: Python 3.10.11, pandas 2.3.3; signed-rank uses standard-library integer arithmetic.
+Exact conditional signed-rank sign permutation, two-sided, inclusive tails; average ranks for equal absolute differences.
+Differences rounded to 12 decimal places (half-even); zeros omitted from ranks and count as neither method ahead; all-zero p=1.
+PR-AUC is the historical CSV label for average precision (AP, sklearn.metrics.average_precision_score), not trapezoidal PR integration.
+
+1 %                                      P=R=F1: mean +0.0531 sd 0.0547; IF ahead in 13 of 20, A_g ahead in 1, ties 6; p_exact = 0.0012207 (20/16384) | AP (CSV PR-AUC): mean +0.0833 sd 0.0268; IF ahead in 20 of 20, A_g ahead in 0, ties 0; p_exact = 1.90735e-06 (2/1048576)
+3 % (published)                          P=R=F1: mean +0.0691 sd 0.0419; IF ahead in 19 of 20, A_g ahead in 1, ties 0; p_exact = 5.72205e-06 (6/1048576) | AP (CSV PR-AUC): mean +0.0517 sd 0.0234; IF ahead in 20 of 20, A_g ahead in 0, ties 0; p_exact = 1.90735e-06 (2/1048576)
+5 %                                      P=R=F1: mean +0.0423 sd 0.0408; IF ahead in 16 of 20, A_g ahead in 2, ties 2; p_exact = 0.000228882 (60/262144) | AP (CSV PR-AUC): mean +0.0269 sd 0.0265; IF ahead in 16 of 20, A_g ahead in 4, ties 0; p_exact = 0.00101662 (1066/1048576)
+10 %                                     P=R=F1: mean +0.0145 sd 0.0118; IF ahead in 18 of 20, A_g ahead in 2, ties 0; p_exact = 0.000118256 (124/1048576) | AP (CSV PR-AUC): mean +0.0055 sd 0.0154; IF ahead in 15 of 20, A_g ahead in 5, ties 0; p_exact = 0.113987 (119524/1048576)
+10 % spikes                              P=R=F1: mean +0.3362 sd 0.0584; IF ahead in 20 of 20, A_g ahead in 0, ties 0; p_exact = 1.90735e-06 (2/1048576) | AP (CSV PR-AUC): mean +0.1761 sd 0.0283; IF ahead in 20 of 20, A_g ahead in 0, ties 0; p_exact = 1.90735e-06 (2/1048576)
+30 % spikes                              P=R=F1: mean +0.2830 sd 0.0602; IF ahead in 20 of 20, A_g ahead in 0, ties 0; p_exact = 1.90735e-06 (2/1048576) | AP (CSV PR-AUC): mean +0.1636 sd 0.0313; IF ahead in 20 of 20, A_g ahead in 0, ties 0; p_exact = 1.90735e-06 (2/1048576)
+50 % spikes                              P=R=F1: mean +0.1521 sd 0.0670; IF ahead in 20 of 20, A_g ahead in 0, ties 0; p_exact = 1.90735e-06 (2/1048576) | AP (CSV PR-AUC): mean +0.1079 sd 0.0317; IF ahead in 20 of 20, A_g ahead in 0, ties 0; p_exact = 1.90735e-06 (2/1048576)
+90 % spikes                              P=R=F1: mean -0.0202 sd 0.0445; IF ahead in 6 of 20, A_g ahead in 10, ties 4; p_exact = 0.0662231 (4340/65536) | AP (CSV PR-AUC): mean -0.0051 sd 0.0154; IF ahead in 9 of 20, A_g ahead in 11, ties 0; p_exact = 0.20245 (212284/1048576)
+subtle (x1.5-2 / x0.5-0.67)              P=R=F1: mean +0.0021 sd 0.0344; IF ahead in 8 of 20, A_g ahead in 6, ties 6; p_exact = 0.88623 (14520/16384) | AP (CSV PR-AUC): mean +0.0005 sd 0.0059; IF ahead in 12 of 20, A_g ahead in 8, ties 0; p_exact = 0.647655 (679116/1048576)
+moderate (x2-3 / x0.33-0.5)              P=R=F1: mean +0.0330 sd 0.0381; IF ahead in 13 of 20, A_g ahead in 3, ties 4; p_exact = 0.00137329 (90/65536) | AP (CSV PR-AUC): mean +0.0198 sd 0.0151; IF ahead in 19 of 20, A_g ahead in 1, ties 0; p_exact = 9.53674e-06 (10/1048576)

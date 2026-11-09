@@ -138,6 +138,8 @@ def evaluate_method(
         "Recall": recall,
         "F1": f1,
         "ROC-AUC": roc_auc_score(labels, scores),
+        # Historical CSV label retained for compatibility: this is average
+        # precision (AP), not trapezoidal precision--recall integration.
         "PR-AUC": average_precision_score(labels, scores),
     }
     curve = pd.DataFrame(
@@ -235,6 +237,7 @@ def main() -> int:
     )
     print(f"Seeds: {args.seed_start}--{args.seed_start + args.seeds - 1} ({args.seeds} runs).")
     print(f"Equal operating point: exactly {details['anomalies']} alerts per method and seed.")
+    print("Metric note: PR-AUC is the historical CSV label for average precision (AP, sklearn.metrics.average_precision_score), not trapezoidal PR integration.")
     print("\nPer-seed metrics:")
     print(results.to_string(index=False, float_format=lambda value: f"{value:.4f}"))
     columns = ["Precision", "Recall", "F1", "ROC-AUC", "PR-AUC"]

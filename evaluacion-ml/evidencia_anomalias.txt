@@ -4,6 +4,8 @@ Injected anomalies: 47 / 1553 (3.03%): 33 spikes, 14 drops.
 Seeds: 42--61 (20 runs).
 Equal operating point: exactly 47 alerts per method and seed.
 
+Metric note: PR-AUC is the historical label for average precision (AP, sklearn.metrics.average_precision_score), not trapezoidal PR integration. This note does not change the stored scores.
+
 Per-seed metrics:
  Seed                 Method  Alerts  Precision  Recall     F1  ROC-AUC  PR-AUC
    42 A_g (deployed ranking)      47     0.5745  0.5745 0.5745   0.9724  0.6959

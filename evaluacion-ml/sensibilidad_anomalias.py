@@ -120,6 +120,8 @@ def evaluate(units: pd.DataFrame, seed: int, inj: Injection) -> pd.DataFrame:
             "anomalies": alerts, "spikes": int((kinds == "spike").sum()), "drops": int((kinds == "drop").sum()),
             "P=R=F1": flagged[labels == 1].mean(),
             "ROC-AUC": roc_auc_score(labels, values),
+            # Historical CSV label retained: average precision (AP), not a
+            # trapezoidal area under an interpolated precision--recall curve.
             "PR-AUC": average_precision_score(labels, values),
         }
         for k in ("spike", "drop"):
@@ -162,6 +164,7 @@ def main() -> int:
     summary = results.groupby(["factor", "setting", "method"], sort=False)[cols].agg(["mean", "std"])
     print(f"Seeds {seeds.start}--{seeds.stop - 1} ({args.seeds} runs per setting); "
           "equal operating point: as many alerts as injected anomalies.\n")
+    print("Metric note: PR-AUC is the historical CSV label for average precision (AP, sklearn.metrics.average_precision_score), not trapezoidal PR integration.\n")
     current = None
     for (factor, setting, method), row in summary.iterrows():
         if factor != current:

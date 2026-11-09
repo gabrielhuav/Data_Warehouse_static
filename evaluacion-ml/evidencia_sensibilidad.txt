@@ -1,6 +1,8 @@
 Default injection model reproduces eval_anomalias.py exactly (checked on seed 42).
 Seeds 42--61 (20 runs per setting); equal operating point: as many alerts as injected anomalies.
 
+Metric note: PR-AUC is the historical label for average precision (AP, sklearn.metrics.average_precision_score), not trapezoidal PR integration. This note does not change the stored scores.
+
 == prevalence ==
 1 %                                      A_g (deployed ranking)   P=R=F1=0.491+/-0.106  ROC-AUC=0.970+/-0.013  PR-AUC=0.543+/-0.088  recall_spikes=0.714+/-0.154  recall_drops=0.000+/-0.000
 1 %                                      Isolation Forest         P=R=F1=0.544+/-0.102  ROC-AUC=0.978+/-0.013  PR-AUC=0.627+/-0.096  recall_spikes=0.691+/-0.152  recall_drops=0.220+/-0.204

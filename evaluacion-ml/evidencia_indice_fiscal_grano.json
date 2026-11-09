@@ -1,0 +1,43 @@
+{
+  "input_name": "consumo_agua_historico_2019.csv",
+  "input_sha256": "5b0abf9613a77cc46cebebd34236c89b57b37b1e588dc7963c278dbcb6c5f905",
+  "source_rows": 71102,
+  "retained_records": 70886,
+  "excluded_missing_territory": 216,
+  "retained_records_missing_index": 0,
+  "territorial_pairs": 1553,
+  "pairs_with_multiple_indices": 1200,
+  "grain": "Source billing records, grouped by indice_des; territories keyed by (alcaldia, colonia).",
+  "means": "Unweighted arithmetic means across non-null source-record values; NA/empty are not zero.",
+  "consumo_prom_note": "Reported source average; account counts and account weighting are not inferred.",
+  "per_record_mean_by_index": {
+    "ALTO": {
+      "n": 15495,
+      "consumo_total_valid_n": 15495,
+      "consumo_total_mean": 2191.809299193288,
+      "consumo_prom_valid_n": 15495,
+      "consumo_prom_mean": 96.73724281718697
+    },
+    "BAJO": {
+      "n": 29164,
+      "consumo_total_valid_n": 29164,
+      "consumo_total_mean": 1476.8313653819778,
+      "consumo_prom_valid_n": 29164,
+      "consumo_prom_mean": 47.86032723555932
+    },
+    "MEDIO": {
+      "n": 9748,
+      "consumo_total_valid_n": 9748,
+      "consumo_total_mean": 1362.3147702092738,
+      "consumo_prom_valid_n": 9748,
+      "consumo_prom_mean": 50.50262001233089
+    },
+    "POPULAR": {
+      "n": 16479,
+      "consumo_total_valid_n": 16479,
+      "consumo_total_mean": 1823.223855877177,
+      "consumo_prom_valid_n": 16479,
+      "consumo_prom_mean": 273.7001598466064
+    }
+  }
+}
