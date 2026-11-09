@@ -45,8 +45,9 @@ primer semestre de 2019. Es el trabajo **ID 38**. Autores: Eduardo Uriel Velázq
 Arrieta, Omar Fernando Pulido Morales, Emilio García López, Clara Aide Hernández
 Martínez y Gabriel Hurtado Avilés (autor de correspondencia), todos de ESCOM-IPN. En la versión
 de IJCOPI, por decisión de Gabriel, él firma primero y sigue como autor de correspondencia; el
-segundo es el Dr. Roberto Eswart Zagal Flores (ESCOM-IPN, `rzagalf@ipn.mx`, ORCID
-0000-0001-5649-6189), y después los demás. El orden de Springer no cambia.
+último es el Dr. Roberto Eswart Zagal Flores (ESCOM-IPN, `rzagalf@ipn.mx`, ORCID
+0000-0001-5649-6189), por instrucción del 9 nov. Entre Gabriel y él se conserva el
+orden Eduardo, Omar, Emilio y Clara. El orden de Springer no cambia.
 
 Se invitó una versión extendida al número especial de IJCOPI (ISSN 2007-1558). La
 participación de los trabajos 37 y 38 ya se confirmó por correo el 13 de octubre.
@@ -248,6 +249,25 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
 
 ## Estado actual
 
+- 9 nov, cierre Git autorizado por Gabriel: un commit/push en ijcopi-zmvm y otro en
+  el repo IJCOPI/main, identidad humana sin firmas ni créditos automáticos. Ejecutar
+  verificador Springer intacto antes de cada push y detenerse si hay fallos. Primera
+  ejecución de este cierre: 25 enlaces, 0 fallos; ADIP y AZCATL 200. Implementación web
+  y QA confirmadas en IJCOPI; no incluye envío, correo, release ni sitios históricos.
+
+- 9 nov, petición vigente de Gabriel: Roberto pasa al último lugar en IJCOPI,
+  conservando Gabriel primero/correspondencia y datos de identificación. Fuente y
+  conversor corregidos; v3 Word/PDF regenerados y copia Word sincronizada al repo IJCOPI.
+  Word: 15 páginas/9,043 palabras, v0 medida 5,615 (+61.0507569 %). Páginas inspeccionadas;
+  solo autoría, 5.8 y trabajo futuro cambian, cuerpo nuevo todo amarillo; título, tablas,
+  imágenes, declaración de IA y v0 preservados. Trabajo futuro: ampliar población,
+  densidad, usos del suelo y acceso al servicio para contextualizar facturación.
+  Word SHA-256 86f7ea1fbc627ad0ab0ea4036f93b9399b55419abce963eb8d028b271081fac9;
+  PDF bb59ccc1d85c352cec73f89e5c94430f5bc123f82ea24143a7fa86a8707bda03.
+  Clon actual `C:/dev/Data_Warehouse_static`, ijcopi-zmvm, HEAD 967b9f9b; el viejo
+  main de Descargas no se modificó. Web con expansión/distancias se edita solo en
+  Data_Warehouse_IJCOPI. La autorización posterior de cierre Git se registra arriba.
+
 - Revisión posterior al informe independiente del 9 nov: corregidos los hallazgos
   contrastados con fuentes y datos; descartadas cifras y autorías ajenas a esta versión.
   Word/PDF regenerados desde fuente: 15 páginas, 9,029 palabras, v0 5,615 (+60.8014 %),
@@ -379,13 +399,11 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
 
 ## Siguiente paso
 
-Cerrar los dos commits autorizados (original ijcopi-zmvm y distribución main),
-verificar identidad humana y repetir el verificador antes de cada push. Si falla,
-obtener una excepción nueva y específica; no reutilizar las del cierre anterior.
-Comprobar remotos y Pages. Después Gabriel y coautores revisan la v3 de 9,029
-palabras para su aval; metadatos editoriales e ICOKG final siguen pendientes.
-Los permisos usados no autorizan acciones posteriores. No crear release/DOI ni
-enviar correo o manuscrito sin otra autorización.
+Cerrar el commit/push autorizado en ijcopi-zmvm para fuente/conversor/Word/PDF y el
+del repo IJCOPI para Word y web implementada. Antes de cada push repetir el verificador
+y detenerse si falla, según orden expresa de Gabriel. Confirmar remotos y Pages IJCOPI.
+main original y sitios históricos intactos. No enviar el paper: faltan aval humano y
+metadatos editoriales. Cada permiso se consume con la acción. Registros siguientes: antecedentes.
 
 **9 nov, tras corrección:** Gabriel y coautores revisan la v3 final de 9,116 palabras.
 Faltan aval humano y metadatos editoriales/referencia final de ICOKG; no inventarlos.
@@ -427,6 +445,15 @@ cifras de su primera versión eran falsas, sobre todo lo de fugas en 2019. Cuand
 retomar el cubo, sigue la sección 4.4 del informe.
 
 ## Bitácora
+
+- 2026-11-09: cierre Git autorizado por Gabriel con identidad humana, sin firmas ni
+  créditos automáticos; verificador original previo: 25 enlaces y 0 fallos. Se repetirá
+  antes de cada push, con detención obligatoria si falla. Sin permiso de envío editorial.
+
+- 2026-11-09: por petición de Gabriel, Roberto último; trabajo futuro de población y
+  contexto geográfico, navegación a colonias/distancia descritas en 5.8. Regenerado desde
+  fuente, Word/PDF de 15 páginas y 9,043 palabras; inspección de todas las páginas y amarillo
+  comprobados. Copia Word IJCOPI idéntica. Sin commit/push ni cambios a main/históricos.
 
 - 2026-11-09: corregida revisión independiente tras contrastar hallazgos; SQL y RDF
   reproducibles, 22 enlaces deterministas, población/cobertura explícitas y créditos

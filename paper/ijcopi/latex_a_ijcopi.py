@@ -1004,7 +1004,7 @@ for k, a in enumerate(autores):
     nombre = p_autores.add_run(a)
     indice = p_autores.add_run("1")
     indice.font.superscript = True
-    if ORDEN_NUEVO and k < 2:
+    if ORDEN_NUEVO and (k == 0 or a == "Roberto Eswart Zagal Flores"):
         nombre.font.highlight_color = WD_COLOR_INDEX.YELLOW
         indice.font.highlight_color = WD_COLOR_INDEX.YELLOW
 

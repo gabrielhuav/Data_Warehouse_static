@@ -79,14 +79,14 @@
 
 \author{%
 Gabriel Hurtado Avil\'es\thanks{Corresponding author: \href{mailto:gabrielhuav@gmail.com}{gabrielhuav@gmail.com}}\orcidID{\href{https://orcid.org/0009-0002-5686-1822}{0009-0002-5686-1822}} \and
-Roberto Eswart Zagal Flores\orcidID{\href{https://orcid.org/0000-0001-5649-6189}{0000-0001-5649-6189}} \and
 Eduardo Uriel Vel\'azquez Arrieta\orcidID{\href{https://orcid.org/0009-0001-8745-2717}{0009-0001-8745-2717}} \and
 % ORCID enlazados a orcid.org. Desde llncs 2.24 \orcidID se compone en modo texto, asi que la X va
 % cursiva matematica y al copiarla del PDF da U+1D44B en vez de X: el ORCID
 % quedaria roto. \mathrm{X} la deja recta y copiable.
 Omar Fernando Pulido Morales\orcidID{\href{https://orcid.org/0009-0001-5698-987X}{0009-0001-5698-987X}} \and
 Emilio Garc\'ia L\'opez\orcidID{\href{https://orcid.org/0009-0005-2550-0671}{0009-0005-2550-0671}} \and
-Clara Aide Hern\'andez Mart\'inez\orcidID{\href{https://orcid.org/0009-0008-0647-8458}{0009-0008-0647-8458}}%
+Clara Aide Hern\'andez Mart\'inez\orcidID{\href{https://orcid.org/0009-0008-0647-8458}{0009-0008-0647-8458}} \and
+Roberto Eswart Zagal Flores\orcidID{\href{https://orcid.org/0000-0001-5649-6189}{0000-0001-5649-6189}}%
 }
 \authorrunning{G. Hurtado Avil\'es et al.}
 \institute{\icokg{Escuela Superior de C\'omputo (ESCOM),} Instituto Polit\'ecnico Nacional, Mexico City, Mexico\\
@@ -855,7 +855,8 @@ generate no triples; omission does not assert absence. Across the city limit, 18
 boundaries and 169 neighbourhood adjacencies link territories: Nezahualc\'oyotl sinks
 23.5~cm per year beside Venustiano Carranza at 16.5~cm, and 21 municipalities without
 reported volume form 27 municipality--aquifer pairs above an extraction-to-recharge
-ratio of 1.5. Every relation matches its warehouse table; browser queries run against the graph
+ratio of 1.5. Relations match warehouse tables; municipal nodes reveal neighbourhoods,
+and the browser compares approximate centroid distances
 (\url{https://gabrielhuav.github.io/Data_Warehouse_IJCOPI/ijcopi/grafo-zm.html}).
 \end{nuevobloque}
 
@@ -973,10 +974,12 @@ proximity, and reports count what citizens file, not what is missing.}
 
 \subsection{Future Work}
 
-\nuevo{Future work is to provide a persistent SPARQL endpoint, register dereferenceable
-territorial identifiers and integrate official utility polygons; the metropolitan graph
-already uses CONAPO polygons. Validation against labelled incidents and metering coverage
-remains outstanding. A data cube would support further metropolitan analysis.}
+\nuevo{Future work will enrich existing population data with density, land use and service
+access. Graph links could contextualise billed volumes geographically, using compatible
+territories, reference years and coverage, without establishing actual consumption or
+causation. Other priorities are persistent SPARQL access, dereferenceable identifiers,
+utility polygons alongside CONAPO's, labelled-incident validation and a metropolitan
+data cube.}
 \end{icokgblock}
 
 \begin{icokgblock}
