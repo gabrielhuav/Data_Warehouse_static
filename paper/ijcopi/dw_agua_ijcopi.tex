@@ -100,7 +100,7 @@ Roberto Eswart Zagal Flores\orcidID{\href{https://orcid.org/0000-0001-5649-6189}
 \maketitle
 
 \begin{abstract}
-This work presents a data warehouse for the territorial information retrieval of water consumption in Mexico City, built from heterogeneous open sources\nuevo{ and extended to its metropolitan area}. The contribution lies in three elements: an ETL process that consolidates SACMEX data into a dimensional model of 70,886 records, a declarative R2RML mapping that republishes the star schema as an RDF knowledge graph, and a static deployment methodology. \nuevo{Against the 2020 Census, billed volumes amount to 47 litres per inhabitant per day, 38\,\% of published consumption, lowest in the periphery, and the atypical-consumption score structurally misses drops. The extension integrates 62 verified files on 63 municipalities into 2.79 million rows and a metropolitan knowledge graph: municipal volumes require a quality filter, and neighbourhoods with almost no billed volume report shortages nearly as often as the rest. Every map layer is a verified SQL query.}
+This work presents a data warehouse for the territorial information retrieval of water consumption in Mexico City, built from heterogeneous open sources\nuevo{ and extended to its metropolitan area}. The contribution lies in three elements: an ETL process that consolidates SACMEX data into a dimensional model of 70,886 records, a declarative R2RML mapping that republishes the star schema as an RDF knowledge graph, and a static deployment methodology. \nuevo{Against the 2020 Census, billed volumes amount to 47 litres per inhabitant per day, 38\,\% of published consumption, lowest in the periphery, and the atypical-consumption score structurally misses drops. The extension integrates 62 verified files into a warehouse of 2.79 million rows, with a metropolitan knowledge graph covering 63 municipalities: municipal volumes require a quality filter, and neighbourhoods with almost no billed volume report shortages nearly as often as the rest. Every map layer is a verified SQL query.}
 \end{abstract}
 
 \keywords{Data warehouse, Open data, Knowledge graph, RDF Data Cube, Water consumption, \nuevo{Anomaly detection}}
@@ -217,9 +217,12 @@ The system follows a layered architecture: a data layer (PostgreSQL), a processi
 
 \subsection{ETL Consolidation Process}
 
-The first contribution of the work is the ETL process that consolidates the SACMEX open data into the dimensional warehouse. The complete detail of the process \icokg{---the DDL and the ETL scripts (\texttt{ddl/0\_schema.sql}, \texttt{etl/1\_copy.sql}, \texttt{etl/2\_dim.sql}, \texttt{etl/3\_fact.sql}) and the \nuevo{parameterised} retrieval queries---} is documented in the project's public repository; this article presents only the architecture of the process.
+The first contribution of the work is the ETL process that consolidates the SACMEX open data into the dimensional warehouse. The complete detail of the process \icokg{---the DDL and the ETL scripts (\texttt{ddl/0\_schema.sql}, \texttt{etl/1\_copy.sql}, \texttt{etl/2\_dim.sql}, \texttt{etl/3\_fact.sql}) and the \nuevo{parameterised} retrieval queries---} is documented in the project's public repository; this article presents only the architecture of the process. \nuevo{Figure~\ref{fig:corpus} summarises the input corpora.}
 
 The pipeline operates in four phases. (1) \textbf{Extraction}: reading the open SACMEX CSV files. (2) \textbf{Validation and cleaning}: discarding records with empty fields, inconsistent coordinates, or incompatible formats. (3) \textbf{Loading to staging and populating dimensions}: \texttt{COPY} of the data into temporary tables and extraction of the unique values into \icokg{\texttt{dim\_tiempo}, \texttt{dim\_ubicacion} and \texttt{dim\_indice\_des}}. (4) \textbf{Populating the fact tables}: a join between staging and dimensions \icokg{that populates \texttt{fact\_consumo\_agua} and \texttt{fact\_clima}}, finally dropping the staging tables. \icokg{The information thus consolidated becomes available for retrieval through the \nuevo{parameterised} queries distributed with the archived release.}\footnote{SACMEX operates a proprietary platform integrating SCADA and multiple sources; it is distinguished from a reproducible academic work over open data such as this one.}
+
+
+
 
 
 \subsection{Continuous Deployment Methodology}
@@ -333,38 +336,28 @@ wherever the map is reproduced.
 
 The frontend offers a dashboard with indicators, interactive charts (Plotly), and
 a choropleth map of the 16 boroughs (Leaflet + GeoJSON), where \nuevo{colour} represents
-the \nuevo{billed volume} and each borough displays a popup with its detail
-(Fig.~\ref{fig:mapa-a}). \icokg{Alongside it, and over the same exported data, a
+the \nuevo{billed volume} and each borough displays a popup with its detail.
+\icokg{Alongside it, and over the same exported data, a
 second view resolves territorial adjacency by traversing the knowledge graph of
 Section~\ref{sec:kg} rather than by filtering the cube: selecting a neighbourhood
 returns its neighbours ranked by consumption, together with the
-\icokg{\texttt{agua:nearbyWithin1500m}} query that produced them (Fig.~\ref{fig:mapa-b}). The two
-views in Fig.~\ref{fig:mapa} are therefore the same warehouse read through its
-two representations, and both run in the browser with no server behind them.}
+\icokg{\texttt{agua:nearbyWithin1500m}} query that produced them.
+\nuevo{These views read the same warehouse through its two representations and run
+in the browser without a server. The original views remain available at
+\url{https://gabrielhuav.github.io/Data_Warehouse_static/mapa.html} and
+\url{https://gabrielhuav.github.io/Data_Warehouse_static/vecindad.html?alcaldia=IZTAPALAPA&colonia=AO\%20DE\%20JUAREZ}.}}
 
+
+\begin{nuevobloque}
 \begin{figure}[tbp]
 \centering
-\begin{subfigure}[t]{0.485\textwidth}
-  \centering
-  \includegraphics[width=\linewidth,keepaspectratio]{Mapa1.png}
-  \caption{Choropleth retrieval by borough.\\
-  \icokg{\scriptsize\url{https://gabrielhuav.github.io/Data_Warehouse_static/mapa.html}}}
-  \label{fig:mapa-a}
-\end{subfigure}\hfill
-\begin{subfigure}[t]{0.485\textwidth}
-  \centering
-  \includegraphics[width=\linewidth,keepaspectratio]{Mapa2.png}
-  \caption{\icokg{Adjacency as graph traversal, with the \texttt{agua:nearbyWithin1500m}
-  query and its result.\\
-  \scriptsize\url{https://gabrielhuav.github.io/Data_Warehouse_static/vecindad.html?alcaldia=IZTAPALAPA&colonia=AO\%20DE\%20JUAREZ}}}
-  \label{fig:mapa-b}
-\end{subfigure}
-\caption{\icokg{The two retrieval modes of the static demonstration, both
-running in the browser without a server; each caption links to the exact view
-captured. Base map \copyright{} OpenStreetMap contributors (ODbL).}}
-\label{fig:mapa}
+\includegraphics[width=\textwidth,keepaspectratio]{figura_corpus_fuentes.png}
+\caption{Data provenance. Additional files follow the source manifest. Academic inputs:
+MexHiResClimDB (4), InSAR, Huerta-Vergara and Hidro-MX (1 each).
+Table totals follow the verified SQL export.}
+\label{fig:corpus}
 \end{figure}
-
+\end{nuevobloque}
 
 \subsection{Implementation of the Atypical-Consumption Module}
 
@@ -472,8 +465,7 @@ model~\cite{carhomburg2022}; \icokg{Listing~\ref{lst:sparql} is
 the query the published interface executes verbatim}, retrieving the
 neighbourhoods near a selected zone together with their own consumption, a
 single traversal that the relational interface resolves only through an ad-hoc
-spatial self-join, and which Fig.~\ref{fig:mapa-b} shows executing in the
-published demonstration.
+spatial self-join.
 
 \begin{lstlisting}[caption={\icokg{Territorial traversal over the knowledge graph, as executed by \texttt{vecindad.html}.}},label={lst:sparql}]
 PREFIX agua: <https://w3id.org/cdmx/agua/>

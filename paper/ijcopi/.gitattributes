@@ -1,0 +1,3 @@
+# Preserve diagram and evidence bytes used by SHA-256 checks.
+figura_corpus_fuentes.svg -text
+evidencia_corpus_fuentes.json -text

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="16.5cm" height="6.3cm" viewBox="0 0 467.716535 178.582677" role="img" aria-labelledby="title desc">
+<title id="title">Original and extended input corpus of the integrated water data warehouse</title>
+<desc id="desc">The two original CSVs and the 62 additional manifest input files feed integration ETL, a shared warehouse, and the RDF graph, map and queries. Discarded billing rows branch away from the retained facts.</desc>
+<g font-family="Arial, DejaVu Sans, sans-serif">
+<rect x="0.500" y="0.500" width="193.000" height="111.500" rx="4" fill="#EAF5F1" stroke="#8DBAAF" stroke-width="0.7"/>
+<rect x="205.000" y="0.500" width="262.217" height="111.500" rx="4" fill="#F2EDF7" stroke="#B29AC9" stroke-width="0.7"/>
+<text x="9.000" y="13.500" font-size="10" font-weight="700" text-anchor="start" fill="#006E62">Original study</text>
+<text x="9.000" y="24.500" font-size="8.5" font-weight="400" text-anchor="start" fill="#006E62">2 retained CSV files</text>
+<text x="214.000" y="13.500" font-size="10" font-weight="700" text-anchor="start" fill="#673983">Extension: 62 manifest input files</text>
+<text x="214.000" y="24.500" font-size="8" font-weight="400" text-anchor="start" fill="#673983">Files/packages; the original two CSVs are excluded</text>
+<polyline points="8.000,29.000 186.000,29.000" fill="none" stroke="#8DBAAF" stroke-width="0.6" stroke-linejoin="round"/>
+<polyline points="213.000,29.000 458.717,29.000" fill="none" stroke="#B29AC9" stroke-width="0.6" stroke-linejoin="round"/>
+<text x="9.000" y="39.000" font-size="8.5" font-weight="700" text-anchor="start" fill="#172C38">SACMEX billing (Jan–Jun 2019)</text>
+<rect x="8.000" y="44.000" width="80.000" height="17.000" rx="2" fill="#FFFFFF" stroke="#8DBAAF" stroke-width="0.7"/>
+<text x="48.000" y="55.500" font-size="8.5" font-weight="400" text-anchor="middle" fill="#172C38">71,102 raw rows</text>
+<rect x="106.000" y="44.000" width="80.000" height="17.000" rx="2" fill="#FFFFFF" stroke="#8DBAAF" stroke-width="0.7"/>
+<text x="146.000" y="55.500" font-size="8.5" font-weight="400" text-anchor="middle" fill="#172C38">70,886 fact rows</text>
+<polyline points="88.000,52.500 106.000,52.500" fill="none" stroke="#006E62" stroke-width="1" stroke-linejoin="round"/>
+<polygon points="106.000,52.500 102.400,50.772 102.400,54.228" fill="#006E62"/>
+<polyline points="97.000,52.500 97.000,66.500" fill="none" stroke="#006E62" stroke-width="1" stroke-linejoin="round"/>
+<polygon points="97.000,66.500 98.728,62.900 95.272,62.900" fill="#006E62"/>
+<text x="97.000" y="76.500" font-size="8" font-weight="400" text-anchor="middle" fill="#435663">216 excluded</text>
+<text x="9.000" y="88.500" font-size="8.5" font-weight="700" text-anchor="start" fill="#172C38">Open-Meteo weather (Jan–Jun 2019)</text>
+<rect x="8.000" y="93.000" width="80.000" height="16.000" rx="2" fill="#FFFFFF" stroke="#8DBAAF" stroke-width="0.7"/>
+<text x="48.000" y="104.500" font-size="8.5" font-weight="400" text-anchor="middle" fill="#172C38">4,344 hourly rows</text>
+<rect x="106.000" y="93.000" width="80.000" height="16.000" rx="2" fill="#FFFFFF" stroke="#8DBAAF" stroke-width="0.7"/>
+<text x="146.000" y="104.500" font-size="8.5" font-weight="400" text-anchor="middle" fill="#172C38">181 daily rows</text>
+<polyline points="88.000,101.000 106.000,101.000" fill="none" stroke="#006E62" stroke-width="1" stroke-linejoin="round"/>
+<polygon points="106.000,101.000 102.400,99.272 102.400,102.728" fill="#006E62"/>
+<rect x="214.000" y="40.000" width="114.000" height="18.000" rx="2" fill="#FFFFFF" stroke="#B29AC9" stroke-width="0.55"/>
+<text x="220.000" y="52.500" font-size="8.5" font-weight="400" text-anchor="start" fill="#172C38">INEGI</text>
+<text x="322.000" y="52.500" font-size="9" font-weight="700" text-anchor="end" fill="#673983">21</text>
+<rect x="337.000" y="40.000" width="121.717" height="18.000" rx="2" fill="#FFFFFF" stroke="#B29AC9" stroke-width="0.55"/>
+<text x="343.000" y="52.500" font-size="8.5" font-weight="400" text-anchor="start" fill="#172C38">SACMEX / ADIP</text>
+<text x="452.717" y="52.500" font-size="9" font-weight="700" text-anchor="end" fill="#673983">2</text>
+<rect x="214.000" y="62.500" width="114.000" height="18.000" rx="2" fill="#FFFFFF" stroke="#B29AC9" stroke-width="0.55"/>
+<text x="220.000" y="75.000" font-size="8.5" font-weight="400" text-anchor="start" fill="#172C38">CONAGUA / SMN</text>
+<text x="322.000" y="75.000" font-size="9" font-weight="700" text-anchor="end" fill="#673983">25</text>
+<rect x="337.000" y="62.500" width="121.717" height="18.000" rx="2" fill="#FFFFFF" stroke="#B29AC9" stroke-width="0.55"/>
+<text x="343.000" y="75.000" font-size="8.5" font-weight="400" text-anchor="start" fill="#172C38">SHCP</text>
+<text x="452.717" y="75.000" font-size="9" font-weight="700" text-anchor="end" fill="#673983">1</text>
+<rect x="214.000" y="85.000" width="114.000" height="18.000" rx="2" fill="#FFFFFF" stroke="#B29AC9" stroke-width="0.55"/>
+<text x="220.000" y="97.500" font-size="8.5" font-weight="400" text-anchor="start" fill="#172C38">CONAPO</text>
+<text x="322.000" y="97.500" font-size="9" font-weight="700" text-anchor="end" fill="#673983">6</text>
+<rect x="337.000" y="85.000" width="121.717" height="18.000" rx="2" fill="#FFFFFF" stroke="#B29AC9" stroke-width="0.55"/>
+<text x="343.000" y="97.500" font-size="8.5" font-weight="400" text-anchor="start" fill="#172C38">Academic</text>
+<text x="452.717" y="97.500" font-size="9" font-weight="700" text-anchor="end" fill="#673983">7</text>
+<polyline points="97.000,112.000 97.000,119.000 49.000,119.000" fill="none" stroke="#667783" stroke-width="1.05" stroke-linejoin="round"/>
+<polyline points="336.358,112.000 336.358,119.000 49.000,119.000 49.000,124.000" fill="none" stroke="#667783" stroke-width="1.05" stroke-linejoin="round"/>
+<polygon points="49.000,124.000 50.728,120.400 47.272,120.400" fill="#667783"/>
+<rect x="0.500" y="124.000" width="97.000" height="34.000" rx="3" fill="#F3F6F8" stroke="#A3B2BE" stroke-width="0.7"/>
+<text x="49.000" y="137.000" font-size="9.5" font-weight="700" text-anchor="middle" fill="#172C38">Integration ETL</text>
+<text x="49.000" y="149.000" font-size="8" font-weight="400" text-anchor="middle" fill="#172C38">Clean · aggregate · link</text>
+<polyline points="98.000,141.000 122.000,141.000" fill="none" stroke="#667783" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon points="122.000,141.000 118.400,139.272 118.400,142.728" fill="#667783"/>
+<rect x="122.000" y="124.000" width="206.000" height="34.000" rx="3" fill="#F3F6F8" stroke="#A3B2BE" stroke-width="0.7"/>
+<text x="225.000" y="135.000" font-size="9.5" font-weight="700" text-anchor="middle" fill="#172C38">Integrated warehouse</text>
+<text x="225.000" y="146.000" font-size="9.5" font-weight="700" text-anchor="middle" fill="#172C38">45 tables · 2,794,184 rows</text>
+<text x="225.000" y="155.000" font-size="8" font-weight="400" text-anchor="middle" fill="#172C38">including 97 ingestion-control rows</text>
+<polyline points="328.000,141.000 352.000,141.000" fill="none" stroke="#667783" stroke-width="1.2" stroke-linejoin="round"/>
+<polygon points="352.000,141.000 348.400,139.272 348.400,142.728" fill="#667783"/>
+<rect x="352.000" y="124.000" width="115.217" height="34.000" rx="3" fill="#F3F6F8" stroke="#A3B2BE" stroke-width="0.7"/>
+<text x="409.858" y="137.000" font-size="9.5" font-weight="700" text-anchor="middle" fill="#172C38">RDF graph</text>
+<text x="409.858" y="149.000" font-size="8.5" font-weight="400" text-anchor="middle" fill="#172C38">Map + SQL/SPARQL</text>
+<text x="0.000" y="166.000" font-size="8" font-weight="400" text-anchor="start" fill="#435663">National/regional reference data; mixed periods and grains. Rows are not independent observations.</text>
+<text x="0.000" y="176.000" font-size="8" font-weight="400" text-anchor="start" fill="#435663">Counts from the archived SQL export (09 Nov 2026); input versions fixed by SHA-256.</text>
+</g>
+</svg>

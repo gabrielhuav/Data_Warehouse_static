@@ -1,0 +1,183 @@
+{
+  "inputs": {
+    "warehouse/data/consumo_agua_historico_2019.csv": {
+      "sha256_file_bytes": "5b0abf9613a77cc46cebebd34236c89b57b37b1e588dc7963c278dbcb6c5f905",
+      "sha256_canonical_lf": "12aede58872a50856405ea24b6933e4b29b20d1de0e32d7463fabf855259b31d",
+      "canonical_lf_sha256_verified": true
+    },
+    "warehouse/data/open-meteo-19.44N99.11W2233m.csv": {
+      "sha256_file_bytes": "d540ef2f7665352fced631c816ae912ee5929fc8d19a59b8cbe43ea8ae543a69",
+      "sha256_canonical_lf": "3f7e6523150aae80e6fe88dfba3697b277dae72c255e4fcaeef17cc22a471933",
+      "canonical_lf_sha256_verified": true
+    },
+    "warehouse_ampliado/fuentes.json": {
+      "sha256_canonical_lf": "ab168444426d047b2fda93bd94a30fa408ad77f83c3f48e38918763546f40ead"
+    },
+    "ijcopi/datos/01_fuentes_cargadas.json": {
+      "sha256_file_bytes": "dd1f613521434722c1c931b912633d908b5e09383c529803639f237b089853c1",
+      "export_sha256_verified": true
+    },
+    "ijcopi/datos/02_tablas_del_almacen.json": {
+      "sha256_file_bytes": "aa57bf33c7e57b4423de8f5ce0ef8627ba66d75e2930f0e6c233de7c26e4def0",
+      "export_sha256_verified": true
+    }
+  },
+  "basis": "Fresh retained-CSV recount and arithmetic over verified frozen SQL exports; no fresh live-database count.",
+  "export_generation_time": "2026-11-09 19:06 UTC",
+  "original": {
+    "retained_csv_files": 2,
+    "sacmex_source_rows": 71102,
+    "sacmex_fact_rows": 70886,
+    "sacmex_excluded_rows": 216,
+    "open_meteo_hourly_rows": 4344,
+    "open_meteo_daily_rows": 181,
+    "period_start": "2019-01-01",
+    "period_end": "2019-06-30"
+  },
+  "extension": {
+    "manifest_input_files": 62,
+    "original_csvs_in_manifest": 0,
+    "families": [
+      {
+        "family": "INEGI",
+        "input_files": 21,
+        "source_ids": [
+          "B1",
+          "B10",
+          "B11",
+          "B3",
+          "B4",
+          "B5",
+          "B6",
+          "B8",
+          "B9c",
+          "B9d1",
+          "B9d2",
+          "D2a",
+          "D2b",
+          "D2c",
+          "D2d",
+          "D2e",
+          "D3a",
+          "D3b",
+          "D3c",
+          "D3d",
+          "D3e"
+        ]
+      },
+      {
+        "family": "CONAGUA / SMN",
+        "input_files": 25,
+        "source_ids": [
+          "D14CNPMX",
+          "D14DBOMC",
+          "D14DNXMX",
+          "D14GDLMX",
+          "D14HPNMX",
+          "D14PFBMX",
+          "D14PIRMX",
+          "D14PMDMX",
+          "D14PMNMX",
+          "D14PNDMX",
+          "D14SBBMX",
+          "D14TPTMX",
+          "D14TXMHD",
+          "D14VBRMX",
+          "D14VVCMX",
+          "D16a",
+          "D16b",
+          "D5",
+          "D6",
+          "D7",
+          "D8a",
+          "D8b",
+          "D8c",
+          "D9a",
+          "D9b"
+        ]
+      },
+      {
+        "family": "CONAPO",
+        "input_files": 6,
+        "source_ids": [
+          "D11",
+          "D12",
+          "D13",
+          "D15",
+          "D1a",
+          "D1b"
+        ]
+      },
+      {
+        "family": "SACMEX / ADIP",
+        "input_files": 2,
+        "source_ids": [
+          "C1h",
+          "C1i"
+        ]
+      },
+      {
+        "family": "SHCP",
+        "input_files": 1,
+        "source_ids": [
+          "D4"
+        ]
+      },
+      {
+        "family": "Academic",
+        "input_files": 7,
+        "source_ids": [
+          "A1a",
+          "A1n",
+          "A1p",
+          "A1x",
+          "A2",
+          "A3",
+          "D10"
+        ]
+      }
+    ],
+    "academic_parts": {
+      "MexHiResClimDB": [
+        "A1a",
+        "A1n",
+        "A1p",
+        "A1x"
+      ],
+      "InSAR": [
+        "A2"
+      ],
+      "Huerta-Vergara": [
+        "A3"
+      ],
+      "Hidro-MX": [
+        "D10"
+      ]
+    }
+  },
+  "integrated_warehouse": {
+    "base_tables": 45,
+    "physical_rows": 2794184,
+    "included_ingestion_control_rows": 97
+  },
+  "scope": "The warehouse includes national/regional reference data at mixed periods and spatial grains. Physical rows are not independent observations. The 63-municipality analytical view does not delimit all warehouse contents.",
+  "figure": {
+    "width_cm": 16.5,
+    "height_cm": 6.3,
+    "png_dpi": 300,
+    "png_pixels": [
+      1949,
+      744
+    ],
+    "minimum_font_pt": 8,
+    "font": "Arial"
+  },
+  "outputs": {
+    "figura_corpus_fuentes.svg": {
+      "sha256": "3c8511f34977716d0c9914c95a30385e7c2842a70664b35fcaab322efb52ae2b"
+    },
+    "figura_corpus_fuentes.png": {
+      "sha256": "23100860c36ff7a0d79050adbb3bd899345b4b838b9ec26992bbd09c46fcfc29"
+    }
+  }
+}

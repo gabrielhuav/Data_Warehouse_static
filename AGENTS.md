@@ -249,6 +249,52 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
 
 ## Estado actual
 
+- Cierre autorizado por Gabriel el 9 nov: un commit/push por repositorio para diagrama
+  y manuscrito, identidad humana sin firmas ni créditos automáticos. Permite únicamente
+  AZCATL si es el único fallo; repetir verificador antes de cada push. Primera ejecución
+  de este cierre: 25 enlaces/0 fallos. Word/PDF y figura coinciden con la QA previa de
+  15 páginas/9,014 palabras, resumen 146 y amarillo completo. Diagrama/generador/evidencia
+  también copiados y recalculados en IJCOPI. El fallo de carga del grafo se corrige en
+  el repo IJCOPI: una consulta inicial sobre colonias prolonga el estado de análisis;
+  no modifica resultados científicos ni este manuscrito. No enviar ni crear release/DOI.
+
+- Diagrama de corpus terminado localmente: figura 1 sustituye capturas antiguas,
+  assets/URLs preservados. `generar_diagrama_corpus.py` produce SVG/PNG (16.5×6.3 cm,
+  300 dpi, mínimo 8 pt) y `evidencia_corpus_fuentes.json`, en paper/ijcopi.
+  Recuentos: SACMEX 71,102→70,886 hechos (216 excluidos), Open-Meteo 4,344 h→181 d;
+  dos CSV originales separados del manifiesto de 62 archivos adicionales (INEGI 21,
+  CONAGUA/SMN 25, CONAPO 6, SACMEX/ADIP 2, SHCP 1, académicos 7). Totales exportados
+  por SQL y hash verificado: 45 tablas/2,794,184 filas, incluidas 97 de control, granos
+  mixtos/nacionales-regionales; no observaciones independientes ni recuento nuevo de BD.
+  V3 regenerada, 15 páginas/9,014 palabras, resumen 146 y seis keywords; QA de todas las
+  páginas y cero tokens nuevos sin amarillo. Título/autores/otras figuras/tablas/IA/v0
+  preservados; Word idéntico en IJCOPI, SHA-256
+  5051dbebb10345ea1ba65e71c6a84676121bcc7e6115bae5152c6ecb833cb018.
+  PDF SHA-256 4d950cb6a0d4b570946f3061e6f29dc23c56732e740982be6f64d5042d45d5e0.
+  Sin commit/amend/push nuevo; cierre anterior 7375a44 y 03daef8 ya completado.
+
+- Cierre confirmado: IJCOPI/main 03daef8 ya remoto, Pages 42721196699 success, tres
+  archivos del grafo idénticos por SHA-256 y QA pública de colonias/distancia correcta.
+  Gate actual 25/0 (ADIP y AZCATL 200); excepción exclusiva AZCATL autorizada no utilizada.
+  No se repitió push ni hubo otro commit/amend. Nuevo pedido: diagrama de procedencia
+  original/ampliada en paper, con recuentos reproducibles y máximo 15 páginas; en curso
+  local, sin autorización de commit/push nuevo. Original permanece en 7375a44 publicado.
+
+- Reintento del 9 nov autorizado por Gabriel solo para verificar y hacer push IJCOPI
+  con cero fallos: gate 25/1 otra vez por acceso al DOI AZCATL 10.24275/AZC2026E1004,
+  ADIP 200. No hubo push ni nuevos commits/amend. 03daef8 permanece local en IJCOPI;
+  original conserva remoto 7375a44. Confirmada cita 10.1007/978-3-032-42081-7_6
+  en 2.3/bibliografía de v3 como Daowz Laguna et al. (2027), contrastada con ficha
+  y resumen de Springer. No se modificó el manuscrito.
+
+- Cierre del 9 nov: commit humano sin firma/trailers 7375a44025c029ce0d7b77e5100962e0d0c026cd
+  publicado y remoto ijcopi-zmvm confirmado, tras gate 25/0. En IJCOPI se creó
+  03daef8b2a0c268d10e617d9f47ecae941ccd467 con web/Word; su gate dio 25/1 por acceso
+  al DOI AZCATL 10.24275/AZC2026E1004, ADIP 200. No se ejecutó ese segundo push,
+  ni se reintentó: Gabriel ordenó detenerse ante fallos. Web lista local, sin desplegar.
+  Permisos de ambos commits y push del original consumidos. Este registro queda local,
+  sin otro commit/amend; no hay permiso para más acciones Git en el original.
+
 - 9 nov, cierre Git autorizado por Gabriel: un commit/push en ijcopi-zmvm y otro en
   el repo IJCOPI/main, identidad humana sin firmas ni créditos automáticos. Ejecutar
   verificador Springer intacto antes de cada push y detenerse si hay fallos. Primera
@@ -399,11 +445,12 @@ powershell -ExecutionPolicy Bypass -File ijcopi/publicar.ps1
 
 ## Siguiente paso
 
-Cerrar el commit/push autorizado en ijcopi-zmvm para fuente/conversor/Word/PDF y el
-del repo IJCOPI para Word y web implementada. Antes de cada push repetir el verificador
-y detenerse si falla, según orden expresa de Gabriel. Confirmar remotos y Pages IJCOPI.
-main original y sitios históricos intactos. No enviar el paper: faltan aval humano y
-metadatos editoriales. Cada permiso se consume con la acción. Registros siguientes: antecedentes.
+Original cerrado en 7375a44 e IJCOPI en 03daef8, Pages confirmado. No repetir Git.
+Cerrar el commit/push autorizado del diagrama y manuscrito en ijcopi-zmvm; repetir
+verificador y aceptar sólo cero fallos o el único fallo AZCATL autorizado. Después
+cerrar IJCOPI con copia de productos y arreglo del grafo, confirmar Pages y QA pública.
+Un commit/push por repo; sin amend ni acciones posteriores. main original e históricos intactos.
+No enviar el paper: faltan aval humano y metadatos editoriales. Registros siguientes: antecedentes.
 
 **9 nov, tras corrección:** Gabriel y coautores revisan la v3 final de 9,116 palabras.
 Faltan aval humano y metadatos editoriales/referencia final de ICOKG; no inventarlos.
@@ -445,6 +492,28 @@ cifras de su primera versión eran falsas, sobre todo lo de fugas en 2019. Cuand
 retomar el cubo, sigue la sección 4.4 del informe.
 
 ## Bitácora
+
+- 2026-11-09: Gabriel autorizó cierre humano sin firmas/créditos automáticos en ambos
+  repos; primera ejecución del verificador 25/0, excepción sólo AZCATL si único fallo.
+  Word/PDF/figura y generador revalidados, productos copiados en IJCOPI; corrección de
+  carga del grafo en curso allí, sin cambios a cifras ni manuscrito por ese arreglo.
+
+- 2026-11-09: diagrama de corpus generado desde recuentos/manifest/export SQL con hashes;
+  figura 1 nueva, antiguo material y enlaces conservados. V3 Word/PDF regenerada en
+  15 páginas/9,014 palabras, amarillo y QA completos, copia IJCOPI idéntica. Nuevo trabajo
+  local, sin commit/amend/push; publicación previa de web ya confirmada.
+
+- 2026-11-09: IJCOPI 03daef8 y Pages success confirmados, QA pública de colonias y
+  distancia correcta; gate 25/0, excepción AZCATL no necesaria. Nuevo diagrama de
+  corpus en preparación local, sin más commits/amend/pushes.
+
+- 2026-11-09: nueva ejecución solicitada de Springer terminó 25/1 (acceso DOI AZCATL);
+  no se hizo push IJCOPI ni otro commit/amend. Confirmada cita del capítulo DOI
+  10.1007/978-3-032-42081-7_6 en manuscrito vigente, sin cambios al contenido.
+
+- 2026-11-09: publicado 7375a44 en ijcopi-zmvm, identidad humana sin firma/trailers,
+  gate 25/0. IJCOPI 03daef8 creado pero push detenido por gate 25/1 (acceso DOI AZCATL),
+  sin reintentos ni excepciones. Registro local de cierre, sin otro commit/amend.
 
 - 2026-11-09: cierre Git autorizado por Gabriel con identidad humana, sin firmas ni
   créditos automáticos; verificador original previo: 25 enlaces y 0 fallos. Se repetirá
